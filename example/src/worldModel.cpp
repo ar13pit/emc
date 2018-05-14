@@ -8,7 +8,7 @@ double* WorldModel::getMinimumDistance()
 void WorldModel::setMinimumDistance(emc::LaserData* laser)
 {
      double aux = laser->ranges[0];
-     for(int i = 1; i < laser->ranges.size(); ++i) {
+     for(int i = 15; i < laser->ranges.size()-15; ++i) {
             if(laser->ranges[i] < aux && laser->ranges[i] > LRF_THRESH) {
                 aux = laser->ranges[i];
             }
