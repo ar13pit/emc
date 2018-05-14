@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
                     // reset distanceBackwards to 0
                     distanceBackwards = 0.0;
                     // switch state to move backwards
-                    state = drive_backward;
+                    state = rotate;//drive_backward;
                 } else {
                     pico_drive.driveForward(FORWARD_SPEED);
                 }
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
                 // start rotating, add angular displacement to counter rotatedAngle
                 rotatedAngle += pico_drive.rotate(ROTATE_SPEED);
                 // if we have rotated enough,
-                if(fabs(rotatedAngle) >= 0.5*M_PI) {
+                if(fabs(rotatedAngle) >= 0.4*M_PI) {
                     // start driving again
                     state = drive_forward;
                 }
