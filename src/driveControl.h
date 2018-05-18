@@ -2,6 +2,8 @@
 #define driveControl_H
 
 #include <emc/io.h>
+#include <emc/rate.h>
+#include <emc/odom.h>
 
 class DriveControl
         {

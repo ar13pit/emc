@@ -1,5 +1,7 @@
 #include "config.h"
 #include <emc/io.h>
+#include <emc/rate.h>
+#include <emc/odom.h>
 
 #ifndef worldModel_H
 #define worldModel_H
