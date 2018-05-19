@@ -30,19 +30,18 @@ int main(int argc, char *argv[])
     WorldModel worldModel;
 
 
-    int nFilterPoints = 15;
 
     while(io.ok()) {
         //pico_drive.driveForward(1.0);
         if(detection.getSensorData()) {
-            std::cout << detection.laser.ranges.size() << std::endl;
-            std::cout << detection.laser.ranges[999] << "  ";
-            std::cout << detection.laser.ranges[984] << std::endl;
 
-            detection.filterLRFData(&detection.laser, nFilterPoints);
+            detection.saveLRFScan(&detection.laser);
 
-            std::cout << detection.laser.ranges[999] << "  ";
-            std::cout << detection.laser.ranges[984] << std::endl;
+            std::cout << detection.LatestLaserScan[969].x << "  ";
+            std::cout << detection.LatestLaserScan[969].y << std::endl;
+
+            std::cout << detection.LatestLaserScan[969].angle << "  ";
+            std::cout << detection.LatestLaserScan[969].dist << std::endl << std::endl;
 
         }
 

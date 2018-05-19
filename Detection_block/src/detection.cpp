@@ -1,6 +1,8 @@
 #include "detection.h"
 #include "config.h"
 
+
+
     bool Detection::getSensorData() {
         if(inOut->readLaserData(laser)) {
             return true;
@@ -21,6 +23,21 @@
                }
            }
          minDistance_ = aux;*/
+
+    }
+
+    void Detection::saveLRFScan(emc::LaserData* laser){
+        int nFilterPoints = 15;
+        double a = (15*laser->angle_increment) + laser->angle_min;
+        for(unsigned int i = nFilterPoints; i < laser->ranges.size()-nFilterPoints; ++i)
+        {
+            Detection::LatestLaserScan[i-nFilterPoints].dist = laser->ranges[i];
+            Detection::LatestLaserScan[i-nFilterPoints].angle = a;
+            Detection::LatestLaserScan[i-nFilterPoints].x = sin(a) * laser->ranges[i];
+            Detection::LatestLaserScan[i-nFilterPoints].y = cos(a) * laser->ranges[i];
+
+            a += laser->angle_increment;
+        }
 
     }
 
