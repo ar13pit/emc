@@ -2,8 +2,6 @@
 #define driveControl_H
 
 #include <emc/io.h>
-#include <emc/rate.h>
-#include <emc/odom.h>
 
 class DriveControl
         {
@@ -19,9 +17,11 @@ public:
         return;
     }
 
-    void driveForward(double Xspeed); // Method to go forward with the robot
-    double driveBackward(double Xspeed); // Method to go backward with the robot
-    double rotate(double Aspeed); // Method to rotate with the robot
+    void picoDrive(double angle); // Main method to let pico turn for an angle and then drive
+    void picoTurnRight(); // Method to let pico turn right
+    void picoTurnLeft(); // Method to let pico turn left
+    void picoForward(); // Method to let pico drive forward
+    void picoSideDrive(double angle); // Method to let pico drive side ways
     void stop(); // Method to stop moving with the robot
 };
 

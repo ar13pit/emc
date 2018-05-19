@@ -3,9 +3,11 @@
 #include <emc/odom.h>
 #include <cmath>
 
-#include "driveControl.cpp"
-#include "detection.cpp"
-#include "worldModel.cpp"
+#include "driveControl.h"
+#include "detection.h"
+#include "worldModel.h"
+#include "planning.h"
+#include "main.hpp"
 
 #include "config.h"
 
@@ -26,6 +28,7 @@ int main(int argc, char *argv[])
     DriveControl pico_drive(&io);
     Detection detection(&io);
     WorldModel worldModel;
+    Status status;
 
     // Initialize the State of the State Machine
     state_t state = drive_forward;

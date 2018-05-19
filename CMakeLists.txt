@@ -2,7 +2,15 @@ cmake_minimum_required(VERSION 2.8)
 project(example)
 
 
-add_executable(main src/main.cpp)
+set(SOURCES
+ src/detection.cpp
+ src/driveControl.cpp
+ src/worldModel.cpp
+ src/main.cpp
+ src/planning.cpp
+ src/helper.hpp)
+
+add_executable(main ${SOURCES})
 
 
 target_link_libraries(main emc-framework)
