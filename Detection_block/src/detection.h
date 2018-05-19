@@ -17,7 +17,8 @@ public:
 
     emc::LaserData laser;
     bool getSensorData(); // Method to obtain the sensordata
-    bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
+    void filterLRFData(emc::LaserData* laser,int nFilterPoints); // Filter data by sensor measurement
+   // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
 };
 
 #endif //detection_H
