@@ -36,13 +36,26 @@ int main(int argc, char *argv[])
         if(detection.getSensorData()) {
 
             detection.saveLRFScan(&detection.laser);
+            int index = 0;
+            std::cout << detection.LatestLaserScan[index].x << "  ";
+            std::cout << detection.LatestLaserScan[index].y << std::endl;
 
-            std::cout << detection.LatestLaserScan[969].x << "  ";
-            std::cout << detection.LatestLaserScan[969].y << std::endl;
+            std::cout << detection.LatestLaserScan[index].angle << "  ";
+            std::cout << detection.LatestLaserScan[index].dist << std::endl << std::endl;
 
-            std::cout << detection.LatestLaserScan[969].angle << "  ";
-            std::cout << detection.LatestLaserScan[969].dist << std::endl << std::endl;
+            double aFit = 0;
+            double bFit = 0;
+            int firstPoint = 700;
+            int lastPoint = 900;
 
+            if (detection.lineFit(aFit, bFit, firstPoint, lastPoint) ){
+               std::cout << "Line was found, formula: y = " << aFit << "x + "<< bFit << std::endl << std::endl;
+            }else{
+               std::cout << "Line was not found...";
+            }
+
+
+            //pico_drive.driveBackward(0.1);
         }
 
 

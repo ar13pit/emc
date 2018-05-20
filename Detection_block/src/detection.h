@@ -49,6 +49,8 @@ public:
     bool getSensorData(); // Method to obtain the sensordata
     void filterLRFData(emc::LaserData* laser,int nFilterPoints); // Filter data by sensor measurement
     void saveLRFScan(emc::LaserData* laser);
+    bool lineFit(double&, double&, int, int);
+
    // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
 
 
