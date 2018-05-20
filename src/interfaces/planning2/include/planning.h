@@ -30,7 +30,7 @@ public:
 //     slope_      : Stores the computed slope of the line as a double
 //     equation    : Stores coefficients of equation of line (ax + by + c = 0) as a double array
 //
-class Line {
+/*class Line {
     Point point1_, point2_, midpoint_;
     double slope_, equation[3];
 
@@ -60,7 +60,7 @@ class RelativePoint{
     double angle_, radius_;
 
 };
-
+*/
 
 // Furthest point
 typedef struct {
@@ -74,10 +74,10 @@ typedef struct {
 // Store exit data: two corners, angles and a flag whether detected
 typedef struct {
     bool detected;
-    int x1;
-    int y1;
-    int x2;
-    int y2;
+    double x1;
+    double y1;
+    double x2;
+    double y2;
     double angle1;
     double angle2;
 } Exit;
@@ -87,8 +87,17 @@ typedef struct {
 typedef struct {
     int x;
     int y;
-    int angle;
+    double angle;
 } Destination;
+
+
+//Should not be here
+typedef enum {
+    ROOM_ESCAPE,
+    IN_CORRIDOR
+} Status;
+
+void main_logic(Exit exit, Point furthest, Status status, Destination *dest);
 
 
 #endif

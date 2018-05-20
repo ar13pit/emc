@@ -1,10 +1,11 @@
 #include "planning.h"
-#include "helper.hpp"
-#include "main.hpp"
 #include "opencv2/opencv.hpp"
 #include <cmath>
 #include <math.h>
+#include "config.h"
+#include <iostream>
 
+using namespace std;
 
 // Methods of Class Point
 double Point::get_x(){
@@ -25,6 +26,7 @@ void Point::offset(double offsetConstant){
     y_ += offsetConstant;
 };
 
+/*
 // Methods of Class Line
 Point Line::calculate_midpoint(Point point1, Point point2){
     double x_mid, y_mid;
@@ -74,19 +76,24 @@ double get_line_equation(){
     return equation;
 };
 
-
+*/
 
 /*---------------------------------------------------------------------------------
 ---------------------------inside the room-----------------------------------------
 ---------------------------------------------------------------------------------*/
 
 // set furthest point
-Furthest_point set_furthest_point(Point point){
-    Furthest_point far;
-    far.dist = sqrt(point.x*point.x + point.y*point.y);
-    far.x = point.x;
-    far.y = point.y;
-    far.angle = atan(point.y/point.x);
+Furthest_point *set_furthest_point(Point point, Furthest_point *far){
+
+    far->dist = sqrt(point.get_x()*point.get_x() + point.get_y()*point.get_y());
+    far->x = point.get_x();
+    far->y = point.get_y();
+    far->angle = atan(point.get_y()/point.get_x());
+
+    if (far->angle < tol) {
+        far->angle = tol;
+    }
+
     return far;
 }
 
@@ -98,39 +105,48 @@ Destination *calc_exit_dest (Exit exit, Destination *dest){
     dest->x = (exit.x1 + exit.x2)/2;
     dest->y = (exit.y1 + exit.y2)/2;
     dest->angle = (exit.angle1 + exit.angle2)/2;
+    if (dest->angle < tol) {
+        dest->angle = tol;
+    }
     return dest;
 }
 
 
 // calculate the destination when exit in not identified
-Destination *calc_furthest_dest (Furthest_point furthest, Destination *dest){
-    dest->x = furthest.x/4;
-    dest->y = furthest.y/4;
-    dest->angle = furthest.angle;
+Destination *calc_furthest_dest (Furthest_point *furthest, Destination *dest){
+    dest->x = furthest->x/4;
+    dest->y = furthest->y/4;
+    dest->angle = furthest->angle;
+    if (dest->angle < tol) {
+        dest->angle = tol;
+    }
     return dest;
 }
 
 
 // check whether the new point is further than the saved one
-Furthest_point compare_furthest_point(Point point, Furthest_point far){
+Furthest_point *compare_furthest_point(Point point, Furthest_point *far){
     double new_dist;
-    new_dist = sqrt(point.x*point.x + point.y*point.y);
-    if (new_dist>far.dist) {
-        far = set_furthest_point(point);
+    new_dist = sqrt(point.get_x()*point.get_x() + point.get_y()*point.get_y());
+    if (new_dist < tol){
+        new_dist = tol;
+    }
+    if (new_dist>far->dist) {
+        far = set_furthest_point(point,far);
     }
     return far;
 }
 
 
 
-Destination main_logic(Exit exit, Point furthest, Status status, Destination *dest){
+void main_logic(Exit exit, Point furthest, Status status, Destination *dest){
 
 
     bool set_turn_flag;
     bool turned_once_flag;
     bool move_to_exit;
     Furthest_point far;
-    //Destination dest;
+    Point p(100.0,100.0);
 
     // initialize
     far.dist = 0;
@@ -156,7 +172,7 @@ Destination main_logic(Exit exit, Point furthest, Status status, Destination *de
             if (!turned_once_flag){
                 set_turn_flag = true;           // command control to turn 180
                 turned_once_flag = true;        // remember that we've turned around
-                far = set_furthest_point(furthest);     // save the furthest point given info from perception
+                set_furthest_point(furthest,&far);     // save the furthest point given info from perception
             } else {
 
                 // check if exit detected after we turned
@@ -164,8 +180,8 @@ Destination main_logic(Exit exit, Point furthest, Status status, Destination *de
                     move_to_exit = true;
                     dest = calc_exit_dest(exit,dest);        // define destination
                 } else {
-                    far = compare_furthest_point(furthest,far);     // check if the first point was further
-                    dest = calc_furthest_dest(far,dest);             // set the furthest point as a destination
+                    compare_furthest_point(furthest,&far);     // check if the first point was further
+                    dest = calc_furthest_dest(&far,dest);             // set the furthest point as a destination
                 }
             }
 
@@ -178,7 +194,7 @@ Destination main_logic(Exit exit, Point furthest, Status status, Destination *de
     case(IN_CORRIDOR):
         break;
     }
-    return dest;
+    //return dest;
 }
 
 
