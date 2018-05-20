@@ -1,0 +1,26 @@
+README DETECTION
+
+Structs:
+
+-Point(double x, double y, double angle, double dist) describes a point stored both in polar coordinates and in carthesian coordinates.
+
+-Exit(bool detected, Point exitPoint1, Point exitPoint2) describes the 2 coordinates and a boolean that specifies whether the exit is detected from the latest LRF measurement
+
+-CorridorWalls(bool escaped, Point rightWall1, Point rightWall2, Point leftWall1, Point leftWall2) describes 4 coordinates of the wall in the corridor phase. Escaped true means that no walls can be found in the neighbourhood, which means that the robot has probably escaped.
+
+
+Functions:
+
+-filterLRFData: Is an outdated function that is not used anymore, but is kept in the code as a backup. Don't call this function.
+
+-saveLRFScan(emc::LaserData* laser): To use the detection class, always execute the function "saveLRFScan" first. This will update the array with Points LatestLaserScan[]. This array is used in all other functions (furthest point detection, linefit, etc.)
+
+-lineFit: This function is used by other functions, but is not needed to be called directly.
+
+-findFurthestPoint(): Function that returns a "Point" that is furthest away from the latest LRF scan (no inputs required).
+
+-findExit(): Function that returns the two exit points and a a flag detected together of type "Exit" (no inputs required).
+
+-findCorridorWalls(): Function that returns 4 coordinates and a flag whether PICO has succesfully escaped, together of type "CorridorWalls" (no inputs required).
+
+Poin
