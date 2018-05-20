@@ -1,0 +1,119 @@
+#include <cmath>
+#include <iostream>
+#include <config.h>
+
+#ifndef planning_H
+#define planning_H
+
+
+/*
+--------------------------------------------------------------------------------
+                                Class Point
+--------------------------------------------------------------------------------
+*/
+class Point {
+    // Class Point
+    // Constructs a 2D point object in relative coordinates
+    // Properties:
+    //     x_          : x-coordinate relative to origin
+    //     y_          : y-cooridnate relative to origin
+    //     angle_      : angle of vector made (x, y) from y-axis
+    //     radius_     : distance of the point from the relative origin
+    //
+
+    double x_, y_, angle_, radius_;
+
+    void calculate_angle();
+    void calculate_radius();
+
+public:
+    Point(){
+        x_ = 0.0;
+        y_ = 0.0;
+        angle_ = 0.0;
+        radius_ = 0.0;
+    };
+
+    Point(double x, double y){
+        x_ = x;
+        y_ = y;
+        calculate_angle();
+        calculate_radius();
+    };
+
+    double get_x();
+    double get_y();
+    double get_angle();
+    double get_radius();
+    void print();
+    // void offset(Point offsetPoint);
+    // void offset(double offsetConstant);
+};
+
+
+/*
+--------------------------------------------------------------------------------
+                                Class Line
+--------------------------------------------------------------------------------
+*/
+
+class Line {
+    // Class Line
+    // Constructs a line object from 2 input points
+    //
+    // Properties:
+    //     midpoint_   : Stores the midpoint of the line joining the 2 input
+    //                   points as Point object
+    //     slope_      : Stores the computed slope of the line as a double
+    //     equation    : Stores coefficients of equation of
+    //                   line (ax + by + c = 0) as a double array
+    //
+
+    Point point1_, point2_, midpoint_;
+    double slope_, equation[3], perpendicular_point1[3], perpendicular_point2[3];
+
+    void calculate_midpoint();
+    void calculate_slope();
+    void calculate_equation();
+    void calculate_perpendicular();
+
+public:
+    Line(Point point1, Point point2){
+        point1_ = point1;
+        point2_ = point2;
+        calculate_midpoint();
+        calculate_slope();
+        calculate_equation();
+        calculate_perpendicular();
+    };
+
+    Point get_line_point1();
+    Point get_line_point2();
+    Point get_line_midpoint();
+    double get_line_slope();
+    void get_line_equation(double input_array[3]) const;
+    void get_line_perpendicular1(double input_array[3]) const;
+    void get_line_perpendicular2(double input_array[3]) const;
+    void print();
+};
+
+
+/*
+--------------------------------------------------------------------------------
+                                Class Corridor
+--------------------------------------------------------------------------------
+*/
+
+class Corridor {
+    Line left, right;
+    Point setpoint;
+
+public:
+    Corridor (Line leftLine, Line rightLine) {
+        left = leftLine;
+        right = rightLine;
+    };
+};
+
+
+#endif
