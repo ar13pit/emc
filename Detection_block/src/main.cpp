@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
                std::cout << "Line was not found..." << std::endl;
             }*/
 
-            std::cout << "Furthest point: (" << detection.findFurthestPoint().x << ", " << detection.findFurthestPoint().y << ")" << std::endl << std::endl;
+            /*std::cout << "Furthest point: (" << detection.findFurthestPoint().x << ", " << detection.findFurthestPoint().y << ")" << std::endl << std::endl;
 
             CorridorWalls walls;
             walls = detection.findCorridorWalls();
@@ -67,10 +67,19 @@ int main(int argc, char *argv[])
                 std::cout << "Corridor still spotted: Left between:" << std::endl;
                 std::cout << "(" << walls.leftWall1.x << "," << walls.leftWall1.y << ")" << std::endl;
                 std::cout << "(" << walls.leftWall2.x << "," << walls.leftWall2.y << ")" << std::endl;
+            }*/
+
+            Exit exit = detection.findExit();
+
+            if (exit.detected){
+                std::cout << "Exit detected at: (" << exit.exitPoint1.x <<", " << exit.exitPoint1.y << ") and (" << exit.exitPoint2.x <<", " << exit.exitPoint2.y << ")" << std::endl;
+             }
+            else{
+                std::cout << "No exit detected..." << std::endl;
             }
 
+
             //pico_drive.driveBackward(0.1);
-            Exit exit = detection.findExit();
         }
 
 

@@ -105,9 +105,9 @@
 
     Exit Detection::findExit(){
 
-        double detectLargerThresh = 1.07;
-        double detectSmallerThresh = 0.96;
-        int nPointsThresh = 5; //Amount of points larger of smaller than expected before action is being undertaken
+        double detectLargerThresh = 1.05;
+        double detectSmallerThresh = 0.95;
+        int nPointsThresh = 4; //Amount of points larger of smaller than expected before action is being undertaken
         int nPointsSearch = 80;
 
         int iExit1 = 0;
@@ -149,12 +149,13 @@
                         j = 1000; // Break out
                     }
                     if (nLarger > nPointsThresh){ // Exit detected
-                        iExit1 = j - 6;
+                        std::cout << "Exitpoint 1 detected!";
+                        iExit1 = j - 7;
 
                         //Start searching for the second point of the exit
                         int nEqual = 0;
 
-                        for (int k = j; j < 1000 - 2*15 - nPointsSearch; ++j){
+                        for (int k = j; k < 1000 - 2*15 - nPointsSearch; ++k){
 
                             double xLine; double yLine; double distLine;
                             if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
@@ -168,7 +169,7 @@
                             }
                             distLine = sqrt(pow(xLine,2) + pow(yLine,2));
 
-                            if (distLine * detectLargerThresh > LatestLaserScan[j].dist && distLine * detectSmallerThresh < LatestLaserScan[j].dist){
+                            if (distLine * detectLargerThresh > LatestLaserScan[k].dist && distLine * detectSmallerThresh < LatestLaserScan[k].dist){
                                 nEqual = nEqual + 1;
                             }
                             else{
