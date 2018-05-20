@@ -49,6 +49,7 @@
 
     }
 
+    //Find 2 lines of the walls in the corridor
     CorridorWalls Detection::findCorridorWalls(){
         bool detectedRight = false;
         bool detectedLeft = false;
@@ -60,22 +61,8 @@
         double bFit;
         int nPointsSearch = 80;
 
-        //Look for right wall
-        for(unsigned int i = 50; i < 250; i = i + 20){
-            if(LatestLaserScan[i].dist < 1.5){
-                if(Detection::lineFit(aFit, bFit, i, i+nPointsSearch) ){
-                    right1.y = -1;
-                    right2.y = 1;
-                    right1.x = (right1.y - bFit)/aFit;
-                    right2.x = (right2.y - bFit)/aFit;
-                    detectedRight = true;
-                    std::cout << "Detected right wall" << std::endl;
-                    i = 251;
-                }
-            }
-        }
-
-        for(unsigned int i = 940; i > 700; i = i - 20){
+        //Look for left wall
+        for(unsigned int i = 700; i < 940; i = i + 20){
             if(LatestLaserScan[i].dist < 1.5){
                 if(Detection::lineFit(aFit, bFit, i-nPointsSearch, i) ){
                     left1.y = -1;
@@ -84,10 +71,27 @@
                     left2.x = (left2.y - bFit)/aFit;
                     detectedLeft = true;
                     std::cout << "Detected left wall" << std::endl;
-                    i = 699;
+                    i = 941;
                 }
             }
         }
+
+
+        //Look for right wall
+        for(unsigned int i = 300; i > 50; i = i - 20){
+            if(LatestLaserScan[i].dist < 1.5){
+                if(Detection::lineFit(aFit, bFit, i, i+nPointsSearch) ){
+                    right1.y = -1;
+                    right2.y = 1;
+                    right1.x = (right1.y - bFit)/aFit;
+                    right2.x = (right2.y - bFit)/aFit;
+                    detectedRight = true;
+                    std::cout << "Detected right wall" << std::endl;
+                    i = 21;
+                }
+            }
+        }
+
 
         CorridorWalls walls;
         walls.rightWall1 = right1;
@@ -100,6 +104,7 @@
     }
 
     Exit Detection::findExit(){
+
 
 
     }
