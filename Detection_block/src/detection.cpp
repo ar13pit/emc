@@ -41,9 +41,57 @@
 
     }
 
+    CorridorWalls Detection::findCorridorWalls(){
+        bool detectedRight = false;
+        bool detectedLeft = false;
+        Point right1;
+        Point right2;
+        Point left1;
+        Point left2;
+        double aFit;
+        double bFit;
+        int nPointsSearch = 80;
+
+        //Look for right wall
+        for(unsigned int i = 50; i < 250; i = i + 20){
+            if(LatestLaserScan[i].dist < 1.5){
+                if(Detection::lineFit(aFit, bFit, i, i+nPointsSearch) ){
+                    right1.y = -1;
+                    right2.y = 1;
+                    right1.x = (right1.y - bFit)/aFit;
+                    right2.x = (right2.y - bFit)/aFit;
+                    bool detectedRight = true;
+                    i = 251;
+                }
+            }
+        }
+
+        for(unsigned int i = 940; i > 700; i = i - 20){
+            if(LatestLaserScan[i].dist < 1.5){
+                if(Detection::lineFit(aFit, bFit, i-nPointsSearch, i) ){
+                    left1.y = -1;
+                    left2.y = 1;
+                    left1.x = (left1.y - bFit)/aFit;
+                    left2.x = (left2.y - bFit)/aFit;
+                    bool detectedLeft = true;
+                    i = 699;
+                }
+            }
+        }
+
+        CorridorWalls walls;
+        walls.rightWall1 = right1;
+        walls.rightWall2 = right2;
+        walls.leftWall1 = left1;
+        walls.leftWall2 = left2;
+        walls.escaped = !(detectedRight && detectedLeft);
+        return walls;
+
+    }
+
     //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)
     bool Detection::lineFit(double &aFit, double &bFit, int firstPoint, int lastPoint){
-        unsigned int nFitPoints = 7; //Amount of points that are used to fit line
+        unsigned int nFitPoints = 5; //Amount of points that are used to fit line
 
 
         int nAveragePoints = (lastPoint - firstPoint)/nFitPoints;
@@ -86,7 +134,7 @@
         double RMSerror = sqrt(fitError);
 
         //Total threshold for linefit (larger when more points are evaluated or when points are further apart from each other)
-        double errorThresh = 0.00001*(lastPoint-firstPoint)*(nFitPoints - 2);
+        double errorThresh = LINEFITTHRESH*(lastPoint-firstPoint)*(nFitPoints - 2);
 
         if (RMSerror < errorThresh){
             return true;
@@ -95,6 +143,20 @@
         }
 
     }
+
+    Point Detection::findFurthestPoint(){
+        int imax = 0;
+        double max = 0;
+        for(int i = 0; i < 1000-2*15; ++i){
+            if (LatestLaserScan[i].dist > max){
+                max = LatestLaserScan[i].dist;
+                imax = i;
+            }
+        }
+        return LatestLaserScan[imax];
+    }
+
+
 
     /*bool Detection::wallDetected(double minDistance) {
         if(minDistance < MIN_DIST_TO_WALL) {
