@@ -1,18 +1,22 @@
 #include <cmath>
 #include <iostream>
 #include <config.h>
+// #include "detection.h"
+// #include "helper.hpp"
+// #include "main.hpp"
+// #include "opencv2/opencv.hpp"
+
 
 #ifndef planning_H
 #define planning_H
 
-
 /*
 --------------------------------------------------------------------------------
-                                Class Point
+                                Class PointCorridor
 --------------------------------------------------------------------------------
 */
-class Point {
-    // Class Point
+class PointCorridor {
+    // Class PointCorridor
     // Constructs a 2D point object in relative coordinates
     // Properties:
     //     x_          : x-coordinate relative to origin
@@ -27,14 +31,14 @@ class Point {
     void calculate_radius();
 
 public:
-    Point(){
+    PointCorridor(){
         x_ = 0.0;
         y_ = 0.0;
         angle_ = 0.0;
         radius_ = 0.0;
     };
 
-    Point(double x, double y){
+    PointCorridor(double x, double y){
         x_ = x;
         y_ = y;
         calculate_angle();
@@ -53,23 +57,23 @@ public:
 
 /*
 --------------------------------------------------------------------------------
-                                Class Line
+                                Class LineCorridor
 --------------------------------------------------------------------------------
 */
 
-class Line {
-    // Class Line
+class LineCorridor {
+    // Class LineCorridor
     // Constructs a line object from 2 input points
     //
     // Properties:
     //     midpoint_   : Stores the midpoint of the line joining the 2 input
-    //                   points as Point object
+    //                   points as PointCorridor object
     //     slope_      : Stores the computed slope of the line as a double
     //     equation    : Stores coefficients of equation of
     //                   line (ax + by + c = 0) as a double array
     //
 
-    Point point1_, point2_, midpoint_;
+    PointCorridor point1_, point2_, midpoint_;
     double slope_, equation[3], perpendicular_point1[3], perpendicular_point2[3], perpendicular_midpoint[3];
 
     void calculate_midpoint();
@@ -78,7 +82,9 @@ class Line {
     void calculate_perpendicular();
 
 public:
-    Line(Point point1, Point point2){
+    LineCorridor() {};
+
+    LineCorridor(PointCorridor point1, PointCorridor point2) {
         point1_ = point1;
         point2_ = point2;
         calculate_midpoint();
@@ -87,14 +93,14 @@ public:
         calculate_perpendicular();
     };
 
-    Point get_line_point1();
-    Point get_line_point2();
-    Point get_line_midpoint();
+    PointCorridor get_line_point1();
+    PointCorridor get_line_point2();
+    PointCorridor get_line_midpoint();
     double get_line_slope();
     void get_line_equation(double input_array[3]) const;
-    void get_line_perpendicular1(double input_array[3]) const;
-    void get_line_perpendicular2(double input_array[3]) const;
-    void get_line_midpoint(double input_array[3]) const;
+    void get_line_perpendicular_point1(double input_array[3]) const;
+    void get_line_perpendicular_point2(double input_array[3]) const;
+    void get_line_perpendicular_midpoint(double input_array[3]) const;
     void print();
 };
 
@@ -116,54 +122,58 @@ class Corridor {
     //     setpoint_   : The generated setpoint for the robot
     //
 
-    Line left_, right_, center_;
-    Point setpoint_;
+    LineCorridor left_, right_, center_;
+    PointCorridor setpoint_;
 
     void calculate_center_line();
     void calculate_setpoint();
 
 public:
-    Corridor (Line leftLine, Line rightLine) {
-        left_ = leftLine;
-        right_ = rightLine;
+    Corridor() {};
+    
+    Corridor(LineCorridor left_line, LineCorridor right_line) {
+        left_ = left_line;
+        right_ = right_line;
         calculate_center_line();
         calculate_setpoint();
     };
 
-    Line get_corridor_line_left();
-    Line get_corridor_line_right();
-    Line get_corridor_line_center();
-    Point get_corridor_setpoint();
+    LineCorridor get_corridor_line_left();
+    LineCorridor get_corridor_line_right();
+    LineCorridor get_corridor_line_center();
+    PointCorridor get_corridor_setpoint();
 };
 
-
-// Furthest point
-typedef struct {
-    int x;
-    int y;
-    double angle;
-    double dist;
-} Furthest_point;
-
-
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    double angle1;
-    double angle2;
-} Exit;
-
-
-// Destination that is passed to the Control block
-typedef struct {
-    int x;
-    int y;
-    int angle;
-} Destination;
+//
+// // Furthest Point
+// typedef struct {
+//     int x;
+//     int y;
+//     double angle;
+//     double dist;
+// } Furthest_Point;
+//
+// /*
+//  * Use definition from Jari
+//  *
+// // Store exit data: two corners, angles and a flag whether detected
+// typedef struct {
+//     bool detected;
+//     int x1;
+//     int y1;
+//     int x2;
+//     int y2;
+//     double angle1;
+//     double angle2;
+// } Exit_pl;*/
+//
+//
+// // Destination that is passed to the Control block
+// typedef struct {
+//     int x;
+//     int y;
+//     int angle;
+// } Destination;
 
 
 #endif
