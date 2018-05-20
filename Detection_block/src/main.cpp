@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
             }
 
             //pico_drive.driveBackward(0.1);
+            Exit exit = detection.findExit();
         }
 
 
