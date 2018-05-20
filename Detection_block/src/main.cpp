@@ -61,7 +61,12 @@ int main(int argc, char *argv[])
             if(walls.escaped){
                 std::cout << "No corridor found to follow" << std:: endl;
             }else{
-                std::cout << "Corridor still spotted!" << std::endl;
+                std::cout << "Corridor still spotted: Right between:" << std::endl;
+                std::cout << "(" << walls.rightWall1.x << "," << walls.rightWall1.y << ")" << std::endl;
+                std::cout << "(" << walls.rightWall2.x << "," << walls.rightWall2.y << ")" << std::endl;
+                std::cout << "Corridor still spotted: Left between:" << std::endl;
+                std::cout << "(" << walls.leftWall1.x << "," << walls.leftWall1.y << ")" << std::endl;
+                std::cout << "(" << walls.leftWall2.x << "," << walls.leftWall2.y << ")" << std::endl;
             }
 
             //pico_drive.driveBackward(0.1);

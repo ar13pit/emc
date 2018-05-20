@@ -31,10 +31,18 @@
         double a = (15*laser->angle_increment) + laser->angle_min;
         for(unsigned int i = nFilterPoints; i < laser->ranges.size()-nFilterPoints; ++i)
         {
-            Detection::LatestLaserScan[i-nFilterPoints].dist = laser->ranges[i];
-            Detection::LatestLaserScan[i-nFilterPoints].angle = -a;
-            Detection::LatestLaserScan[i-nFilterPoints].x = sin(-a) * laser->ranges[i];
-            Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * laser->ranges[i];
+            if(laser->ranges[i]>0.001){
+                Detection::LatestLaserScan[i-nFilterPoints].dist = laser->ranges[i];
+                Detection::LatestLaserScan[i-nFilterPoints].angle = -a;
+                Detection::LatestLaserScan[i-nFilterPoints].x = sin(-a) * laser->ranges[i];
+                Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * laser->ranges[i];
+            }
+            else{ // 30 meters if range is below threshold
+                Detection::LatestLaserScan[i-nFilterPoints].dist = 30;
+                Detection::LatestLaserScan[i-nFilterPoints].angle = -a;
+                Detection::LatestLaserScan[i-nFilterPoints].x = sin(-a) * 30;
+                Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * 30;
+            }
 
             a += laser->angle_increment;
         }
@@ -60,7 +68,8 @@
                     right2.y = 1;
                     right1.x = (right1.y - bFit)/aFit;
                     right2.x = (right2.y - bFit)/aFit;
-                    bool detectedRight = true;
+                    detectedRight = true;
+                    std::cout << "Detected right wall" << std::endl;
                     i = 251;
                 }
             }
@@ -73,7 +82,8 @@
                     left2.y = 1;
                     left1.x = (left1.y - bFit)/aFit;
                     left2.x = (left2.y - bFit)/aFit;
-                    bool detectedLeft = true;
+                    detectedLeft = true;
+                    std::cout << "Detected left wall" << std::endl;
                     i = 699;
                 }
             }
@@ -86,6 +96,11 @@
         walls.leftWall2 = left2;
         walls.escaped = !(detectedRight && detectedLeft);
         return walls;
+
+    }
+
+    Exit Detection::findExit(){
+
 
     }
 

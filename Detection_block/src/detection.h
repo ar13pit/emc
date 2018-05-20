@@ -48,6 +48,7 @@ public:
     void saveLRFScan(emc::LaserData* laser);
     bool lineFit(double&, double&, int, int);
     Point findFurthestPoint();
+    Exit findExit();
 
    // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
 
