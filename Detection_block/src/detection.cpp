@@ -105,7 +105,97 @@
 
     Exit Detection::findExit(){
 
+        double detectLargerThresh = 1.07;
+        double detectSmallerThresh = 0.96;
+        int nPointsThresh = 5; //Amount of points larger of smaller than expected before action is being undertaken
+        int nPointsSearch = 80;
 
+        int iExit1 = 0;
+        int iExit2 = 0;
+
+        double aFit; double bFit;
+
+        for (unsigned int i = 0; i < (1000 - 2*15 - nPointsSearch); i = i+10){
+            if(lineFit(aFit, bFit, i, i+nPointsSearch)){ //Line found, next: search for deviation in positive direction
+                int nLarger = 0; //Amount of points larger than a certain treshold, compared with linefit data
+                int nSmaller = 0; //Amount of points smaller than a certain treshold, compared with linefit data
+                for (int j = i+nPointsSearch; j < 1000 - 2*15 - nPointsSearch; ++j){
+                    double xLine; double yLine; double distLine;
+                    if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
+                        yLine = LatestLaserScan[j].y;
+                        xLine = (yLine - bFit)/aFit;
+                    }
+                    else{ // Evaluate y-coordinates for given x
+                        xLine = LatestLaserScan[j].x;
+                        yLine = aFit*xLine + bFit;
+
+                    }
+                    distLine = sqrt(pow(xLine,2) + pow(yLine,2));
+
+                    if (distLine * detectLargerThresh < LatestLaserScan[j].dist){
+                        nLarger = nLarger + 1;
+                        nSmaller = 0;
+                    }
+                    else if (distLine * detectSmallerThresh > LatestLaserScan[j].dist){
+                        nLarger = 0;
+                        nSmaller = nSmaller + 1;
+                    }
+                    else{
+                        nLarger = 0; nSmaller = 0;
+                    }
+
+                    if(nSmaller > nPointsThresh){ // Corner detected
+                        i = j - 10;
+                        j = 1000; // Break out
+                    }
+                    if (nLarger > nPointsThresh){ // Exit detected
+                        iExit1 = j - 6;
+
+                        //Start searching for the second point of the exit
+                        int nEqual = 0;
+
+                        for (int k = j; j < 1000 - 2*15 - nPointsSearch; ++j){
+
+                            double xLine; double yLine; double distLine;
+                            if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
+                                yLine = LatestLaserScan[k].y;
+                                xLine = (yLine - bFit)/aFit;
+                            }
+                            else{ // Evaluate y-coordinates for given x
+                                xLine = LatestLaserScan[k].x;
+                                yLine = aFit*xLine + bFit;
+
+                            }
+                            distLine = sqrt(pow(xLine,2) + pow(yLine,2));
+
+                            if (distLine * detectLargerThresh > LatestLaserScan[j].dist && distLine * detectSmallerThresh < LatestLaserScan[j].dist){
+                                nEqual = nEqual + 1;
+                            }
+                            else{
+                                nEqual = 0;
+                            }
+
+                            if (nEqual > 5){
+                               iExit2 = k - 5;
+                               Exit exit;
+                               exit.exitPoint1 = LatestLaserScan[iExit1];
+                               exit.exitPoint2 = LatestLaserScan[iExit2];
+                               exit.detected = true;
+                               return exit;
+                            }
+                        }
+
+
+                    }
+
+                }
+            }
+        }
+        Exit exit;
+        exit.exitPoint1 = LatestLaserScan[0];
+        exit.exitPoint2 = LatestLaserScan[0];
+        exit.detected = false;
+        return exit;
 
     }
 
@@ -127,7 +217,7 @@
             lineFitPoint[i].x = sumx/nAveragePoints;
             lineFitPoint[i].y = sumy/nAveragePoints;
 
-            std::cout << "Point " << i << ": (" << lineFitPoint[i].x << ", " << lineFitPoint[i].y << ")" << std::endl;
+            //std::cout << "Point " << i << ": (" << lineFitPoint[i].x << ", " << lineFitPoint[i].y << ")" << std::endl;
         }
 
 
