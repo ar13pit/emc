@@ -2,6 +2,25 @@
 #include "config.h"
 
 
+
+void detection_general(Detection_data *data, bool in_corridor){
+    if (in_corridor){
+    data->corridor = findCorridorWalls();
+    } else {
+    data->exit = findExit();
+    data->furthest_point = findFurthestPoint_det();
+    }
+}
+
+
+
+
+/*-------------------------------------------------------------------------------
+ *                  Suplementary functions
+ *-------------------------------------------------------------------------------
+ * */
+
+
     bool Detection::getSensorData() {
         if(inOut->readLaserData(laser)) {
             return true;

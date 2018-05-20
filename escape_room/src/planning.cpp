@@ -1,4 +1,5 @@
 #include "planning.h"
+<<<<<<< Updated upstream
 
 
 /*
@@ -16,6 +17,42 @@ void Point::calculate_radius() {
 };
 
 double Point::get_x() {
+=======
+#include "helper.hpp"
+#include "main.hpp"
+#include "detection.h"
+#include "opencv2/opencv.hpp"
+#include <cmath>
+#include <math.h>
+#include <iostream>
+
+
+// main function for decisions inside the block
+void planning(Detection_data *data, Destination *dest, bool in_corridor){
+
+    if (!in_corridor) {
+        room_logic(data->exit,data->furthest_point,dest);
+    }
+    else if (in_corridor){
+        //do something with arpit
+    } else {
+        std::cout << "Fatal error: not is room and not in a corridor" << endl;
+    }
+
+}
+
+
+
+
+
+
+/*-------------------------------------------------------------------------------
+ *                  Suplementary functions
+ *-------------------------------------------------------------------------------
+ * */
+// Methods of Class Point
+double Point::get_x(){
+>>>>>>> Stashed changes
     return x_;
 };
 
@@ -23,6 +60,7 @@ double Point::get_y() {
     return y_;
 };
 
+<<<<<<< Updated upstream
 double Point::get_angle() {
     return angle_;
 };
@@ -34,8 +72,24 @@ double Point::get_radius() {
 void Point::print() {
     std::cout << "Coordinates: (" << x_ << ", " << y_ << "), Radius: " << radius_ << " Angle: " << angle_ ;
 }
+=======
+void Point::offset(Point offsetPoint){
+    x_ += offsetPoint.get_x();
+    y_ += offsetPoint.get_y();
+};
+
+void Point::offset(double offsetConstant){
+    x_ += offsetConstant;
+    y_ += offsetConstant;
+};
+
+// Methods of Class Line
+Point Line::calculate_midpoint(Point point1, Point point2){
+    double x_mid, y_mid;
+>>>>>>> Stashed changes
 
 
+<<<<<<< Updated upstream
 /*
 -------------------------------------------------------------------------------
                         Class Line Methods
@@ -49,6 +103,13 @@ void Line::calculate_midpoint() {
     y_mid = (point1_.get_y() + point2_.get_y())/2;
     midpoint_ = Point(x_mid, y_mid);
 };
+=======
+    return Point(x_mid, y_mid);
+};
+
+double Line::calculate_slope(Point point1, Point point2){
+    double slope;
+>>>>>>> Stashed changes
 
 void Line::calculate_slope() {
     slope_ = (point1_.get_y() - point2_.get_y())/(point1_.get_x() - point2_.get_x());
@@ -60,16 +121,25 @@ void Line::calculate_equation() {
     equation[2] = -slope_*point1_.get_x() + point1_.get_y();
 };
 
+<<<<<<< Updated upstream
 void Line::calculate_perpendicular(){
     perpendicular_point1[0] = 1.0;
     perpendicular_point1[1] = slope_;
     perpendicular_point1[2] = -point1_.get_x() -slope_*point1_.get_y();
+=======
+void Line::calculate_equation(Point point1, double slope, double &equation_array){
+    // double x, y;
+    //
+    // x = point1.get_x();
+    // y = point1.get_y();
+>>>>>>> Stashed changes
 
     perpendicular_point2[0] = 1.0;
     perpendicular_point2[1] = slope_;
     perpendicular_point2[2] = -point2_.get_x() -slope_*point2_.get_y();
 };
 
+<<<<<<< Updated upstream
 Point Line::get_line_point1() {
     return point1_;
 };
@@ -79,6 +149,17 @@ Point Line::get_line_point2() {
 };
 
 Point Line::get_line_midpoint() {
+=======
+Point Line::get_line_point1(){
+    return point1_;
+};
+
+Point Line::get_line_point2(){
+    return point2_;
+};
+
+Point Line::get_line_midpoint(){
+>>>>>>> Stashed changes
     return midpoint_;
 };
 
@@ -224,20 +305,14 @@ Point Corridor::get_corridor_setpoint() {
 ---------------------------inside the room-----------------------------------------
 ---------------------------------------------------------------------------------*/
 
-// conversion from Exit to Exit_pl
-Exit_pl exits_conversion(Exit ex_det){
-    Exit_pl ex_conv;
-    ex_conv.x1
-}
-
 // set furthest point
-Furthest_point set_furthest_point(Point point){
-    Furthest_point far;
-    far.dist = sqrt(point.x*point.x + point.y*point.y);
-    far.x = point.x;
-    far.y = point.y;
-    far.angle = atan(point.y/point.x);
-    return far;
+Point_det set_furthest_point(Point point){
+    Point_det absolute_furthest;
+    absolute_furthest.dist = sqrt(point.x*point.x + point.y*point.y);
+    absolute_furthest.x = point.x;
+    absolute_furthest.y = point.y;
+    absolute_furthest.angle = atan(point.y/point.x);
+    return absolute_furthest;
 }
 
 //----------------------------------------------------------------------------------
@@ -253,7 +328,7 @@ Destination *calc_exit_dest (Exit exit, Destination *dest){
 
 
 // calculate the destination when exit in not identified
-Destination *calc_furthest_dest (Furthest_point furthest, Destination *dest){
+Destination *calc_furthest_dest (Point_det furthest, Destination *dest){
     dest->x = furthest.x/4;
     dest->y = furthest.y/4;
     dest->angle = furthest.angle;
@@ -262,71 +337,61 @@ Destination *calc_furthest_dest (Furthest_point furthest, Destination *dest){
 
 
 // check whether the new point is further than the saved one
-Furthest_point compare_furthest_point(Point point, Furthest_point far){
+Point_det compare_furthest_point(Point point, Point_det absolute_furthest){
     double new_dist;
     new_dist = sqrt(point.x*point.x + point.y*point.y);
-    if (new_dist>far.dist) {
-        far = set_furthest_point(point);
+    if (new_dist>absolute_furthest.dist) {
+        absolute_furthest = set_absolute_furthest(point);
     }
-    return far;
+    return absolute_furthest;
 }
 
 
 
-Destination main_logic(Exit exit, Point furthest, Status status, Destination *dest){
+void room_logic(Exit exit, Point_det current_furthest,  Destination *dest){
 
 
     bool set_turn_flag;
     bool turned_once_flag;
     bool move_to_exit;
-    Furthest_point far;
+    Point_det absolute_furthest;
     //Destination dest;
 
     // initialize
-    far.dist = 0;
-    far.angle = 0;
-    far.x = 0;
-    far.y = 0;
+    absolute_furthest.dist = 0;
+    absolute_furthest.angle = 0;
+    absolute_furthest.x = 0;
+    absolute_furthest.y = 0;
     turned_once_flag = false;   // assume always start without turning
 
-    switch(status){
 
 
-    case(ROOM_ESCAPE):
+    // check if the exit detected
+    if ((exit.detected) || (move_to_exit)) {
 
-        // check if the exit detected
-        if ((exit.detected) || (move_to_exit)) {
+        move_to_exit = true;
+        dest = calc_exit_dest(exit,dest);        // define destination
 
-            move_to_exit = true;
-            dest = calc_exit_dest(exit,dest);        // define destination
+    } else {
 
+        // check if we have turned around already
+        if (!turned_once_flag){
+            set_turn_flag = true;           // command control to turn 180
+            turned_once_flag = true;        // remember that we've turned around
+            absolute_furthest = set_furthest_point(current_furthest);     // save the furthest point given info from perception
         } else {
 
-            // check if we have turned around already
-            if (!turned_once_flag){
-                set_turn_flag = true;           // command control to turn 180
-                turned_once_flag = true;        // remember that we've turned around
-                far = set_furthest_point(furthest);     // save the furthest point given info from perception
+            // check if exit detected after we turned
+            if ((exit.detected) || (move_to_exit)) {
+                move_to_exit = true;
+                dest = calc_exit_dest(exit,dest);        // define destination
             } else {
-
-                // check if exit detected after we turned
-                if ((exit.detected) || (move_to_exit)) {
-                    move_to_exit = true;
-                    dest = calc_exit_dest(exit,dest);        // define destination
-                } else {
-                    far = compare_furthest_point(furthest,far);     // check if the first point was further
-                    dest = calc_furthest_dest(far,dest);             // set the furthest point as a destination
-                }
+                absolute_furthest = compare_furthest_point(current_furthest,absolute_furthest);     // check if the first point was further
+                dest = calc_furthest_dest(absolute_furthest,dest);             // set the furthest point as a destination
             }
-
-
         }
 
 
-        break;
-
-    case(IN_CORRIDOR):
-        break;
     }
-    return dest;
+
 }

@@ -5,6 +5,18 @@
 #include <cmath>
 #include <iostream>
 
+// the main logic function
+void detection_general(Detection_data *data, bool in_corridor);
+
+
+// All passed data together
+typedef struct {
+    Exit exit;
+    CorridorWalls corridor;
+    Point_det furthest_point;
+} Detection_data;
+
+
 // Point_det data
 typedef struct {
     double x;

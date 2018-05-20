@@ -10,6 +10,7 @@
 #ifndef planning_H
 #define planning_H
 
+<<<<<<< Updated upstream
 /*
 --------------------------------------------------------------------------------
                                 Class Point
@@ -38,6 +39,22 @@ public:
         radius_ = 0.0;
     };
 
+=======
+
+void planning(Detection_data *data, Destination *dest, bool in_corridor);
+void room_logic(Exit exit, Point_det current_furthest,  Destination *dest);
+
+
+
+
+
+
+// Class Point
+class Point {
+    double x_, y_;
+
+public:
+>>>>>>> Stashed changes
     Point(double x, double y){
         x_ = x;
         y_ = y;
@@ -47,6 +64,7 @@ public:
 
     double get_x();
     double get_y();
+<<<<<<< Updated upstream
     double get_angle();
     double get_radius();
     void print();
@@ -80,15 +98,43 @@ class Line {
     void calculate_slope();
     void calculate_equation();
     void calculate_perpendicular();
+=======
+    void offset(Point offsetPoint);
+    void offset(double offsetConstant);
+};
+
+
+// Class Line
+// Constructs a line object from 2 input points
+//
+// Properties:
+//     midpoint_   : Stores the midpoint of the line joining the 2 input points as Point object
+//     slope_      : Stores the computed slope of the line as a double
+//     equation    : Stores coefficients of equation of line (ax + by + c = 0) as a double array
+//
+class Line {
+    Point point1_, point2_, midpoint_;
+    double slope_, equation[3];
+
+    Point calculate_midpoint(Point point1, Point point2);
+    double calculate_slope(Point point1, Point point2);
+    void calculate_equation(Point point1, double slope, double &equation_array);
+>>>>>>> Stashed changes
 
 public:
     Line(Point point1, Point point2){
         point1_ = point1;
         point2_ = point2;
+<<<<<<< Updated upstream
         calculate_midpoint();
         calculate_slope();
         calculate_equation();
         calculate_perpendicular();
+=======
+        midpoint_ = calculate_midpoint(point1_, point2_);
+        slope_ = calculate_slope(point1_, point2_);
+        calculate_equation(point1_, slope_, equation);
+>>>>>>> Stashed changes
     };
 
     Point get_line_point1();
@@ -103,6 +149,7 @@ public:
 };
 
 
+<<<<<<< Updated upstream
 /*
 --------------------------------------------------------------------------------
                                 Class Corridor
@@ -133,6 +180,11 @@ public:
         calculate_center_line();
         calculate_setpoint();
     };
+=======
+class RelativePoint{
+    Point coordinates_;
+    double angle_, radius_;
+>>>>>>> Stashed changes
 
     Line get_corridor_line_left();
     Line get_corridor_line_right();
@@ -141,28 +193,6 @@ public:
 };
 
 
-// Furthest Point
-typedef struct {
-    int x;
-    int y;
-    double angle;
-    double dist;
-} Furthest_Point;
-
-/*
- * Use definition from Jari
- *
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    double angle1;
-    double angle2;
-} Exit_pl;*/
-
 
 // Destination that is passed to the Control block
 typedef struct {
@@ -170,6 +200,8 @@ typedef struct {
     int y;
     int angle;
 } Destination;
+
+
 
 
 #endif
