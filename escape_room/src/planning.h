@@ -1,65 +1,143 @@
 #include <cmath>
-//#include <config.h>
-//#include <opencv2/opencv.hpp>
+#include <iostream>
+#include "config.h"
 #include "detection.h"
+#include "helper.hpp"
+#include "main.hpp"
+#include "opencv2/opencv.hpp"
+
 
 #ifndef planning_H
 #define planning_H
 
-// Class Point_cor
-class Point_cor {
-    double x_, y_;
+/*
+--------------------------------------------------------------------------------
+                                Class Point
+--------------------------------------------------------------------------------
+*/
+class Point {
+    // Class Point
+    // Constructs a 2D point object in relative coordinates
+    // Properties:
+    //     x_          : x-coordinate relative to origin
+    //     y_          : y-cooridnate relative to origin
+    //     angle_      : angle of vector made (x, y) from y-axis
+    //     radius_     : distance of the point from the relative origin
+    //
+
+    double x_, y_, angle_, radius_;
+
+    void calculate_angle();
+    void calculate_radius();
 
 public:
-    Point_cor(double x, double y){
+    Point(){
+        x_ = 0.0;
+        y_ = 0.0;
+        angle_ = 0.0;
+        radius_ = 0.0;
+    };
+
+    Point(double x, double y){
         x_ = x;
         y_ = y;
+        calculate_angle();
+        calculate_radius();
     };
 
     double get_x();
     double get_y();
-    void offset(Point_cor offsetPoint_cor);
-    void offset(double offsetConstant);
+    double get_angle();
+    double get_radius();
+    void print();
+    // void offset(Point offsetPoint);
+    // void offset(double offsetConstant);
 };
 
 
-// Class Line
-// Constructs a line object from 2 input Point_cors
-//
-// Properties:
-//     midPoint_cor_   : Stores the midPoint_cor of the line joining the 2 input Point_cors as Point_cor object
-//     slope_      : Stores the computed slope of the line as a double
-//     equation    : Stores coefficients of equation of line (ax + by + c = 0) as a double array
-//
-class Line {
-    Point_cor Point_cor1_, Point_cor2_, midPoint_cor_;
-    double slope_, equation[3];
+/*
+--------------------------------------------------------------------------------
+                                Class Line
+--------------------------------------------------------------------------------
+*/
 
-    Point_cor calculate_midPoint_cor(Point_cor Point_cor1, Point_cor Point_cor2);
-    double calculate_slope(Point_cor Point_cor1, Point_cor Point_cor2);
-    void calculate_equation(Point_cor Point_cor1, double slope, double &equation_array);
+class Line {
+    // Class Line
+    // Constructs a line object from 2 input points
+    //
+    // Properties:
+    //     midpoint_   : Stores the midpoint of the line joining the 2 input
+    //                   points as Point object
+    //     slope_      : Stores the computed slope of the line as a double
+    //     equation    : Stores coefficients of equation of
+    //                   line (ax + by + c = 0) as a double array
+    //
+
+    Point point1_, point2_, midpoint_;
+    double slope_, equation[3], perpendicular_point1[3], perpendicular_point2[3], perpendicular_midpoint[3];
+
+    void calculate_midpoint();
+    void calculate_slope();
+    void calculate_equation();
+    void calculate_perpendicular();
 
 public:
-    Line(Point_cor Point_cor1, Point_cor Point_cor2){
-        Point_cor1_ = Point_cor1;
-        Point_cor2_ = Point_cor2;
-        midPoint_cor_ = calculate_midPoint_cor(Point_cor1_, Point_cor2_);
-        slope_ = calculate_slope(Point_cor1_, Point_cor2_);
-        calculate_equation(Point_cor1_, slope_, equation);
+    Line(Point point1, Point point2){
+        point1_ = point1;
+        point2_ = point2;
+        calculate_midpoint();
+        calculate_slope();
+        calculate_equation();
+        calculate_perpendicular();
     };
 
-    Point_cor get_line_Point_cor1();
-    Point_cor get_line_Point_cor2();
-    Point_cor get_line_midPoint_cor();
+    Point get_line_point1();
+    Point get_line_point2();
+    Point get_line_midpoint();
     double get_line_slope();
-    double get_line_equation();
+    void get_line_equation(double input_array[3]) const;
+    void get_line_perpendicular1(double input_array[3]) const;
+    void get_line_perpendicular2(double input_array[3]) const;
+    void get_line_midpoint(double input_array[3]) const;
+    void print();
 };
 
 
-class RelativePoint_cor{
-    Point_cor coordinates_;
-    double angle_, radius_;
+/*
+--------------------------------------------------------------------------------
+                                Class Corridor
+--------------------------------------------------------------------------------
+*/
 
+class Corridor {
+    // Class Corridor
+    // Generates a setpoint based on predefined distance for the robot in the corridor
+    //
+    // Properties:
+    //     left_       : Line representing the left wall of the corridor
+    //     right_      : Line representing the right wall of the corridor
+    //     center_     : Line representing the center of the corridor
+    //     setpoint_   : The generated setpoint for the robot
+    //
+
+    Line left_, right_, center_;
+    Point setpoint_;
+
+    void calculate_center_line();
+    void calculate_setpoint();
+
+public:
+    Corridor (Line leftLine, Line rightLine) {
+        left_ = leftLine;
+        right_ = rightLine;
+        calculate_center_line();
+        calculate_setpoint();
+    };
+
+    Line get_corridor_line_left();
+    Line get_corridor_line_right();
+    Line get_corridor_line_center();
+    Point get_corridor_setpoint();
 };
 
 

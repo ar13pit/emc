@@ -6,74 +6,6 @@
 #include <math.h>
 
 
-// Methods of Class Point
-double Point::get_x(){
-    return x_;
-};
-
-double Point::get_y(){
-    return y_;
-};
-
-void Point::offset(Point offsetPoint){
-    x_ += offsetPoint.get_x();
-    y_ += offsetPoint.get_y();
-};
-
-void Point::offset(double offsetConstant){
-    x_ += offsetConstant;
-    y_ += offsetConstant;
-};
-
-// Methods of Class Line
-Point Line::calculate_midpoint(Point point1, Point point2){
-    double x_mid, y_mid;
-
-    x_mid = (point1.get_x() + point2.get_x())/2;
-    y_mid = (point1.get_y() + point2.get_y())/2;
-
-    return Point(x_mid, y_mid);
-};
-
-double Line::calculate_slope(Point point1, Point point2){
-    double slope;
-
-    slope = (point1.get_y() - point2.get_y())/(point1.get_x() - point2.get_x());
-
-    return slope;
-};
-
-void Line::calculate_equation(Point point1, double slope, double &equation_array){
-    // double x, y;
-    //
-    // x = point1.get_x();
-    // y = point1.get_y();
-
-    equation_array[0] = slope;
-    equation_array[1] = -1;
-    equation_array[2] = -slope*point1.get_x() + point1.get_y();
-};
-
-Point Line::get_line_point1(){
-    return point1_;
-};
-
-Point Line::get_line_point2(){
-    return point2_;
-};
-
-Point Line::get_line_midpoint(){
-    return midpoint_;
-};
-
-double Line::get_line_slope(){
-    return slope_;
-};
-
-double get_line_equation(){
-    return equation;
-};
-
 
 
 /*---------------------------------------------------------------------------------
@@ -180,6 +112,3 @@ Destination main_logic(Exit exit, Point furthest, Status status, Destination *de
     }
     return dest;
 }
-
-
-
