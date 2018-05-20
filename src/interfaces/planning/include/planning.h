@@ -70,7 +70,7 @@ class Line {
     //
 
     Point point1_, point2_, midpoint_;
-    double slope_, equation[3], perpendicular_point1[3], perpendicular_point2[3];
+    double slope_, equation[3], perpendicular_point1[3], perpendicular_point2[3], perpendicular_midpoint[3];
 
     void calculate_midpoint();
     void calculate_slope();
@@ -94,6 +94,7 @@ public:
     void get_line_equation(double input_array[3]) const;
     void get_line_perpendicular1(double input_array[3]) const;
     void get_line_perpendicular2(double input_array[3]) const;
+    void get_line_midpoint(double input_array[3]) const;
     void print();
 };
 
@@ -105,14 +106,34 @@ public:
 */
 
 class Corridor {
-    Line left, right;
-    Point setpoint;
+    // Class Corridor
+    // Generates a setpoint based on predefined distance for the robot in the corridor
+    //
+    // Properties:
+    //     left_       : Line representing the left wall of the corridor
+    //     right_      : Line representing the right wall of the corridor
+    //     center_     : Line representing the center of the corridor
+    //     setpoint_   : The generated setpoint for the robot
+    //
+
+    Line left_, right_, center_;
+    Point setpoint_;
+
+    void calculate_center_line();
+    void calculate_setpoint();
 
 public:
     Corridor (Line leftLine, Line rightLine) {
-        left = leftLine;
-        right = rightLine;
+        left_ = leftLine;
+        right_ = rightLine;
+        calculate_center_line();
+        calculate_setpoint();
     };
+
+    Line get_corridor_line_left();
+    Line get_corridor_line_right();
+    Line get_corridor_line_center();
+    Point get_corridor_setpoint();
 };
 
 

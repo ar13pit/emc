@@ -103,6 +103,12 @@ void Line::get_line_perpendicular2(double input_array[3]) const {
     }
 };
 
+void Line::get_line_midpoint(double input_array[3]) const {
+    for(int i = 0; i < 3; ++i) {
+        input_array[i] = perpendicular_midpoint[i];
+    }
+};
+
 void Line::print() {
     std::cout << "Line Point 1: "; point1_.print(); std::cout << '\n';
     std::cout << "Line Point 2: "; point2_.print(); std::cout << '\n';
@@ -111,4 +117,36 @@ void Line::print() {
     std::cout << "Line Equation: " << equation[0] << "x + " << equation[1] << "y + " << equation[2] << " = 0" << '\n';
     std::cout << "Line Perpendicular through Point 1: " << perpendicular_point1[0] << "x + " << perpendicular_point1[1] << "y + " << perpendicular_point1[2] << " = 0" << '\n';
     std::cout << "Line Perpendicular through Point 2: " << perpendicular_point2[0] << "x + " << perpendicular_point2[1] << "y + " << perpendicular_point2[2] << " = 0" << '\n';
+    std::cout << "Line Perpendicular through Mid-Point: " << perpendicular_midpoint[0] << "x + " << perpendicular_midpoint[1] << "y + " << perpendicular_midpoint[2] << " = 0" << '\n';
+};
+
+
+/*
+-------------------------------------------------------------------------------
+                        Class Corridor Methods
+-------------------------------------------------------------------------------
+*/
+
+void Corridor::calculate_center_line() {
+
+};
+
+void Corridor::calculate_setpoint() {
+
+};
+
+Line Corridor::get_corridor_line_left() {
+
+};
+
+Line Corridor::get_corridor_line_right() {
+
+};
+
+Line Corridor::get_corridor_line_center() {
+
+};
+
+Point Corridor::get_corridor_setpoint() {
+
 };
