@@ -284,13 +284,24 @@ void Planning::turn_around(){
 
 void Planning::room_logic(Detection_data *data, Flags *flags){
 
-    Point_det current_furthest = data->furthest_point;
-    //Destination dest;
+    if (flags->in_corridor == true){
+        std::cout << "In corridor = true" <<std::endl;
+    } else {
+        std::cout << "In corridor = false" <<std::endl;
+    }
 
+    if (data->exit.detected == true){
+        std::cout << "Exit detected = true" <<std::endl;
+    } else {
+        std::cout << "Exit detected = false" <<std::endl;
+    }
+
+    Point_det current_furthest = data->furthest_point;
 
     // check if the exit detected
     if (data->exit.detected) {
         calc_exit_dest(data);        // define destination
+        std::cout << "Exit points " << data->exit.exitPoint_det1.x << " " << data->exit.exitPoint_det1.y << std::endl;
 
     } else {
 
@@ -311,27 +322,38 @@ void Planning::room_logic(Detection_data *data, Flags *flags){
 
 
 
-
+/*
 // main function for decisions inside the block
 void Planning::planning(Detection_data *data, Flags *flags){
+
+    if (flags->in_corridor == true){
+        std::cout << "signal in corridor = true" <<std::endl;
+    } else {
+        std::cout << "signal in corridor = false" <<std::endl;
+    }
 
     if (!flags->in_corridor) {
         room_logic(data, flags);
     }
     else if (flags->in_corridor){
-        Line leftLine(data->corridor.leftWall1, data->corridor.leftWall2);
-        Line rightLine(data->corridor.rightWall1, data->corridor.rightWall2);
+        PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
+        PointCorridor left2(data->corridor.leftWall2.x, data->corridor.leftWall2.y);
+        PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
+        PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
+
+        LineCorridor leftLine(left1, left2);
+        LineCorridor rightLine(right1, right2);
         Corridor corridor(leftLine, rightLine);
 
         // assign destination point
         corrid2dest_transf(corridor);
     } else {
-        std::cout << "Fatal error: not in a room and not in a corridor" << endl;
+ //       std::cout << "Fatal error: not in a room and not in a corridor" << endl;
     }
 
 }
+*/
 
-
-void get_Destination(){
+Destination Planning::get_Destination(){
     return dest;
 }

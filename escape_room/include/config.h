@@ -1,4 +1,4 @@
-#define EXECUTION_RATE 20 // [Hz]
+#define EXECUTION_RATE 10 // [Hz]
 #define FORWARD_SPEED  0.5 // [m/s]
 #define ROTATE_SPEED   -0.7 // [rad/s]
 #define DIST_BACKWARDS 0.1 // [m]

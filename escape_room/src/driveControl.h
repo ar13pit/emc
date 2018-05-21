@@ -3,6 +3,7 @@
 
 #include <emc/io.h>
 #include <emc/rate.h>
+#include "main.hpp"
 
 class DriveControl
         {
@@ -23,7 +24,7 @@ public:
         return;
     }
 
-    void picoDrive(double angle);       // Main method to let pico turn for an angle and then drive
+    void picoDrive(double angle, Flags * flags);       // Main method to let pico turn for an angle and then drive
 
 };
 

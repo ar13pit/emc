@@ -175,7 +175,7 @@ void Detection::findExit() {
                     j = 1000;                                                       // Break out
                 }
                 if (nLarger > nPoint_detsThresh){                                   // Exit detected
-                    std::cout << "ExitPoint_det 1 detected!";
+//                    std::cout << "ExitPoint_det 1 detected!";
                     iExit1 = j - 7;
 
                     // Start searching for the second Point_det of the exit

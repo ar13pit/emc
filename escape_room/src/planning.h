@@ -153,7 +153,7 @@ public:
 typedef struct {
     int x;
     int y;
-    int angle;
+    double angle;
 } Destination;
 
 
@@ -177,8 +177,29 @@ private:
 public:
 
     Planning(Detection_data *data, Flags *flags){
-        void planning(Detection_data *data, Flags* flags);
+
+
+        if (!flags->in_corridor) {
+            room_logic(data, flags);
+        }
+        else if (flags->in_corridor){
+            PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
+            PointCorridor left2(data->corridor.leftWall2.x, data->corridor.leftWall2.y);
+            PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
+            PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
+
+            LineCorridor leftLine(left1, left2);
+            LineCorridor rightLine(right1, right2);
+            Corridor corridor(leftLine, rightLine);
+
+            // assign destination point
+            corrid2dest_transf(corridor);
+        } else {
+            std::cout << "Fatal error: not in a room and not in a corridor" << std::endl;
+        }
+
     }
+
 
 
     Destination get_Destination();
