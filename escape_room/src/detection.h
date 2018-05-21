@@ -42,6 +42,9 @@ typedef struct {
     Point_det furthest_point;
 } Detection_data;
 
+
+
+
 class Detection{
 private:
     emc::IO *inOut;

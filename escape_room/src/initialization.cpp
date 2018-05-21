@@ -9,6 +9,7 @@ void initialize(Detection_data *data, Destination *dest, Flags *flags){
 
     flags->in_corridor = false;
     flags->in_process = false;
+    flags->turned_once = false;
 
 
 

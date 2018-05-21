@@ -1,12 +1,13 @@
 #include "planning.h"
 
-// main function for decisions inside the block
-void planning(Detection_data *data, Destination *dest, bool in_corridor){
 
-    if (!in_corridor) {
-        room_logic(data->exit, data->furthest_point, dest);
+// main function for decisions inside the block
+void planning(Detection_data *data, Destination *dest, Flags *flags){
+
+    if (!flags->in_corridor) {
+        room_logic(data->exit, data->furthest_point, dest, flags);
     }
-    else if (in_corridor){
+    else if (flags->in_corridor){
         Line leftLine(data->corridor.leftWall1, data->corridor.leftWall2);
         Line rightLine(data->corridor.rightWall1, data->corridor.rightWall2);
         Corridor corridor(leftLine, rightLine);
@@ -250,11 +251,10 @@ PointCorridor Corridor::get_corridor_setpoint() {
 
 
 // trasformation of the corridor representation to Destination format
-Destination *corrid2dest_transf(Destination *dest, Corridor corr){
+void corrid2dest_transf(Destination *dest, Corridor corr){
     dest->x = corr.get_corridor_setpoint().get_x();
     dest->y = corr.get_corridor_setpoint().get_y();
     dest->angle = corr.get_corridor_setpoint().get_angle();
-
 }
 
 
@@ -263,92 +263,71 @@ Destination *corrid2dest_transf(Destination *dest, Corridor corr){
 ---------------------------------------------------------------------------------*/
 
 // set furthest point
-Point_det set_furthest_point(Point point){
+Point_det set_furthest_point(Point_det *point){
     Point_det absolute_furthest;
-    absolute_furthest.dist = sqrt(point.x*point.x + point.y*point.y);
-    absolute_furthest.x = point.x;
-    absolute_furthest.y = point.y;
-    absolute_furthest.angle = atan(point.y/point.x);
+    absolute_furthest.dist = point->dist;
+    absolute_furthest.x = point->x;
+    absolute_furthest.y = point->y;
+    absolute_furthest.angle = point->angle + M_PI; // add pi because we assume turn at next instant
     return absolute_furthest;
 }
 
-//----------------------------------------------------------------------------------
-
 
 // calculate the destination when exit identified
-Destination *calc_exit_dest (Exit exit, Destination *dest){
-    dest->x = (exit.exitPoint_det1.x + exit.exitPoint_det2.x)/2;
-    dest->y = (exit.exitPoint_det1.y + exit.exitPoint_det2.y)/2;
-    dest->angle = (exit.exitPoint_det1.angle + exit.exitPoint_det2.angle)/2;
-    return dest;
+void *calc_exit_dest (Exit *exit, Destination *dest){
+    dest->x = (exit->exitPoint_det1.x + exit->exitPoint_det2.x)/2;
+    dest->y = (exit->exitPoint_det1.y + exit->exitPoint_det2.y)/2;
+    dest->angle = (exit->exitPoint_det1.angle + exit->exitPoint_det2.angle)/2;
 }
 
 
 // calculate the destination when exit in not identified
-Destination *calc_furthest_dest (Point_det furthest, Destination *dest){
+void *calc_furthest_dest (Point_det furthest, Destination *dest){
     dest->x = furthest.x/4;
     dest->y = furthest.y/4;
     dest->angle = furthest.angle;
-    return dest;
 }
 
 
 // check whether the new point is further than the saved one
-Point_det compare_furthest_point(Point point, Point_det absolute_furthest){
-    double new_dist;
-    new_dist = sqrt(point.x*point.x + point.y*point.y);
-    if (new_dist>absolute_furthest.dist) {
+void *compare_furthest_point(Point_det *point, Point_det *absolute_furthest){
+    if (point->dist > absolute_furthest.dist) {
         absolute_furthest = set_absolute_furthest(point);
     }
-    return absolute_furthest;
+}
+
+void *turn_around(Destination *dest){
+    dest->angle = PI_M;
+    dest->x = 0;
+    dest->y = 0;
 }
 
 
 
 
-void room_logic(Exit exit, Point_det current_furthest,  Destination *dest){
+void room_logic(Exit *exit, Point_det *current_furthest,  Destination *dest, Flags *flags){
 
-    bool set_turn_flag;
-    bool turned_once_flag;
-    bool move_to_exit;
+
     Point_det absolute_furthest;
     //Destination dest;
 
-    // initialize
-    absolute_furthest.dist = 0;
-    absolute_furthest.angle = 0;
-    absolute_furthest.x = 0;
-    absolute_furthest.y = 0;
-    turned_once_flag = false;   // assume always start without turning
-
-
 
     // check if the exit detected
-    if ((exit.detected) || (move_to_exit)) {
-        move_to_exit = true;
+    if (exit->detected) {
         dest = calc_exit_dest(exit,dest);        // define destination
 
     } else {
 
         // check if we have turned around already
-        if (!turned_once_flag){
-            set_turn_flag = true;           // command control to turn 180
-            turned_once_flag = true;        // remember that we've turned around
+        if (!flags->turned_once){
+            flags->turned_once = true;        // remember that we've turned around
             absolute_furthest = set_furthest_point(current_furthest);     // save the furthest point given info from perception
-
+            dest = turn_around(dest);
         } else {
+            compare_furthest_point(current_furthest, &absolute_furthest);     // check if the first point was further
+            dest = calc_furthest_dest(absolute_furthest, dest);             // set the furthest point as a destination
 
-            // check if exit detected after we turned
-            if ((exit.detected) || (move_to_exit)) {
-                move_to_exit = true;
-                dest = calc_exit_dest(exit,dest);        // define destination
-            } else {
-                absolute_furthest = compare_furthest_point(current_furthest,absolute_furthest);     // check if the first point was further
-                dest = calc_furthest_dest(absolute_furthest,dest);             // set the furthest point as a destination
-            }
         }
-
-
     }
 
 }

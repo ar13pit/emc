@@ -47,11 +47,9 @@ int main(int argc, char *argv[])
             if (corridor.escaped){
                 break;
             }
-//------------------------------------
-//------needs to be optimized---------
-//------------------------------------
-            detection_general(&data,in_corridor);
-            dest = planning(&data, &dest, in_corridor);
+            detection_general(&data,&flags);
+            dest = planning(&data, &dest, &flags);
+            picoDrive(dest);
 
         }
 

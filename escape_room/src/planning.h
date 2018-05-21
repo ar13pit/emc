@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <config.h>
+#include <math.h>
 #include "detection.h"
 #include "helper.hpp"
 #include "main.hpp"
@@ -12,7 +13,7 @@
 
 void planning(Detection_data *data, Destination *dest, bool in_corridor);
 void room_logic(Exit exit, Point_det current_furthest,  Destination *dest);
-Destination *corrid2dest_transf(Destination *dest, Corridor corr);
+void corrid2dest_transf(Destination *dest, Corridor corr);
 
 /*
 --------------------------------------------------------------------------------

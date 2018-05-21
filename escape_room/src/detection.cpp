@@ -73,7 +73,8 @@ void Detection::saveLRFScan(emc::LaserData* laser){
 
 
 //Find 2 lines of the walls in the corridor
-void Detection::findCorridorWalls(Detection_data *data){
+void
+Detection::findCorridorWalls(Detection_data *data){
     bool detectedRight = false;
     bool detectedLeft = false;
     Point_det right1;
@@ -311,16 +312,17 @@ void Detection::findFurthestPoint_det(Detection_data * data){
 
 void detection_general(Detection_data *data, Flags *flags){
 
+   // Detection det = new Detection;
 
     if (flags->in_corridor){
         //CorridorWalls cor;
         //data->corridor = Detection::findCorridorWalls();
-        Detection::findCorridorWalls(data);
+        data = Detection::findCorridorWalls(data);
     } else {
         //Exit *ex;
         //Point_det far;
-        Detection::findExit(data);
-        Detection::findFurthestPoint_det(data);
+        data = Detection::findExit(data);
+        data = Detection::findFurthestPoint_det(data);
     }
 }
 
