@@ -50,7 +50,6 @@ private:
     Detection_data data_;
     Point_det LatestLaserScan[1000-2*15]; //Deleted first and last 15 Point_dets
 
-    bool getSensorData(); // Method to obtain the sensordata
     void filterLRFData(int nFilterPoint_dets); // Filter data by sensor measurement
     void saveLRFScan();
     bool lineFit(double&, double&, int, int);
@@ -76,6 +75,7 @@ public:
 
     };
 
+    bool getSensorData(); // Method to obtain the sensordata
     Detection_data get_Detection_data();
 
 

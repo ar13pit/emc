@@ -299,25 +299,12 @@ void Detection::findFurthestPoint_det() {
 }
 
 
+
+
 Detection_data Detection::get_Detection_data() {
     return data_;
 };
 
-// void detection_general(Detection_data *data, Flags *flags){
-//
-//    // Detection det = new Detection;
-//
-//     if (flags->in_corridor){
-//         //CorridorWalls cor;
-//         //data->corridor = Detection::findCorridorWalls();
-//         data = Detection::findCorridorWalls(data);
-//     } else {
-//         //Exit *ex;
-//         //Point_det far;
-//         data = Detection::findExit(data);
-//         data = Detection::findFurthestPoint_det(data);
-//     }
-// }
 
 
 

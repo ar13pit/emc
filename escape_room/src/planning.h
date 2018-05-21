@@ -11,9 +11,7 @@
 #ifndef planning_H
 #define planning_H
 
-void planning(Detection_data *data, Destination *dest, bool in_corridor);
-void room_logic(Exit exit, Point_det current_furthest,  Destination *dest);
-void corrid2dest_transf(Destination *dest, Corridor corr);
+
 
 /*
 --------------------------------------------------------------------------------
@@ -158,6 +156,38 @@ typedef struct {
     int angle;
 } Destination;
 
+
+class Planning{
+private:
+    Destination dest;
+    Point_det absolute_furthest;
+
+    void room_logic(Detection_data *data, Flags *flags);
+    void corrid2dest_transf(Corridor corr);
+    void planning(Detection_data *data, Flags* flags);
+
+
+
+    void set_furthest_point(Point_det *point);
+    void calc_exit_dest (Detection_data *data);
+    void calc_furthest_dest (Point_det furthest);
+    void compare_furthest_point(Point_det *point);
+    void turn_around();
+
+public:
+
+    Planning(Detection_data *data, Flags *flags){
+        void planning(Detection_data *data, Flags* flags);
+    }
+
+
+    Destination get_Destination();
+
+
+
+   // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
+
+};
 
 
 

@@ -21,35 +21,33 @@ int main(int argc, char *argv[])
     emc::IO io;
     emc::OdometryData odom;
 
-    // Initialize the Classes
-    DriveControl pico_drive(&io);
-    Detection detection(&io);
-
+    // Transition values
     Detection_data data;
-
     Destination dest;
     Flags flags;
-
-
-
-    //-----------------------------------------------
-    //------add initialization of parameters---------
-    //-----------------------------------------------
     initialize(&data, &dest, &flags);
+
+    // Initialize the Classes
+    DriveControl pico_drive(&io);
+    Detection detection(&io, &flags);
+
 
 
     while(io.ok()) {
         if(detection.getSensorData()) {
 
-            detection.saveLRFScan(&detection.laser);
-
-            // check if escaped the room
-            if (corridor.escaped){
+    /*        // check if escaped the room
+            if (flags.escaped){
                 break;
-            }
-            detection_general(&data,&flags);
-            dest = planning(&data, &dest, &flags);
-            picoDrive(dest);
+            }*/
+            Detection detection(&io, &flags);
+            data = detection.get_Detection_data();
+
+            Planning plan(&data, &flags);
+            dest = plan.get_Destination();
+
+
+            pico_drive.picoDrive(dest.angle);
 
         }
 

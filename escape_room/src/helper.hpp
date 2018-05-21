@@ -95,7 +95,7 @@ inline bool are_parallel(Line l1, Line l2){
   else
     return true;
 }
-
+/*
 // Computes the intersection of two lines
 inline cv::Point2d intersect(Line l1, Line l2){
   Eigen::Matrix2f A;
@@ -118,7 +118,7 @@ inline void extrema(std::vector<T> *vec, double eps, std::vector<int> *minima, s
     /*
      * Computes the indices at which extrema are obtained: the vector should only contain strictly positive values
      */
-
+/*
     typedef enum state {
         INITIAL, DECREASE, LEVEL, INCREASE
     } State;
@@ -305,7 +305,7 @@ inline bool fit_line(const std::vector<Point> &pts, Line &line) {
      *  - when abs(varX)  > abs(varY): more horizontal line -> y = -a/b*x - c/b
      *  - when abs(varX) <= abs(varY): more vertical line -> x = -b/a*y - c/a
      *
-     */
+     */ /*
     int nb_pts = pts.size();
     if (nb_pts < 2) {
         // Fail: minimum two points are needed for line fitting
@@ -361,5 +361,5 @@ inline void polar2cartesian(std::vector<float> *ranges, double angle_min, double
     }
 
 }
-
+*/
 #endif

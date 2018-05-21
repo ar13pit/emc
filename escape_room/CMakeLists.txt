@@ -10,7 +10,8 @@ set(SOURCES
  src/driveControl.cpp
  src/main.cpp
  src/planning.cpp
- src/initialization.cpp)
+ src/initialization.cpp
+ src/helper.hpp)
 
 # Create executable named "testPlanning"
 add_executable(escape_room ${SOURCES})
