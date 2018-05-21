@@ -1,6 +1,4 @@
 #include "detection.h"
-#include "config.h"
-
 
 
 /*-------------------------------------------------------------------------------
@@ -10,7 +8,7 @@
 
 
 bool Detection::getSensorData() {
-    if(inOut->readLaserData(laser)) {
+    if(inOut->readLaserData(laser_)) {
         return true;
     } else {
         return false;
@@ -23,18 +21,11 @@ bool Detection::getSensorData() {
 
 
 
-void Detection::filterLRFData(emc::LaserData* laser, int nFilterPoint_dets){
+void Detection::filterLRFData(int nFilterPoint_dets) {
     for(int i = 0; i<nFilterPoint_dets; ++i){
-        laser->ranges[i] = laser->ranges[nFilterPoint_dets];
-        laser->ranges[laser->ranges.size()-1-i] = laser->ranges[laser->ranges.size()-1-nFilterPoint_dets];
+        laser_.ranges[i] = laser_.ranges[nFilterPoint_dets];
+        laser_.ranges[laser_.ranges.size()-1-i] = laser_.ranges[laser_.ranges.size()-1-nFilterPoint_dets];
     }
-
-    /*for(int i = 16; i < laser->ranges.size()-15; ++i) {
-               if(laser->ranges[i] < aux && laser->ranges[i] > LRF_THRESH) {
-                   aux = laser->ranges[i];
-               }
-           }
-         minDistance_ = aux;*/
 
 }
 
@@ -44,25 +35,26 @@ void Detection::filterLRFData(emc::LaserData* laser, int nFilterPoint_dets){
 
 
 
-void Detection::saveLRFScan(emc::LaserData* laser){
+void Detection::saveLRFScan() {
     int nFilterPoint_dets = 15;
-    double a = (15*laser->angle_increment) + laser->angle_min;
-    for(unsigned int i = nFilterPoint_dets; i < laser->ranges.size()-nFilterPoint_dets; ++i)
+    double a = (15*laser_.angle_increment) + laser_.angle_min;
+
+    for(unsigned int i = nFilterPoint_dets; i < laser_.ranges.size()-nFilterPoint_dets; ++i)
     {
-        if(laser->ranges[i]>0.001){
-            Detection::LatestLaserScan[i-nFilterPoint_dets].dist = laser->ranges[i];
-            Detection::LatestLaserScan[i-nFilterPoint_dets].angle = -a;
-            Detection::LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * laser->ranges[i];
-            Detection::LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * laser->ranges[i];
+        if(laser_.ranges[i]>0.001){
+            LatestLaserScan[i-nFilterPoint_dets].dist = laser_.ranges[i];
+            LatestLaserScan[i-nFilterPoint_dets].angle = -a;
+            LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * laser_.ranges[i];
+            LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * laser_.ranges[i];
         }
         else{ // 30 meters if range is below threshold
-            Detection::LatestLaserScan[i-nFilterPoint_dets].dist = 30;
-            Detection::LatestLaserScan[i-nFilterPoint_dets].angle = -a;
-            Detection::LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * 30;
-            Detection::LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * 30;
+            LatestLaserScan[i-nFilterPoint_dets].dist = 30;
+            LatestLaserScan[i-nFilterPoint_dets].angle = -a;
+            LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * 30;
+            LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * 30;
         }
 
-        a += laser->angle_increment;
+        a += laser_.angle_increment;
     }
 
 }
@@ -73,8 +65,7 @@ void Detection::saveLRFScan(emc::LaserData* laser){
 
 
 //Find 2 lines of the walls in the corridor
-void
-Detection::findCorridorWalls(Detection_data *data){
+void Detection::findCorridorWalls() {
     bool detectedRight = false;
     bool detectedLeft = false;
     Point_det right1;
@@ -118,11 +109,11 @@ Detection::findCorridorWalls(Detection_data *data){
 
 
 //    CorridorWalls walls;
-    data->corridor.leftWall1 = left1;
-    data->corridor.leftWall2 = left2;
-    data->corridor.rightWall1 = right1;
-    data->corridor.rightWall2 = right2;
-    data->corridor.escaped = !(detectedRight && detectedLeft);
+    data_.corridor.leftWall1 = left1;
+    data_.corridor.leftWall2 = left2;
+    data_.corridor.rightWall1 = right1;
+    data_.corridor.rightWall2 = right2;
+    data_.corridor.escaped = !(detectedRight && detectedLeft);
 /*    walls.rightWall1 = right1;
     walls.rightWall2 = right2;
     walls.leftWall1 = left1;
@@ -138,11 +129,11 @@ Detection::findCorridorWalls(Detection_data *data){
 
 
 
-void Detection::findExit(Detection_data *data){
+void Detection::findExit() {
 
     double detectLargerThresh = 1.05;
     double detectSmallerThresh = 0.95;
-    int nPoint_detsThresh = 4; //Amount of Point_dets larger of smaller than expected before action is being undertaken
+    int nPoint_detsThresh = 4;                                                      // Amount of Point_dets larger of smaller than expected before action is being undertaken
     int nPoint_detsSearch = 80;
 
     int iExit1 = 0;
@@ -151,16 +142,16 @@ void Detection::findExit(Detection_data *data){
     double aFit; double bFit;
 
     for (unsigned int i = 0; i < (1000 - 2*15 - nPoint_detsSearch); i = i+10){
-        if(lineFit(aFit, bFit, i, i+nPoint_detsSearch)){ //Line found, next: search for deviation in positive direction
-            int nLarger = 0; //Amount of Point_dets larger than a certain treshold, compared with linefit data
-            int nSmaller = 0; //Amount of Point_dets smaller than a certain treshold, compared with linefit data
+        if(lineFit(aFit, bFit, i, i+nPoint_detsSearch)){                            // Line found, next: search for deviation in positive direction
+            int nLarger = 0;                                                        // Amount of Point_dets larger than a certain treshold, compared with linefit data
+            int nSmaller = 0;                                                       // Amount of Point_dets smaller than a certain treshold, compared with linefit data
             for (int j = i+nPoint_detsSearch; j < 1000 - 2*15 - nPoint_detsSearch; ++j){
-                double xLine; double yLine; double distLine;
-                if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
+                double xLine, yLine, distLine;
+                if(aFit < -1 || aFit > 1){                                          // Evaluate x-coordinates for given y
                     yLine = LatestLaserScan[j].y;
                     xLine = (yLine - bFit)/aFit;
                 }
-                else{ // Evaluate y-coordinates for given x
+                else{                                                               // Evaluate y-coordinates for given x
                     xLine = LatestLaserScan[j].x;
                     yLine = aFit*xLine + bFit;
 
@@ -179,25 +170,25 @@ void Detection::findExit(Detection_data *data){
                     nLarger = 0; nSmaller = 0;
                 }
 
-                if(nSmaller > nPoint_detsThresh){ // Corner detected
+                if(nSmaller > nPoint_detsThresh){                                   // Corner detected
                     i = j - 10;
-                    j = 1000; // Break out
+                    j = 1000;                                                       // Break out
                 }
-                if (nLarger > nPoint_detsThresh){ // Exit detected
+                if (nLarger > nPoint_detsThresh){                                   // Exit detected
                     std::cout << "ExitPoint_det 1 detected!";
                     iExit1 = j - 7;
 
-                    //Start searching for the second Point_det of the exit
+                    // Start searching for the second Point_det of the exit
                     int nEqual = 0;
 
                     for (int k = j; k < 1000 - 2*15 - nPoint_detsSearch; ++k){
 
                         double xLine; double yLine; double distLine;
-                        if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
+                        if(aFit < -1 || aFit > 1){                                  // Evaluate x-coordinates for given y
                             yLine = LatestLaserScan[k].y;
                             xLine = (yLine - bFit)/aFit;
                         }
-                        else{ // Evaluate y-coordinates for given x
+                        else{                                                       // Evaluate y-coordinates for given x
                             xLine = LatestLaserScan[k].x;
                             yLine = aFit*xLine + bFit;
 
@@ -213,9 +204,9 @@ void Detection::findExit(Detection_data *data){
 
                         if (nEqual > 5){
                             iExit2 = k - 5;
-                            data->exit.exitPoint_det1 = LatestLaserScan[iExit1];
-                            data->exit.exitPoint_det2 = LatestLaserScan[iExit2];
-                            data->exit.detected = true;
+                            data_.exit.exitPoint_det1 = LatestLaserScan[iExit1];
+                            data_.exit.exitPoint_det2 = LatestLaserScan[iExit2];
+                            data_.exit.detected = true;
                         }
                     }
 
@@ -225,9 +216,9 @@ void Detection::findExit(Detection_data *data){
             }
         }
     }
-    data->exit.exitPoint_det1 = LatestLaserScan[0];
-    data->exit.exitPoint_det2 = LatestLaserScan[0];
-    data->exit.detected = false;
+    data_.exit.exitPoint_det1 = LatestLaserScan[0];
+    data_.exit.exitPoint_det2 = LatestLaserScan[0];
+    data_.exit.detected = false;
     //return exit;
 
 }
@@ -295,7 +286,7 @@ bool Detection::lineFit(double &aFit, double &bFit, int firstPoint_det, int last
 
 
 
-void Detection::findFurthestPoint_det(Detection_data * data){
+void Detection::findFurthestPoint_det() {
     int imax = 0;
     double max = 0;
     for(int i = 0; i < 1000-2*15; ++i){
@@ -304,27 +295,29 @@ void Detection::findFurthestPoint_det(Detection_data * data){
             imax = i;
         }
     }
-    data->furthest_point = LatestLaserScan[imax];
+    data_.furthest_point = LatestLaserScan[imax];
 }
 
 
+Detection_data Detection::get_Detection_data() {
+    return data_;
+};
 
-
-void detection_general(Detection_data *data, Flags *flags){
-
-   // Detection det = new Detection;
-
-    if (flags->in_corridor){
-        //CorridorWalls cor;
-        //data->corridor = Detection::findCorridorWalls();
-        data = Detection::findCorridorWalls(data);
-    } else {
-        //Exit *ex;
-        //Point_det far;
-        data = Detection::findExit(data);
-        data = Detection::findFurthestPoint_det(data);
-    }
-}
+// void detection_general(Detection_data *data, Flags *flags){
+//
+//    // Detection det = new Detection;
+//
+//     if (flags->in_corridor){
+//         //CorridorWalls cor;
+//         //data->corridor = Detection::findCorridorWalls();
+//         data = Detection::findCorridorWalls(data);
+//     } else {
+//         //Exit *ex;
+//         //Point_det far;
+//         data = Detection::findExit(data);
+//         data = Detection::findFurthestPoint_det(data);
+//     }
+// }
 
 
 
