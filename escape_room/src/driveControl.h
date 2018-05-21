@@ -4,10 +4,13 @@
 #include <emc/io.h>
 #include <emc/rate.h>
 #include "main.hpp"
+#include <iostream>
 
 class DriveControl
         {
 private:
+    double ref_angle;
+
     emc::IO *inOut;
     emc::OdometryData odom; // [x,y,a]
     void picoTurnRight();               // Method to let pico turn right

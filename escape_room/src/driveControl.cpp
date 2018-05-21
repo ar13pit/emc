@@ -10,20 +10,26 @@ using namespace std;
 void DriveControl::picoDrive(double angle, Flags *flags){
     emc::OdometryData odomRef;
     emc::OdometryData odomCur;
-    emc::Rate r(10);
+    emc::Rate r(20);
+    if (!flags->in_process){
+        ref_angle = angle;
+        std::cout << "Update angle = " << ref_angle << std::endl <<std::endl;
+    }
 
-    if ( abs(angle) > TURN_MARGIN )
+    std::cout << "Reference angle = " << ref_angle << std::endl;
+
+    if ( abs(ref_angle) > TURN_MARGIN )
     {
         r.sleep();
         inOut->readOdometryData(odomRef);
         r.sleep();
         inOut->readOdometryData(odomCur);
-        double destA = odomRef.a-angle;
+        double destA = odomRef.a-ref_angle;
         if( destA < -M_PI )
             destA = M_PI - abs(fmod(destA,M_PI));
         if( destA > M_PI )
             destA = -1*fmod(destA,M_PI);
-        angle < 0 ? picoTurnLeft() : picoTurnRight();
+        ref_angle < 0 ? picoTurnLeft() : picoTurnRight();
 
         while(abs(destA - odomCur.a) > TURN_COMPLETE)
         {
@@ -37,7 +43,7 @@ void DriveControl::picoDrive(double angle, Flags *flags){
     else
     {
         flags->in_process = false;
-        picoSideDrive(angle);
+        picoSideDrive(ref_angle);
     }
     return;
 }

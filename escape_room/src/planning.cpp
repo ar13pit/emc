@@ -310,11 +310,18 @@ void Planning::room_logic(Detection_data *data, Flags *flags){
             flags->turned_once = true;        // remember that we've turned around
             set_furthest_point(&current_furthest);     // save the furthest point given info from perception
             turn_around();
+
+            std::cout << "Turn around" <<std::endl;
         } else {
             compare_furthest_point(&current_furthest);     // check if the first point was further
             calc_furthest_dest(absolute_furthest);             // set the furthest point as a destination
 
         }
+    }
+
+    if (dest.angle>M_PI){
+        dest.angle = M_PI;
+        std::cout << "Reference angle is too large" << std::endl;
     }
 
 }
