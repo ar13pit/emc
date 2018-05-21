@@ -8,9 +8,9 @@ include_directories(include)
 set(SOURCES
  src/detection.cpp
  src/driveControl.cpp
- src/worldModel.cpp
  src/main.cpp
- src/planning.cpp)
+ src/planning.cpp
+ src/initialization.cpp)
 
 # Create executable named "testPlanning"
 add_executable(escape_room ${SOURCES})

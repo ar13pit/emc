@@ -10,6 +10,7 @@
 #include "worldModel.h"
 #include "planning.h"
 #include "config.h"
+#include "initialization.cpp"
 
 
 
@@ -27,13 +28,14 @@ int main(int argc, char *argv[])
     Detection_data data;
 
     Destination dest;
-    bool in_process;
-    bool in_corridor = false;
+    Flags flags;
+
+
 
     //-----------------------------------------------
     //------add initialization of parameters---------
     //-----------------------------------------------
-    // corridor.escaped = false
+    initialize(&data, &dest, &flags);
 
 
     while(io.ok()) {

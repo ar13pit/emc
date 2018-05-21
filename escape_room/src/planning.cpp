@@ -4,15 +4,21 @@
 void planning(Detection_data *data, Destination *dest, bool in_corridor){
 
     if (!in_corridor) {
-        room_logic(data->exit,data->furthest_point,dest);
+        room_logic(data->exit, data->furthest_point, dest);
     }
     else if (in_corridor){
-        //do something with arpit
+        Line leftLine(data->corridor.leftWall1, data->corridor.leftWall2);
+        Line rightLine(data->corridor.rightWall1, data->corridor.rightWall2);
+        Corridor corridor(leftLine, rightLine);
+
+        // assign destination point
+        corrid2dest_transf(&dest,  corridor);
     } else {
-        std::cout << "Fatal error: not is room and not in a corridor" << endl;
+        std::cout << "Fatal error: not in a room and not in a corridor" << endl;
     }
 
 }
+
 
 
 
@@ -243,6 +249,15 @@ PointCorridor Corridor::get_corridor_setpoint() {
 };
 
 
+// trasformation of the corridor representation to Destination format
+Destination *corrid2dest_transf(Destination *dest, Corridor corr){
+    dest->x = corr.get_corridor_setpoint().get_x();
+    dest->y = corr.get_corridor_setpoint().get_y();
+    dest->angle = corr.get_corridor_setpoint().get_angle();
+
+}
+
+
 /*---------------------------------------------------------------------------------
 ---------------------------inside the room-----------------------------------------
 ---------------------------------------------------------------------------------*/
@@ -290,8 +305,8 @@ Point_det compare_furthest_point(Point point, Point_det absolute_furthest){
 
 
 
-void room_logic(Exit exit, Point_det current_furthest,  Destination *dest){
 
+void room_logic(Exit exit, Point_det current_furthest,  Destination *dest){
 
     bool set_turn_flag;
     bool turned_once_flag;
@@ -310,7 +325,6 @@ void room_logic(Exit exit, Point_det current_furthest,  Destination *dest){
 
     // check if the exit detected
     if ((exit.detected) || (move_to_exit)) {
-
         move_to_exit = true;
         dest = calc_exit_dest(exit,dest);        // define destination
 
@@ -321,6 +335,7 @@ void room_logic(Exit exit, Point_det current_furthest,  Destination *dest){
             set_turn_flag = true;           // command control to turn 180
             turned_once_flag = true;        // remember that we've turned around
             absolute_furthest = set_furthest_point(current_furthest);     // save the furthest point given info from perception
+
         } else {
 
             // check if exit detected after we turned

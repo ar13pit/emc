@@ -12,6 +12,7 @@
 
 void planning(Detection_data *data, Destination *dest, bool in_corridor);
 void room_logic(Exit exit, Point_det current_furthest,  Destination *dest);
+Destination *corrid2dest_transf(Destination *dest, Corridor corr);
 
 /*
 --------------------------------------------------------------------------------

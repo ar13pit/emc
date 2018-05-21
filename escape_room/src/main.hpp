@@ -2,11 +2,9 @@
 #define MAIN_HPP
 
 
-typedef enum status {
-    INITIALIZATION,
-    ROOM_ESCAPE,
-    IN_CORRIDOR,
-    TERMINATION
-} Status;
+typedef struct {
+    bool in_process;    // should be active when turning 180
+    bool in_corridor;   // check the phase of the escape
+} Flags;
 
 #endif
