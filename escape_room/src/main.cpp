@@ -9,8 +9,9 @@
 #include "detection.h"
 #include "worldModel.h"
 #include "planning.h"
-
 #include "config.h"
+
+
 
 int main(int argc, char *argv[])
 {
@@ -22,16 +23,33 @@ int main(int argc, char *argv[])
     // Initialize the Classes
     DriveControl pico_drive(&io);
     Detection detection(&io);
-    Exit exit;
+
+    Detection_data data;
+
+    Destination dest;
+    bool in_process;
+    bool in_corridor = false;
+
+    //-----------------------------------------------
+    //------add initialization of parameters---------
+    //-----------------------------------------------
+    // corridor.escaped = false
 
 
     while(io.ok()) {
         if(detection.getSensorData()) {
 
             detection.saveLRFScan(&detection.laser);
-            int index = 0;
 
-            exit = detection.findExit();
+            // check if escaped the room
+            if (corridor.escaped){
+                break;
+            }
+//------------------------------------
+//------needs to be optimized---------
+//------------------------------------
+            detection_general(&data,in_corridor);
+            dest = planning(&data, &dest, in_corridor);
 
         }
 

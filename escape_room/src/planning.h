@@ -10,6 +10,9 @@
 #ifndef planning_H
 #define planning_H
 
+void planning(Detection_data *data, Destination *dest, bool in_corridor);
+void room_logic(Exit exit, Point_det current_furthest,  Destination *dest);
+
 /*
 --------------------------------------------------------------------------------
                                 Class PointCorridor
@@ -145,28 +148,6 @@ public:
 };
 
 
-// Furthest Point
-typedef struct {
-    int x;
-    int y;
-    double angle;
-    double dist;
-} Furthest_Point;
-
-/*
- * Use definition from Jari
- *
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    double angle1;
-    double angle2;
-} Exit_pl;*/
-
 
 // Destination that is passed to the Control block
 typedef struct {
@@ -174,6 +155,8 @@ typedef struct {
     int y;
     int angle;
 } Destination;
+
+
 
 
 #endif

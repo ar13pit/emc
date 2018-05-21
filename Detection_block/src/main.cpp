@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     DriveControl pico_drive(&io);
     Detection detection(&io);
     WorldModel worldModel;
+    Exit exit;
 
 
 
@@ -37,39 +38,8 @@ int main(int argc, char *argv[])
 
             detection.saveLRFScan(&detection.laser);
             int index = 0;
-            /*std::cout << detection.LatestLaserScan[index].x << "  ";
-            std::cout << detection.LatestLaserScan[index].y << std::endl;
 
-            std::cout << detection.LatestLaserScan[index].angle << "  ";
-            std::cout << detection.LatestLaserScan[index].dist << std::endl << std::endl;
-
-            double aFit = 0;
-            double bFit = 0;
-            int firstPoint = 10;
-            int lastPoint = 80;
-
-            if (detection.lineFit(aFit, bFit, firstPoint, lastPoint) ){
-               std::cout << "Line was found, formula: y = " << aFit << "x + "<< bFit << std::endl;
-            }else{
-               std::cout << "Line was not found..." << std::endl;
-            }*/
-
-            /*std::cout << "Furthest point: (" << detection.findFurthestPoint().x << ", " << detection.findFurthestPoint().y << ")" << std::endl << std::endl;
-
-            CorridorWalls walls;
-            walls = detection.findCorridorWalls();
-            if(walls.escaped){
-                std::cout << "No corridor found to follow" << std:: endl;
-            }else{
-                std::cout << "Corridor still spotted: Right between:" << std::endl;
-                std::cout << "(" << walls.rightWall1.x << "," << walls.rightWall1.y << ")" << std::endl;
-                std::cout << "(" << walls.rightWall2.x << "," << walls.rightWall2.y << ")" << std::endl;
-                std::cout << "Corridor still spotted: Left between:" << std::endl;
-                std::cout << "(" << walls.leftWall1.x << "," << walls.leftWall1.y << ")" << std::endl;
-                std::cout << "(" << walls.leftWall2.x << "," << walls.leftWall2.y << ")" << std::endl;
-            }*/
-
-            Exit exit = detection.findExit();
+            exit = detection.findExit();
 
             if (exit.detected){
                 std::cout << "Exit detected at: (" << exit.exitPoint1.x <<", " << exit.exitPoint1.y << ") and (" << exit.exitPoint2.x <<", " << exit.exitPoint2.y << ")" << std::endl;
