@@ -11,10 +11,10 @@
         }
     }
 
-    void Detection::filterLRFData(emc::LaserData* laser, int nFilterPoints){
+    void Detection::filterLRFData(int nFilterPoints){
         for(int i = 0; i<nFilterPoints; ++i){
-           laser->ranges[i] = laser->ranges[nFilterPoints];
-           laser->ranges[laser->ranges.size()-1-i] = laser->ranges[laser->ranges.size()-1-nFilterPoints];
+           laser.ranges[i] = laser.ranges[nFilterPoints];
+           laser.ranges[laser.ranges.size()-1-i] = laser.ranges[laser.ranges.size()-1-nFilterPoints];
         }
 
         /*for(int i = 16; i < laser->ranges.size()-15; ++i) {
@@ -26,16 +26,16 @@
 
     }
 
-    void Detection::saveLRFScan(emc::LaserData* laser){
-        int nFilterPoints = 15;
-        double a = (15*laser->angle_increment) + laser->angle_min;
-        for(unsigned int i = nFilterPoints; i < laser->ranges.size()-nFilterPoints; ++i)
+    void Detection::saveLRFScan(){
+        unsigned int nFilterPoints = 15;
+        double a = (15*laser.angle_increment) + laser.angle_min;
+        for(unsigned int i = nFilterPoints; i < laser.ranges.size()-nFilterPoints; ++i)
         {
-            if(laser->ranges[i]>0.001){
-                Detection::LatestLaserScan[i-nFilterPoints].dist = laser->ranges[i];
+            if(laser.ranges[i]>0.001){
+                Detection::LatestLaserScan[i-nFilterPoints].dist = laser.ranges[i];
                 Detection::LatestLaserScan[i-nFilterPoints].angle = -a;
-                Detection::LatestLaserScan[i-nFilterPoints].x = sin(-a) * laser->ranges[i];
-                Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * laser->ranges[i];
+                Detection::LatestLaserScan[i-nFilterPoints].x = sin(-a) * laser.ranges[i];
+                Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * laser.ranges[i];
             }
             else{ // 30 meters if range is below threshold
                 Detection::LatestLaserScan[i-nFilterPoints].dist = 30;
@@ -44,7 +44,7 @@
                 Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * 30;
             }
 
-            a += laser->angle_increment;
+            a += laser.angle_increment;
         }
 
     }
