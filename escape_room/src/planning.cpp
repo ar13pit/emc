@@ -1,6 +1,7 @@
 #include "planning.h"
 
 
+
 /*
 -------------------------------------------------------------------------------
                         Class PointCorridor Methods
@@ -8,7 +9,7 @@
 */
 
 void PointCorridor::calculate_angle() {
-    angle_ = ((PI/2) - atan(y_/x_));
+    angle_ = ((M_PI/2) - atan(y_/x_));
 };
 
 void PointCorridor::calculate_radius() {
@@ -168,7 +169,7 @@ void Corridor::calculate_center_line() {
         center_point1 = temp;
         for (int i = 0; i < 3; ++i) {
             center_equation[i] = center_equation_temp[i];
-            opposite_wall_equation[i] = opposite_wall_equation_temp[i];    
+            opposite_wall_equation[i] = opposite_wall_equation_temp[i];
         }
     }
 
@@ -227,114 +228,139 @@ PointCorridor Corridor::get_corridor_setpoint() {
     return setpoint_;
 };
 
-//
-// /*---------------------------------------------------------------------------------
-// ---------------------------inside the room-----------------------------------------
-// ---------------------------------------------------------------------------------*/
-//
-// // conversion from Exit to Exit_pl
-// Exit_pl exits_conversion(Exit ex_det){
-//     Exit_pl ex_conv;
-//     ex_conv.x1
-// }
-//
-// // set furthest point
-// Furthest_point set_furthest_point(Point point){
-//     Furthest_point far;
-//     far.dist = sqrt(point.x*point.x + point.y*point.y);
-//     far.x = point.x;
-//     far.y = point.y;
-//     far.angle = atan(point.y/point.x);
-//     return far;
-// }
-//
-// //----------------------------------------------------------------------------------
-//
-//
-// // calculate the destination when exit identified
-// Destination *calc_exit_dest (Exit exit, Destination *dest){
-//     dest->x = (exit.exitPoint_det1.x + exit.exitPoint_det2.x)/2;
-//     dest->y = (exit.exitPoint_det1.y + exit.exitPoint_det2.y)/2;
-//     dest->angle = (exit.exitPoint_det1.angle + exit.exitPoint_det2.angle)/2;
-//     return dest;
-// }
-//
-//
-// // calculate the destination when exit in not identified
-// Destination *calc_furthest_dest (Furthest_point furthest, Destination *dest){
-//     dest->x = furthest.x/4;
-//     dest->y = furthest.y/4;
-//     dest->angle = furthest.angle;
-//     return dest;
-// }
-//
-//
-// // check whether the new point is further than the saved one
-// Furthest_point compare_furthest_point(Point point, Furthest_point far){
-//     double new_dist;
-//     new_dist = sqrt(point.x*point.x + point.y*point.y);
-//     if (new_dist>far.dist) {
-//         far = set_furthest_point(point);
-//     }
-//     return far;
-// }
-//
-//
-//
-// Destination main_logic(Exit exit, Point furthest, Status status, Destination *dest){
-//
-//
-//     bool set_turn_flag;
-//     bool turned_once_flag;
-//     bool move_to_exit;
-//     Furthest_point far;
-//     //Destination dest;
-//
-//     // initialize
-//     far.dist = 0;
-//     far.angle = 0;
-//     far.x = 0;
-//     far.y = 0;
-//     turned_once_flag = false;   // assume always start without turning
-//
-//     switch(status){
-//
-//
-//     case(ROOM_ESCAPE):
-//
-//         // check if the exit detected
-//         if ((exit.detected) || (move_to_exit)) {
-//
-//             move_to_exit = true;
-//             dest = calc_exit_dest(exit,dest);        // define destination
-//
-//         } else {
-//
-//             // check if we have turned around already
-//             if (!turned_once_flag){
-//                 set_turn_flag = true;           // command control to turn 180
-//                 turned_once_flag = true;        // remember that we've turned around
-//                 far = set_furthest_point(furthest);     // save the furthest point given info from perception
-//             } else {
-//
-//                 // check if exit detected after we turned
-//                 if ((exit.detected) || (move_to_exit)) {
-//                     move_to_exit = true;
-//                     dest = calc_exit_dest(exit,dest);        // define destination
-//                 } else {
-//                     far = compare_furthest_point(furthest,far);     // check if the first point was further
-//                     dest = calc_furthest_dest(far,dest);             // set the furthest point as a destination
-//                 }
-//             }
-//
-//
-//         }
-//
-//
-//         break;
-//
-//     case(IN_CORRIDOR):
-//         break;
-//     }
-//     return dest;
-// }
+
+// trasformation of the corridor representation to Destination format
+void Planning::corrid2dest_transf(Corridor corr){
+    dest.x = corr.get_corridor_setpoint().get_x();
+    dest.y = corr.get_corridor_setpoint().get_y();
+    dest.angle = corr.get_corridor_setpoint().get_angle();
+}
+
+
+/*---------------------------------------------------------------------------------
+---------------------------inside the room-----------------------------------------
+---------------------------------------------------------------------------------*/
+
+// set furthest point
+void Planning::set_furthest_point(Point_det *point){
+    absolute_furthest.dist = point->dist;
+    absolute_furthest.x = point->x;
+    absolute_furthest.y = point->y;
+    absolute_furthest.angle = point->angle + M_PI; // add pi because we assume turn at next instant
+}
+
+
+// calculate the destination when exit identified
+void Planning::calc_exit_dest (Detection_data *data){
+    dest.x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
+    dest.y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
+    dest.angle = (data->exit.exitPoint_det1.angle + data->exit.exitPoint_det2.angle)/2;
+}
+
+
+// calculate the destination when exit in not identified
+void Planning::calc_furthest_dest (Point_det furthest){
+    dest.x = furthest.x/4;
+    dest.y = furthest.y/4;
+    dest.angle = furthest.angle;
+}
+
+
+// check whether the new point is further than the saved one
+void Planning::compare_furthest_point(Point_det *point){
+    if (point->dist > absolute_furthest.dist) {
+        set_furthest_point(point);
+    }
+}
+
+void Planning::turn_around(){
+    dest.angle = M_PI;
+    dest.x = 0;
+    dest.y = 0;
+}
+
+
+
+
+void Planning::room_logic(Detection_data *data, Flags *flags){
+
+    if (flags->in_corridor == true){
+        std::cout << "In corridor = true" <<std::endl;
+    } else {
+        std::cout << "In corridor = false" <<std::endl;
+    }
+
+    if (data->exit.detected == true){
+        std::cout << "Exit detected = true" <<std::endl;
+    } else {
+        std::cout << "Exit detected = false" <<std::endl;
+    }
+
+    Point_det current_furthest = data->furthest_point;
+
+    // check if the exit detected
+    if (data->exit.detected) {
+        calc_exit_dest(data);        // define destination
+        std::cout << "Exit points " << data->exit.exitPoint_det1.x << " " << data->exit.exitPoint_det1.y << std::endl;
+
+    } else {
+
+        // check if we have turned around already
+        if (!flags->turned_once){
+            flags->turned_once = true;        // remember that we've turned around
+            set_furthest_point(&current_furthest);     // save the furthest point given info from perception
+            turn_around();
+
+            std::cout << "Turn around" <<std::endl;
+        } else {
+            compare_furthest_point(&current_furthest);     // check if the first point was further
+            calc_furthest_dest(absolute_furthest);             // set the furthest point as a destination
+
+        }
+    }
+
+    if (dest.angle>M_PI){
+        dest.angle = M_PI;
+        std::cout << "Reference angle is too large" << std::endl;
+    }
+
+}
+
+
+
+
+/*
+// main function for decisions inside the block
+void Planning::planning(Detection_data *data, Flags *flags){
+
+    if (flags->in_corridor == true){
+        std::cout << "signal in corridor = true" <<std::endl;
+    } else {
+        std::cout << "signal in corridor = false" <<std::endl;
+    }
+
+    if (!flags->in_corridor) {
+        room_logic(data, flags);
+    }
+    else if (flags->in_corridor){
+        PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
+        PointCorridor left2(data->corridor.leftWall2.x, data->corridor.leftWall2.y);
+        PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
+        PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
+
+        LineCorridor leftLine(left1, left2);
+        LineCorridor rightLine(right1, right2);
+        Corridor corridor(leftLine, rightLine);
+
+        // assign destination point
+        corrid2dest_transf(corridor);
+    } else {
+ //       std::cout << "Fatal error: not in a room and not in a corridor" << endl;
+    }
+
+}
+*/
+
+Destination Planning::get_Destination(){
+    return dest;
+}

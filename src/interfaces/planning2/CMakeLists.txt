@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8.9)
-project(planning)
+project (planning)
 
 # Include all header files
 include_directories(include)
 
-# Search for all source files of extension ".cc" and add them to $SOURCES
-file(GLOB SOURCES "src/*.cc")
+# Search for all source files of extension ".cpp" and add them to $SOURCES
+file(GLOB SOURCES "src/*.cpp")
 
 # Create executable named "testPlanning"
 add_executable(testPlanning ${SOURCES})

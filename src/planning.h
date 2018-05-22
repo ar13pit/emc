@@ -1,3 +1,7 @@
+#include <cmath>
+//#include <config.h>
+#include <opencv2/opencv.hpp>
+
 #ifndef planning_H
 #define planning_H
 

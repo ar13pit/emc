@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(example)
+project(detection)
 
 
 add_executable(main src/main.cpp)

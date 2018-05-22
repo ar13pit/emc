@@ -1,14 +1,17 @@
 #include <cmath>
 #include <iostream>
 #include <config.h>
-// #include "detection.h"
-// #include "helper.hpp"
-// #include "main.hpp"
-// #include "opencv2/opencv.hpp"
+#include <math.h>
+#include "detection.h"
+#include "helper.hpp"
+#include "main.hpp"
+#include "opencv2/opencv.hpp"
 
 
 #ifndef planning_H
 #define planning_H
+
+
 
 /*
 --------------------------------------------------------------------------------
@@ -130,7 +133,7 @@ class Corridor {
 
 public:
     Corridor() {};
-    
+
     Corridor(LineCorridor left_line, LineCorridor right_line) {
         left_ = left_line;
         right_ = right_line;
@@ -144,36 +147,69 @@ public:
     PointCorridor get_corridor_setpoint();
 };
 
-//
-// // Furthest Point
-// typedef struct {
-//     int x;
-//     int y;
-//     double angle;
-//     double dist;
-// } Furthest_Point;
-//
-// /*
-//  * Use definition from Jari
-//  *
-// // Store exit data: two corners, angles and a flag whether detected
-// typedef struct {
-//     bool detected;
-//     int x1;
-//     int y1;
-//     int x2;
-//     int y2;
-//     double angle1;
-//     double angle2;
-// } Exit_pl;*/
-//
-//
-// // Destination that is passed to the Control block
-// typedef struct {
-//     int x;
-//     int y;
-//     int angle;
-// } Destination;
+
+
+// Destination that is passed to the Control block
+typedef struct {
+    int x;
+    int y;
+    double angle;
+} Destination;
+
+
+class Planning{
+private:
+    Destination dest;
+    Point_det absolute_furthest;
+
+    void room_logic(Detection_data *data, Flags *flags);
+    void corrid2dest_transf(Corridor corr);
+    void planning(Detection_data *data, Flags* flags);
+
+
+
+    void set_furthest_point(Point_det *point);
+    void calc_exit_dest (Detection_data *data);
+    void calc_furthest_dest (Point_det furthest);
+    void compare_furthest_point(Point_det *point);
+    void turn_around();
+
+public:
+
+    Planning(Detection_data *data, Flags *flags){
+
+
+        if (!flags->in_corridor) {
+            room_logic(data, flags);
+        }
+        else if (flags->in_corridor){
+            PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
+            PointCorridor left2(data->corridor.leftWall2.x, data->corridor.leftWall2.y);
+            PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
+            PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
+
+            LineCorridor leftLine(left1, left2);
+            LineCorridor rightLine(right1, right2);
+            Corridor corridor(leftLine, rightLine);
+
+            // assign destination point
+            corrid2dest_transf(corridor);
+        } else {
+            std::cout << "Fatal error: not in a room and not in a corridor" << std::endl;
+        }
+
+    }
+
+
+
+    Destination get_Destination();
+
+
+
+   // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
+
+};
+
 
 
 #endif

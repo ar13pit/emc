@@ -5,8 +5,12 @@
 #include <cmath>
 #include <math.h>
 
-//-----------------------------------------------------------------------------------
-// might be useful for corridor
+
+
+
+/*---------------------------------------------------------------------------------
+---------------------------inside the room-----------------------------------------
+---------------------------------------------------------------------------------*/
 
 // set furthest point
 Furthest_point set_furthest_point(Point point){
@@ -22,21 +26,19 @@ Furthest_point set_furthest_point(Point point){
 
 
 // calculate the destination when exit identified
-Destination calc_exit_dest (Exit exit){
-    Destination dest;
-    dest.x = (exit.x1 + exit.x2)/2;
-    dest.y = (exit.y1 + exit.y2)/2;
-    dest.angle = (exit.angle1 + exit.angle2)/2;
+Destination *calc_exit_dest (Exit exit, Destination *dest){
+    dest->x = (exit.x1 + exit.x2)/2;
+    dest->y = (exit.y1 + exit.y2)/2;
+    dest->angle = (exit.angle1 + exit.angle2)/2;
     return dest;
 }
 
 
 // calculate the destination when exit in not identified
-Destination calc_furthest_dest (Furthest_point furthest){
-    Destination dest;
-    dest.x = furthest.x/4;
-    dest.y = furthest.y/4;
-    dest.angle = furthest.angle;
+Destination *calc_furthest_dest (Furthest_point furthest, Destination *dest){
+    dest->x = furthest.x/4;
+    dest->y = furthest.y/4;
+    dest->angle = furthest.angle;
     return dest;
 }
 
@@ -52,14 +54,15 @@ Furthest_point compare_furthest_point(Point point, Furthest_point far){
 }
 
 
-Destination main_logic(Exit exit, Point furthest, Status status){
+
+Destination main_logic(Exit exit, Point furthest, Status status, Destination *dest){
 
 
     bool set_turn_flag;
     bool turned_once_flag;
     bool move_to_exit;
     Furthest_point far;
-    Destination dest;
+    //Destination dest;
 
     // initialize
     far.dist = 0;
@@ -77,7 +80,7 @@ Destination main_logic(Exit exit, Point furthest, Status status){
         if ((exit.detected) || (move_to_exit)) {
 
             move_to_exit = true;
-            dest = calc_exit_dest(exit);        // define destination
+            dest = calc_exit_dest(exit,dest);        // define destination
 
         } else {
 
@@ -91,10 +94,10 @@ Destination main_logic(Exit exit, Point furthest, Status status){
                 // check if exit detected after we turned
                 if ((exit.detected) || (move_to_exit)) {
                     move_to_exit = true;
-                    dest = calc_exit_dest(exit);        // define destination
+                    dest = calc_exit_dest(exit,dest);        // define destination
                 } else {
                     far = compare_furthest_point(furthest,far);     // check if the first point was further
-                    dest = calc_furthest_dest(far);             // set the furthest point as a destination
+                    dest = calc_furthest_dest(far,dest);             // set the furthest point as a destination
                 }
             }
 
@@ -109,6 +112,3 @@ Destination main_logic(Exit exit, Point furthest, Status status){
     }
     return dest;
 }
-
-
-
