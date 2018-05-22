@@ -62,17 +62,22 @@ public:
     Detection(emc::IO *io, Flags *flags) {
         inOut = io;
 
+        saveLRFScan();
+
         if (flags->in_corridor){
             //CorridorWalls cor;
             //data->corridor = Detection::findCorridorWalls();
+
             findCorridorWalls();
+            std::cout << "Detection class work "<< data_.exit.exitPoint_det1.x << std::endl;
         } else {
             //Exit *ex;
             //Point_det far;
+
+            std::cout << "Detection class work "<< data_.exit.exitPoint_det1.x << std::endl;
             findExit();
             findFurthestPoint_det();
         }
-
     };
 
     bool getSensorData(); // Method to obtain the sensordata

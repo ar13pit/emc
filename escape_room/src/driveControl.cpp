@@ -11,6 +11,7 @@ void DriveControl::picoDrive(double angle, Flags *flags){
     emc::OdometryData odomRef;
     emc::OdometryData odomCur;
     emc::Rate r(20);
+
     if (!flags->in_process){
         ref_angle = angle;
         std::cout << "Update angle = " << ref_angle << std::endl <<std::endl;
@@ -36,7 +37,7 @@ void DriveControl::picoDrive(double angle, Flags *flags){
             r.sleep();
             inOut->readOdometryData(odomCur);
         }
-        picoForward();
+                picoForward();
 
         flags->in_process = true;
     }

@@ -315,7 +315,7 @@ void Planning::room_logic(Detection_data *data, Flags *flags){
         } else {
             compare_furthest_point(&current_furthest);     // check if the first point was further
             calc_furthest_dest(absolute_furthest);             // set the furthest point as a destination
-
+            flags->turned_once = false;
         }
     }
 

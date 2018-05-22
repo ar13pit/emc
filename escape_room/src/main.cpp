@@ -85,7 +85,7 @@ void initialize(Detection_data *data, Destination *dest, Flags *flags){
 int main(int argc, char *argv[])
 {
     // Initialization of Robot
-    emc::Rate r(0.3); //EXECUTION_RATE
+    emc::Rate r(1); //EXECUTION_RATE
     emc::IO io;
     emc::OdometryData odom;
 
@@ -108,16 +108,19 @@ int main(int argc, char *argv[])
             if (flags.escaped){
                 break;
             }*/
+
             Detection detection(&io, &flags);
             data = detection.get_Detection_data();
+
+            cout << "exit (x,y)" << data.exit.exitPoint_det1.x <<" "<< data.exit.exitPoint_det1.y <<endl;
 
             Planning plan(&data, &flags);
             dest = plan.get_Destination();
 
 
-            cout << "Relative angle " << dest.angle <<endl;
-            pico_drive.picoDrive(dest.angle, &flags);
-            usleep(1000000);
+            cout << "Relative angle " << dest.angle << endl << endl;
+          //  pico_drive.picoDrive(dest.angle, &flags);
+            //usleep(1000000);
         }
 
 
