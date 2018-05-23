@@ -205,6 +205,8 @@ public:
 
             LineCorridor leftLine(left1, left2);
             LineCorridor rightLine(right1, right2);
+
+            std::cout << "\n Calculating Corridor setpoint" << '\n';
             Corridor corridor(leftLine, rightLine);
 
 //            rightLine.print();
@@ -213,6 +215,7 @@ public:
 //            std::cout << "" << corridor.get_corridor_setpoint()
             // assign destination point
             corrid2dest_transf(corridor);
+            flags->drive_frw = true;
 
         } else {
             std::cout << "Fatal error: not in a room and not in a corridor" << std::endl;
