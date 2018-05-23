@@ -194,6 +194,8 @@ void Corridor::calculate_setpoint() {
     denominator = pow(a, 2) + pow(b, 2);
     discriminant = sqrt(denominator*pow(c1, 2) - pow(c, 2));
 
+    std::cout << "devision test " << denominator << "\n";
+
     x1 = (-a*c + b*discriminant)/denominator;
     x2 = (-a*c - b*discriminant)/denominator;
 
@@ -209,6 +211,7 @@ void Corridor::calculate_setpoint() {
     else {
         setpoint_ = PointCorridor(x2, y2);
     }
+    std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
 
 };
 
@@ -231,6 +234,11 @@ PointCorridor Corridor::get_corridor_setpoint() {
 
 // trasformation of the corridor representation to Destination format
 void Planning::corrid2dest_transf(Corridor corr){
+
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_y() << "\n"<< "\n";
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_angle() << "\n"<< "\n";
+
     dest.x = corr.get_corridor_setpoint().get_x();
     dest.y = corr.get_corridor_setpoint().get_y();
     dest.angle = corr.get_corridor_setpoint().get_angle();
@@ -246,7 +254,7 @@ void Planning::set_furthest_point(Point_det *point){
     absolute_furthest.dist = point->dist;
     absolute_furthest.x = point->x;
     absolute_furthest.y = point->y;
-    absolute_furthest.angle = point->angle + M_PI; // add pi because we assume turn at next instant
+    absolute_furthest.angle = point->angle; // add pi because we assume turn at next instant
 }
 
 
@@ -280,9 +288,31 @@ void Planning::turn_around(){
 }
 
 
+bool Planning::check_corridor(Detection_data *data){
+    double dist_x;
+    double dist_y;
+    double dist_c;
 
 
-void Planning::room_logic(Detection_data *data, Flags *flags){
+    dist_x = (data->exit.exitPoint_det1.x,2 + data->exit.exitPoint_det2.x,2)/2;
+    dist_y = (data->exit.exitPoint_det1.y,2 + data->exit.exitPoint_det2.y,2)/2;
+
+    dist_c = sqrt(pow(dist_x,2)+pow(dist_y,2));
+
+    std::cout << "distance c " << dist_c << "\n";
+
+    if (dist_c < THRESHOLD_CORRIDOR ){
+        std::cout << "Threshold not active" << "\n"<< "\n";
+        return 1;
+    } else {
+        std::cout << "Threshold is active" << "\n" << "\n";
+        return 0;
+    }
+}
+
+
+
+void Planning::room_logic(Detection_data *data, Flags *flags, Destination *far_point){
 
     if (flags->in_corridor == true){
         std::cout << "In corridor = true" <<std::endl;
@@ -302,7 +332,7 @@ void Planning::room_logic(Detection_data *data, Flags *flags){
     if (data->exit.detected) {
         calc_exit_dest(data);        // define destination
         std::cout << "Exit points " << data->exit.exitPoint_det1.x << " " << data->exit.exitPoint_det1.y << std::endl;
-
+        flags->drive_frw = true;
     } else {
 
         // check if we have turned around already
@@ -310,20 +340,33 @@ void Planning::room_logic(Detection_data *data, Flags *flags){
             flags->turned_once = true;        // remember that we've turned around
             set_furthest_point(&current_furthest);     // save the furthest point given info from perception
             turn_around();
+            flags->turn = true;
+            flags->drive_frw = false;
+
+            calc_furthest_dest (absolute_furthest);
+            far_point = &dest;
+            far_point->angle = far_point->angle + M_PI;
+
 
             std::cout << "Turn around" <<std::endl;
         } else {
+            absolute_furthest.x = far_point->x;
+            absolute_furthest.y = far_point->y;
+            absolute_furthest.angle = far_point->angle;
+            absolute_furthest.dist = sqrt(pow(far_point->x,2)+pow(far_point->y,2));
+
             compare_furthest_point(&current_furthest);     // check if the first point was further
             calc_furthest_dest(absolute_furthest);             // set the furthest point as a destination
             flags->turned_once = false;
+            flags->drive_frw = true;
         }
     }
 
-    if (dest.angle>M_PI){
+/*    if (dest.angle>M_PI){
         dest.angle = M_PI;
         std::cout << "Reference angle is too large" << std::endl;
     }
-
+*/
 }
 
 

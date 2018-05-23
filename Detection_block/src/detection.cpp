@@ -108,7 +108,7 @@
         double detectLargerThresh = 1.05;
         double detectSmallerThresh = 0.95;
         int nPointsThresh = 4; //Amount of points larger of smaller than expected before action is being undertaken
-        int nPointsSearch = 80;
+        int nPointsSearch = 30;
 
         int iExit1 = 0;
         int iExit2 = 0;

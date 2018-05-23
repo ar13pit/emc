@@ -6,17 +6,21 @@
  *-------------------------------------------------------------------------------
  * */
 
+bool Detection::get_data(emc::Rate *r){
+    while(inOut->ok()){
+        if (inOut->readLaserData(laser_)){
+            std::cout << "reading laser"<< std::endl << std::endl;
 
-bool Detection::getSensorData() {
-    if(inOut->readLaserData(laser_)) {
-        return true;
-    } else {
-        return false;
+//            std::cout << "c = " << c << std::endl;
+            break;
+        }
+        else{
+            std::cout << "failed to get data" << std::endl;
+        }
+        r->sleep();
     }
+    return true;
 }
-
-
-
 
 
 
@@ -39,22 +43,28 @@ void Detection::saveLRFScan() {
     int nFilterPoint_dets = 15;
     double a = (15*laser_.angle_increment) + laser_.angle_min;
 
+    double random;
 
-    std::cout << "LatestLaserScan" << LatestLaserScan[i-nFilterPoint_dets].y << endl;
+
+
+//    std::cout << "LatestLaserScan " << inOut->ok() << std::endl;
+//   std::cout << "A value from laser_" << laser_.ranges[100] <<std::endl;
+
 
     for(unsigned int i = nFilterPoint_dets; i < laser_.ranges.size()-nFilterPoint_dets; ++i)
     {
-        if(laser_.ranges[i]>0.001){
+        if(laser_.ranges[i]>0.01){
             LatestLaserScan[i-nFilterPoint_dets].dist = laser_.ranges[i];
             LatestLaserScan[i-nFilterPoint_dets].angle = -a;
             LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * laser_.ranges[i];
             LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * laser_.ranges[i];
         }
         else{ // 30 meters if range is below threshold
-            LatestLaserScan[i-nFilterPoint_dets].dist = 30;
+            random = rand() % 10 + 10;
+            LatestLaserScan[i-nFilterPoint_dets].dist = random;
             LatestLaserScan[i-nFilterPoint_dets].angle = -a;
-            LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * 30;
-            LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * 30;
+            LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * random;
+            LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * random;
         }
 
         a += laser_.angle_increment;
@@ -71,7 +81,6 @@ void Detection::saveLRFScan() {
 
 //Find 2 lines of the walls in the corridor
 void Detection::findCorridorWalls() {
-    Detection::saveLRFScan();
 
     bool detectedRight = false;
     bool detectedLeft = false;
@@ -136,13 +145,12 @@ void Detection::findCorridorWalls() {
 
 
 
-void Detection::findExit() {
-    Detection::saveLRFScan();
+bool Detection::findExit() {
 
     double detectLargerThresh = 1.05;
     double detectSmallerThresh = 0.95;
-    int nPointsThresh = 4; //Amount of points larger of smaller than expected before action is being undertaken
-    int nPointsSearch = 80;
+    int nPointsThresh = 5; //Amount of points larger of smaller than expected before action is being undertaken
+    int nPointsSearch = 30;
 
     int iExit1 = 0;
     int iExit2 = 0;
@@ -183,7 +191,7 @@ void Detection::findExit() {
                     j = 1000; // Break out
                 }
                 if (nLarger > nPointsThresh){ // Exit detected
-                    std::cout << "Exitpoint 1 detected!" << std::endl;
+//                    std::cout << "Exitpoint 1 detected!" << std::endl;
                     iExit1 = j - 7;
 
                     //Start searching for the second point of the exit
@@ -203,19 +211,9 @@ void Detection::findExit() {
                         }
                         distLine = sqrt(pow(xLine,2) + pow(yLine,2));
 
-                        std::cout << "LatestLaserScan[k].x"  << LatestLaserScan[k].dist << std::endl;
-
-                        std::cout << "distLine " << distLine << std::endl;
-                        std::cout << "detectLargerThresh  " << detectLargerThresh << std::endl<< std::endl;
-
-
-                        bool check1 = distLine*detectLargerThresh > LatestLaserScan[k].dist;
-                        bool check2 = distLine*detectSmallerThresh < LatestLaserScan[k].dist;
-                        std::cout << "check " << check1 << std::endl;
-                        std::cout << "check " << check2 << std::endl<< std::endl;
                         if (distLine*detectLargerThresh > LatestLaserScan[k].dist && distLine*detectSmallerThresh < LatestLaserScan[k].dist){
                             nEqual = nEqual + 1;
-                            std::cout << "ExitPoint "<<nEqual << std::endl;
+                    //        std::cout << "ExitPoint "<<nEqual << std::endl;
                         }
                         else{
                             nEqual = 0;
@@ -226,7 +224,8 @@ void Detection::findExit() {
                             data_.exit.exitPoint_det1 = LatestLaserScan[iExit1];
                             data_.exit.exitPoint_det2 = LatestLaserScan[iExit2];
                             data_.exit.detected = true;
-                            std::cout << "method jari "<<data_.exit.detected << std::endl;
+                            //std::cout << "method jari "<<data_.exit.detected << std::endl;
+                            return true;
 
                         }
                     }
@@ -240,7 +239,7 @@ void Detection::findExit() {
     data_.exit.exitPoint_det1 = LatestLaserScan[0];
     data_.exit.exitPoint_det2 = LatestLaserScan[0];
     data_.exit.detected = false;
-    //return exit;
+    return false;
     //std::cout << "method jari "<<data_.exit.detected << std::endl;
 }
 
@@ -308,8 +307,6 @@ bool Detection::lineFit(double &aFit, double &bFit, int firstPoint_det, int last
 
 
 void Detection::findFurthestPoint_det() {
-
-    Detection::saveLRFScan();
 
     int imax = 0;
     double max = 0;
