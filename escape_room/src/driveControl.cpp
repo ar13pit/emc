@@ -13,6 +13,8 @@ void DriveControl::picoDrive(Destination *dest, Flags *flags){
     double angle = dest->angle;
 
     ref_dist = sqrt(pow(dest->x,2)+pow(dest->y,2));
+//    ref_dist = 1.0 + sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
+
 
 
 
@@ -23,6 +25,7 @@ void DriveControl::picoDrive(Destination *dest, Flags *flags){
     double destA = odomRef.a-angle;
     if( destA < -M_PI )
         destA = M_PI - abs(fmod(destA,M_PI));
+
     if( destA > M_PI )
         destA = -1*fmod(destA,M_PI);
     ref_angle = destA;
@@ -81,6 +84,7 @@ void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::
 
         meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
     }
+    std::cout << "Measured odometry " <<  meas_dist << std::endl;
     stop();
     std::cout << "stopped driving forward" << std::endl;
 }

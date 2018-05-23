@@ -294,10 +294,10 @@ bool Planning::check_corridor(Detection_data *data){
     std::cout << "distance c " << dist_c << "\n";
 
     if (dist_c < THRESHOLD_CORRIDOR ){
-        std::cout << "Threshold not active" << "\n";
+        std::cout << "Threshold not active" << "\n"<< "\n";
         return 1;
     } else {
-        std::cout << "Threshold not active" << "\n";
+        std::cout << "Threshold is active" << "\n" << "\n";
         return 0;
     }
 }

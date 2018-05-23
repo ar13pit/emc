@@ -180,6 +180,7 @@ public:
 
     Planning(Detection_data *data, Flags *flags, Destination *far_point){
 
+
         if (check_corridor(data)){
             flags->in_corridor = true;
         }
