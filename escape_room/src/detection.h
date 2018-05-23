@@ -3,8 +3,9 @@
 #include <cmath>
 #include <iostream>
 #include "config.h"
-#include "main2.hpp"
+#include "helper.hpp"
 #include <cstdlib>
+#include "main2.hpp"
 
 #ifndef detection_H
 #define detection_H

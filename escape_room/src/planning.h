@@ -5,7 +5,6 @@
 #include "detection.h"
 #include "helper.hpp"
 #include "main2.hpp"
-#include "opencv2/opencv.hpp"
 
 
 #ifndef planning_H
