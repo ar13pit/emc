@@ -140,8 +140,10 @@ void Corridor::calculate_center_line() {
     // double *center_equation, *center_equation_temp, *opposite_wall_equation, *opposite_wall_equation_temp;
 
     y1 = left_.get_line_point1().get_y();
+
     y2 = left_.get_line_point2().get_y();
     right_.get_line_equation(opposite_wall_equation);
+    right_.print();
 
     if (y1 > y2) {
         center_point1 = left_.get_line_point1();
@@ -155,6 +157,7 @@ void Corridor::calculate_center_line() {
     y1 = right_.get_line_point1().get_y();
     y2 = right_.get_line_point2().get_y();
     left_.get_line_equation(opposite_wall_equation_temp);
+    left_.print();
 
     if (y1 > y2) {
         temp = right_.get_line_point1();
@@ -170,47 +173,57 @@ void Corridor::calculate_center_line() {
         for (int i = 0; i < 3; ++i) {
             center_equation[i] = center_equation_temp[i];
             opposite_wall_equation[i] = opposite_wall_equation_temp[i];
+            // std::cout << "/* message */" << '\n';
         }
     }
 
+    center_point1.print(); std::cout << '\n';
+
     y2 = (center_equation[0]*opposite_wall_equation[2] - opposite_wall_equation[0]*center_equation[2])/(opposite_wall_equation[0]*center_equation[1] - center_equation[0]*opposite_wall_equation[1]);
     x2 = (center_equation[2] + center_equation[1]*y2)/(-center_equation[0]);
+
+    std::cout << x2*center_equation[0] + y2*center_equation[1] + center_equation[2] << '\n';
+    std::cout << x2*opposite_wall_equation[0] + y2*opposite_wall_equation[1] + opposite_wall_equation[2] << '\n';
 
     center_point2 = PointCorridor(x2, y2);
     center_ = LineCorridor(center_point1, center_point2);
 };
 
 void Corridor::calculate_setpoint() {
-    double x1, x2, y1, y2, a, b, c, c1, discriminant, denominator, setpoint_line_equation[3], center_line_equation[3], val1, val2;
+    // double x1, x2, y1, y2, a, b, c, c1, discriminant, denominator, setpoint_line_equation[3], center_line_equation[3], val1, val2;
+    double x2, y2, a, b, c, setpoint_line_equation[3];
 
     center_.get_line_perpendicular_midpoint(setpoint_line_equation);
-    center_.get_line_perpendicular_midpoint(center_line_equation);
+    // center_.get_line_perpendicular_midpoint(center_line_equation);
 
-    c1 = SETPOINT_CORRIDOR;
+    // c1 = SETPOINT_CORRIDOR;
     a = setpoint_line_equation[0];
     b = setpoint_line_equation[1];
     c = setpoint_line_equation[2];
 
-    denominator = pow(a, 2) + pow(b, 2);
-    discriminant = sqrt(denominator*pow(c1, 2) - pow(c, 2));
+    x2 = (b + c)/-a;
 
-    std::cout << "devision test " << denominator << "\n";
-
-    x1 = (-a*c + b*discriminant)/denominator;
-    x2 = (-a*c - b*discriminant)/denominator;
-
-    y1 = sqrt(pow(c1, 2) - pow(x1, 2));
-    y2 = sqrt(pow(c1, 2) - pow(x2, 2));
-
-    val1 = center_line_equation[0]*x1 + center_line_equation[1]*y1 + center_line_equation[2];
-    val2 = center_line_equation[0]*x2 + center_line_equation[1]*y2 + center_line_equation[2];
-
-    if (val1 > 0) {
-        setpoint_ = PointCorridor(x1, y1);
-    }
-    else {
-        setpoint_ = PointCorridor(x2, y2);
-    }
+    //
+    // denominator = pow(a, 2) + pow(b, 2);
+    // discriminant = sqrt(denominator*pow(c1, 2) - pow(c, 2));
+    //
+    // std::cout << "devision test " << denominator << "\n";
+    //
+    // x1 = (-a*c + b*discriminant)/denominator;
+    // x2 = (-a*c - b*discriminant)/denominator;
+    //
+    // y1 = sqrt(pow(c1, 2) - pow(x1, 2));
+    // y2 = sqrt(pow(c1, 2) - pow(x2, 2));
+    //
+    // val1 = center_line_equation[0]*x1 + center_line_equation[1]*y1 + center_line_equation[2];
+    // val2 = center_line_equation[0]*x2 + center_line_equation[1]*y2 + center_line_equation[2];
+    //
+    // if (val1 > 0) {
+    //     setpoint_ = PointCorridor(x1, y1);
+    // }
+    // else {
+    setpoint_ = PointCorridor(x2, 1);
+    // }
     std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
 
 
@@ -243,7 +256,7 @@ void Planning::corrid2dest_transf(Corridor corr, Detection_data *data){
 
     dest.x = corr.get_corridor_setpoint().get_x();
     dest.y = corr.get_corridor_setpoint().get_y();
-    dest.angle = corr.get_corridor_setpoint().get_angle();
+    dest.angle = corr.get_corridor_setpoint().get_angle() - M_PI;
 }
 
 

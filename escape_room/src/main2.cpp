@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     // Initialization of Robot
     emc::Rate r(2); //EXECUTION_RATE
     emc::IO io;
-//    emc::OdometryData odom;
+    //    emc::OdometryData odom;
 
     // Transition values
     Detection_data data;
@@ -109,9 +109,9 @@ int main(int argc, char *argv[])
     while(io.ok()) {
         if(detection.get_data(&r)) {
 
-//            if (data.exit.detected){
-//                flags.in_corridor = true;
-//            }
+            if (data.exit.detected){
+                flags.in_corridor = true;
+            }
 
             Detection detection(&r, &io, &flags);
             //should be function to update flags instead
@@ -123,9 +123,9 @@ int main(int argc, char *argv[])
                 cout << "exit detected: false " << endl;
             }
 
-//            if (flags.in_corridor){
-//                data.exit.detected = false;
-//            }
+            if (flags.in_corridor){
+                data.exit.detected = false;
+            }
 
             cout << "exit Point 1 (x,y) " << data.exit.exitPoint_det1.x <<" "<< data.exit.exitPoint_det1.y <<endl;
             cout << "exit Point 2 (x,y) " << data.exit.exitPoint_det2.x <<" "<< data.exit.exitPoint_det2.y <<endl;

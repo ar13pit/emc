@@ -205,6 +205,8 @@ public:
 
             LineCorridor leftLine(left1, left2);
             LineCorridor rightLine(right1, right2);
+
+            std::cout << "\n Calculating Corridor setpoint" << '\n';
             Corridor corridor(leftLine, rightLine);
 
 //            rightLine.print();
@@ -212,9 +214,8 @@ public:
 
 //            std::cout << "" << corridor.get_corridor_setpoint()
             // assign destination point
-            corrid2dest_transf(corridor, data);
 
-            std::cout << "Destination" << dest.angle <<" " << dest.x << "\n";
+            corrid2dest_transf(corridor,data);
             flags->drive_frw = true;
 
         } else {
