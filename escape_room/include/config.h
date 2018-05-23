@@ -10,3 +10,8 @@
 
 #define LINEFITTHRESH 0.00005 // Higher --> more chance of finding a wall
 #define TOL  0.01	// tolerance for calculations
+
+#define TURN_MARGIN 0.25*M_PI // [rad/s]
+#define TURN_COMPLETE 0.1 // [rad/s]
+#define FRW_COMPLETE 0.1 // [m]
+#define THRESHOLD_CORRIDOR 0.5

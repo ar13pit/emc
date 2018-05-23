@@ -6,7 +6,7 @@
 
 
 #include "driveControl.cpp"
-#include "detection.cpp"
+#include "detection.h"
 #include "worldModel.cpp"
 
 #include "config.h"

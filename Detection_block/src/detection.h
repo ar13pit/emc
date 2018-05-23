@@ -2,6 +2,8 @@
 #define detection_H
 
 #include <emc/io.h>
+#include <cmath>
+#include <iostream>
 
 // Point data
 typedef struct {

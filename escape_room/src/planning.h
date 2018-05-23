@@ -4,7 +4,7 @@
 #include <math.h>
 #include "detection.h"
 #include "helper.hpp"
-#include "main.hpp"
+#include "main2.hpp"
 #include "opencv2/opencv.hpp"
 
 
@@ -85,7 +85,7 @@ class LineCorridor {
     void calculate_perpendicular();
 
 public:
-    LineCorridor() {};
+    LineCorridor() {}
 
     LineCorridor(PointCorridor point1, PointCorridor point2) {
         point1_ = point1;
@@ -94,7 +94,7 @@ public:
         calculate_slope();
         calculate_equation();
         calculate_perpendicular();
-    };
+    }
 
     PointCorridor get_line_point1();
     PointCorridor get_line_point2();
@@ -151,8 +151,8 @@ public:
 
 // Destination that is passed to the Control block
 typedef struct {
-    int x;
-    int y;
+    double x;
+    double y;
     double angle;
 } Destination;
 
@@ -162,7 +162,7 @@ private:
     Destination dest;
     Point_det absolute_furthest;
 
-    void room_logic(Detection_data *data, Flags *flags);
+    void room_logic(Detection_data *data, Flags *flags, Destination *far_point);
     void corrid2dest_transf(Corridor corr);
     void planning(Detection_data *data, Flags* flags);
 
@@ -174,15 +174,26 @@ private:
     void compare_furthest_point(Point_det *point);
     void turn_around();
 
+    bool check_corridor(Detection_data *data);
+
 public:
 
-    Planning(Detection_data *data, Flags *flags){
+    Planning(Detection_data *data, Flags *flags, Destination *far_point){
+
+        if (check_corridor(data)){
+            flags->in_corridor = true;
+        }
+        else{
+            flags->in_corridor = false;
+        }
 
 
         if (!flags->in_corridor) {
-            room_logic(data, flags);
+            room_logic(data, flags, far_point);
         }
         else if (flags->in_corridor){
+            std::cout << "Corridor detected" << "\n";
+
             PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
             PointCorridor left2(data->corridor.leftWall2.x, data->corridor.leftWall2.y);
             PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
