@@ -213,6 +213,8 @@ void Corridor::calculate_setpoint() {
     }
     std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
 
+
+
 };
 
 LineCorridor Corridor::get_corridor_line_left() {
@@ -233,7 +235,7 @@ PointCorridor Corridor::get_corridor_setpoint() {
 
 
 // trasformation of the corridor representation to Destination format
-void Planning::corrid2dest_transf(Corridor corr){
+void Planning::corrid2dest_transf(Corridor corr, Detection_data *data){
 
     std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
     std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_y() << "\n"<< "\n";

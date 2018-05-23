@@ -60,7 +60,7 @@ void Detection::saveLRFScan() {
             LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * laser_.ranges[i];
         }
         else{ // 30 meters if range is below threshold
-            random = rand() % 10 + 10;
+            random = rand() % 10 + 20;
             LatestLaserScan[i-nFilterPoint_dets].dist = random;
             LatestLaserScan[i-nFilterPoint_dets].angle = -a;
             LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * random;

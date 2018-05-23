@@ -161,7 +161,7 @@ private:
     Point_det absolute_furthest;
 
     void room_logic(Detection_data *data, Flags *flags, Destination *far_point);
-    void corrid2dest_transf(Corridor corr);
+    void corrid2dest_transf(Corridor corr, Detection_data *data);
     void planning(Detection_data *data, Flags* flags);
 
 
@@ -198,10 +198,10 @@ public:
             PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
             PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
 
-            left1.print(); std::cout << '\n';
-            left2.print(); std::cout << '\n';
-            right1.print(); std::cout << '\n';
-            right2.print(); std::cout << '\n';
+//            left1.print(); std::cout << '\n';
+//            left2.print(); std::cout << '\n';
+//            right1.print(); std::cout << '\n';
+//            right2.print(); std::cout << '\n';
 
             LineCorridor leftLine(left1, left2);
             LineCorridor rightLine(right1, right2);
@@ -212,7 +212,10 @@ public:
 
 //            std::cout << "" << corridor.get_corridor_setpoint()
             // assign destination point
-            corrid2dest_transf(corridor);
+            corrid2dest_transf(corridor, data);
+
+            std::cout << "Destination" << dest.angle <<" " << dest.x << "\n";
+            flags->drive_frw = true;
 
         } else {
             std::cout << "Fatal error: not in a room and not in a corridor" << std::endl;
