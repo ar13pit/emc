@@ -3,7 +3,6 @@
 #include <config.h>
 #include <math.h>
 #include "detection.h"
-#include "helper.hpp"
 #include "main2.hpp"
 
 
@@ -180,12 +179,12 @@ public:
     Planning(Detection_data *data, Flags *flags, Destination *far_point){
 
 
-        if (check_corridor(data)){
+        /*if (check_corridor(data)){
             flags->in_corridor = true;
         }
         else{
             flags->in_corridor = false;
-        }
+        }*/
 
 
         if (!flags->in_corridor) {
@@ -199,12 +198,22 @@ public:
             PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
             PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
 
+            left1.print(); std::cout << '\n';
+            left2.print(); std::cout << '\n';
+            right1.print(); std::cout << '\n';
+            right2.print(); std::cout << '\n';
+
             LineCorridor leftLine(left1, left2);
             LineCorridor rightLine(right1, right2);
             Corridor corridor(leftLine, rightLine);
 
+//            rightLine.print();
+//            leftLine.print();
+
+//            std::cout << "" << corridor.get_corridor_setpoint()
             // assign destination point
             corrid2dest_transf(corridor);
+
         } else {
             std::cout << "Fatal error: not in a room and not in a corridor" << std::endl;
         }

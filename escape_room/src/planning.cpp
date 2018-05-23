@@ -194,6 +194,8 @@ void Corridor::calculate_setpoint() {
     denominator = pow(a, 2) + pow(b, 2);
     discriminant = sqrt(denominator*pow(c1, 2) - pow(c, 2));
 
+    std::cout << "devision test " << denominator << "\n";
+
     x1 = (-a*c + b*discriminant)/denominator;
     x2 = (-a*c - b*discriminant)/denominator;
 
@@ -209,6 +211,7 @@ void Corridor::calculate_setpoint() {
     else {
         setpoint_ = PointCorridor(x2, y2);
     }
+    std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
 
 };
 
@@ -231,6 +234,11 @@ PointCorridor Corridor::get_corridor_setpoint() {
 
 // trasformation of the corridor representation to Destination format
 void Planning::corrid2dest_transf(Corridor corr){
+
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_y() << "\n"<< "\n";
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_angle() << "\n"<< "\n";
+
     dest.x = corr.get_corridor_setpoint().get_x();
     dest.y = corr.get_corridor_setpoint().get_y();
     dest.angle = corr.get_corridor_setpoint().get_angle();

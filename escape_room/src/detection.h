@@ -3,7 +3,6 @@
 #include <cmath>
 #include <iostream>
 #include "config.h"
-#include "helper.hpp"
 #include <cstdlib>
 #include "main2.hpp"
 
