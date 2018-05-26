@@ -29,8 +29,7 @@ void initialize(Detection_data *data, Destination *dest, Flags *flags){
     // Destination
 
     dest->angle = 0;
-    dest->x = 0;
-    dest->y = 0;
+    dest->dist = 0;
 
 
 
@@ -109,9 +108,9 @@ int main(int argc, char *argv[])
     while(io.ok()) {
         if(detection.get_data(&r)) {
 
-            if (data.exit.detected){
-                flags.in_corridor = true;
-            }
+//            if (data.exit.detected){
+//                flags.in_corridor = true;
+//            }
 
             Detection detection(&r, &io, &flags);
             //should be function to update flags instead
@@ -123,16 +122,17 @@ int main(int argc, char *argv[])
                 cout << "exit detected: false " << endl;
             }
 
-            if (flags.in_corridor){
-                data.exit.detected = false;
-            }
+//            if (flags.in_corridor){
+//                data.exit.detected = false;
+//            }
 
             cout << "exit Point 1 (x,y) " << data.exit.exitPoint_det1.x <<" "<< data.exit.exitPoint_det1.y <<endl;
             cout << "exit Point 2 (x,y) " << data.exit.exitPoint_det2.x <<" "<< data.exit.exitPoint_det2.y <<endl;
 
-            cout << "Furthest point (" << data.furthest_point.x << " " << data.furthest_point.y << ")" <<"\n" << "\n";
+//            cout << "Furthest point (" << data.furthest_point.x << " " << data.furthest_point.y << ")" <<"\n" << "\n";
 
-            cout << "flag in corridor" << flags.in_corridor << "\n";
+            cout << "flag in corridor " << flags.in_corridor << "\n";
+
 
             Planning plan(&data, &flags, &far_point);
             dest = plan.get_Destination();
@@ -141,6 +141,7 @@ int main(int argc, char *argv[])
             cout << "Relative angle " << dest.angle << endl << endl;
 
             pico_drive.picoDrive(&dest, &flags);
+
 
             cout <<"----------------------------" << endl << endl;
         }

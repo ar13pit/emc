@@ -182,9 +182,9 @@ void Corridor::calculate_center_line() {
     y2 = (center_equation[0]*opposite_wall_equation[2] - opposite_wall_equation[0]*center_equation[2])/(opposite_wall_equation[0]*center_equation[1] - center_equation[0]*opposite_wall_equation[1]);
     x2 = (center_equation[2] + center_equation[1]*y2)/(-center_equation[0]);
 
-    std::cout << x2*center_equation[0] + y2*center_equation[1] + center_equation[2] << '\n';
+/*   std::cout << x2*center_equation[0] + y2*center_equation[1] + center_equation[2] << '\n';
     std::cout << x2*opposite_wall_equation[0] + y2*opposite_wall_equation[1] + opposite_wall_equation[2] << '\n';
-
+*/
     center_point2 = PointCorridor(x2, y2);
     center_ = LineCorridor(center_point1, center_point2);
 };
@@ -224,7 +224,7 @@ void Corridor::calculate_setpoint() {
     // else {
     setpoint_ = PointCorridor(x2, 1);
     // }
-    std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
+//    std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
 
 
 
@@ -250,19 +250,25 @@ PointCorridor Corridor::get_corridor_setpoint() {
 // trasformation of the corridor representation to Destination format
 void Planning::corrid2dest_transf(Corridor corr, Detection_data *data){
 
-    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
+/*    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
     std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_y() << "\n"<< "\n";
     std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_angle() << "\n"<< "\n";
-
-    dest.x = corr.get_corridor_setpoint().get_x();
-    dest.y = corr.get_corridor_setpoint().get_y();
-    dest.angle = corr.get_corridor_setpoint().get_angle() - M_PI;
+*/
+    dest.dist = distance_calc(corr.get_corridor_setpoint().get_x(), corr.get_corridor_setpoint().get_y());
+    dest.angle = corr.get_corridor_setpoint().get_angle() - M_PI - TURN_COMPLETE;
 }
 
 
 /*---------------------------------------------------------------------------------
 ---------------------------inside the room-----------------------------------------
 ---------------------------------------------------------------------------------*/
+
+// distance calculation
+double Planning::distance_calc(double x, double y){
+    double dist;
+    dist = sqrt(pow(x,2)+pow(y,2));
+    return dist;
+}
 
 // set furthest point
 void Planning::set_furthest_point(Point_det *point){
@@ -275,16 +281,26 @@ void Planning::set_furthest_point(Point_det *point){
 
 // calculate the destination when exit identified
 void Planning::calc_exit_dest (Detection_data *data){
-    dest.x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
-    dest.y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
+    double x;
+    double y;
+
+    x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
+    y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
     dest.angle = (data->exit.exitPoint_det1.angle + data->exit.exitPoint_det2.angle)/2;
+
+    dest.dist = distance_calc(x, y);
+
+
+    if (dest.dist > DIST_SETPOINT)
+        dest.dist = DIST_SETPOINT;
+
+
 }
 
 
 // calculate the destination when exit in not identified
 void Planning::calc_furthest_dest (Point_det furthest){
-    dest.x = furthest.x/4;
-    dest.y = furthest.y/4;
+    dest.dist = distance_calc(furthest.x/4, furthest.y/4);
     dest.angle = furthest.angle;
 }
 
@@ -298,32 +314,40 @@ void Planning::compare_furthest_point(Point_det *point){
 
 void Planning::turn_around(){
     dest.angle = M_PI;
-    dest.x = 0;
-    dest.y = 0;
+    dest.dist = 0;
 }
 
-
-bool Planning::check_corridor(Detection_data *data){
-    double dist_x;
-    double dist_y;
-    double dist_c;
-
-
-    dist_x = (data->exit.exitPoint_det1.x,2 + data->exit.exitPoint_det2.x,2)/2;
-    dist_y = (data->exit.exitPoint_det1.y,2 + data->exit.exitPoint_det2.y,2)/2;
-
-    dist_c = sqrt(pow(dist_x,2)+pow(dist_y,2));
-
-    std::cout << "distance c " << dist_c << "\n";
-
-    if (dist_c < THRESHOLD_CORRIDOR ){
-        std::cout << "Threshold not active" << "\n"<< "\n";
-        return 1;
+void Planning::exit_center_realign(Detection_data * data){
+    dest.dist = (data->exit.exitPoint_det1.dist - data->exit.exitPoint_det2.dist)/2;
+    if (dest.dist<0) {
+        dest.angle = data->exit.exitPoint_det2.angle;
     } else {
-        std::cout << "Threshold is active" << "\n" << "\n";
-        return 0;
+        dest.angle = data->exit.exitPoint_det1.angle;
     }
 }
+
+
+//bool Planning::check_corridor(Detection_data *data){
+//    double dist_x;
+//    double dist_y;
+//    double dist_c;
+
+
+//    dist_x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
+//    dist_y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
+
+//    dist_c = sqrt(pow(dist_x,2)+pow(dist_y,2));
+
+//    std::cout << "distance c " << dist_c << "\n";
+
+//    if (dist_c < THRESHOLD_CORRIDOR ){
+//        std::cout << "Threshold not active" << "\n"<< "\n";
+//        return 1;
+//    } else {
+//        std::cout << "Threshold is active" << "\n" << "\n";
+//        return 0;
+//    }
+//}
 
 
 
@@ -344,9 +368,8 @@ void Planning::room_logic(Detection_data *data, Flags *flags, Destination *far_p
     Point_det current_furthest = data->furthest_point;
 
     // check if the exit detected
-    if (data->exit.detected) {
+    if (data->exit.detected){
         calc_exit_dest(data);        // define destination
-        std::cout << "Exit points " << data->exit.exitPoint_det1.x << " " << data->exit.exitPoint_det1.y << std::endl;
         flags->drive_frw = true;
     } else {
 
@@ -368,7 +391,7 @@ void Planning::room_logic(Detection_data *data, Flags *flags, Destination *far_p
             absolute_furthest.x = far_point->x;
             absolute_furthest.y = far_point->y;
             absolute_furthest.angle = far_point->angle;
-            absolute_furthest.dist = sqrt(pow(far_point->x,2)+pow(far_point->y,2));
+            absolute_furthest.dist = distance_calc(far_point->x, far_point->y);
 
             compare_furthest_point(&current_furthest);     // check if the first point was further
             calc_furthest_dest(absolute_furthest);             // set the furthest point as a destination

@@ -151,6 +151,7 @@ public:
 typedef struct {
     double x;
     double y;
+    double dist;
     double angle;
 } Destination;
 
@@ -171,6 +172,9 @@ private:
     void calc_furthest_dest (Point_det furthest);
     void compare_furthest_point(Point_det *point);
     void turn_around();
+    void exit_center_realign(Detection_data *data);
+
+    double distance_calc(double x, double y);
 
     bool check_corridor(Detection_data *data);
 
@@ -179,18 +183,7 @@ public:
     Planning(Detection_data *data, Flags *flags, Destination *far_point){
 
 
-        /*if (check_corridor(data)){
-            flags->in_corridor = true;
-        }
-        else{
-            flags->in_corridor = false;
-        }*/
-
-
-        if (!flags->in_corridor) {
-            room_logic(data, flags, far_point);
-        }
-        else if (flags->in_corridor){
+        if (flags->in_corridor){
             std::cout << "Corridor detected" << "\n";
 
             PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
@@ -218,9 +211,32 @@ public:
             corrid2dest_transf(corridor,data);
             flags->drive_frw = true;
 
-        } else {
-            std::cout << "Fatal error: not in a room and not in a corridor" << std::endl;
         }
+
+
+
+        std::cout << "Exit is " << data->exit.exitPoint_det1.dist << " " << data->exit.exitPoint_det2.dist << " away"<< "\n";
+
+        if ((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) || (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD)){
+
+            if ((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) && (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD)){
+
+                flags->in_corridor = true;
+                std::cout << "corridor detected " << "\n";
+
+            } else {
+
+                exit_center_realign(data);
+                std::cout << "realigning with the corridor" << "\n";
+                flags->drive_frw = true;
+                flags->in_corridor = true;
+            }
+
+        } else {
+            room_logic(data, flags, far_point);
+        }
+
+
 
     }
 
