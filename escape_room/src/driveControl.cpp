@@ -15,9 +15,6 @@ void DriveControl::picoDrive(Destination *dest, Flags *flags){
     ref_dist = sqrt(pow(dest->x,2)+pow(dest->y,2));
 //    ref_dist = 1.0 + sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
 
-
-
-
     r.sleep();
     inOut->readOdometryData(odomRef);
     r.sleep();
@@ -49,27 +46,19 @@ void DriveControl::picoDrive(Destination *dest, Flags *flags){
         turn_ref(ref_angle, odomCur, angle, &r);
         travel_dist(ref_dist, odomCur,&r);
         flags->drive_frw = false;
-        //        picoSideDrive(angle);
     }
     return;
 }
 
 void DriveControl::turn_ref(double ref_angle, emc::OdometryData odomCur, double angle, emc::Rate *r){
     std::cout << "turning" << std::endl;
-
-    angle < 0 ? picoTurnLeft() : picoTurnRight();
-
     while(abs(ref_angle - odomCur.a) > TURN_COMPLETE)
     {
+        angle < 0 ? picoTurnLeft() : picoTurnRight();
         r->sleep();
         inOut->readOdometryData(odomCur);
-//        std::cout << "ref Angle " << ref_angle << std::endl;
-//        std::cout << "odometry angle " << odomCur.a << std::endl;
 
     }
-    std::cout << "stopped turning" << std::endl;
-    stop();
-
 }
 
 
@@ -77,8 +66,9 @@ void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::
 
     double meas_dist;
     meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
-    picoForward();
     while(abs(ref_dist - meas_dist) > FRW_COMPLETE){
+        std::cout << "Dist to dest = " << abs(ref_dist - meas_dist) << endl;
+        picoForward();
         r->sleep();
         inOut->readOdometryData(odomCur);
 
@@ -91,22 +81,26 @@ void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::
 
 void DriveControl::picoTurnRight() {
     inOut->sendBaseReference(0.0, 0.0, ROTATE_SPEED);
+//    std::cout << "Turn Right" << endl;
     return;
 }
 
 void DriveControl::picoTurnLeft() {
     inOut->sendBaseReference(0.0, 0.0, -ROTATE_SPEED);
+//    std::cout << "Turn Left" << endl;
     return;
 }
 
 void DriveControl::picoForward() {
     inOut->sendBaseReference(FORWARD_SPEED, 0.0, 0.0);
+//    std::cout << "Drive Forward" << endl;
 }
 
 void DriveControl::picoSideDrive(double angle) {
     double x = FORWARD_SPEED*cos(angle);
     double y = -1*FORWARD_SPEED*cos(0.5*M_PI-angle);
     inOut->sendBaseReference(x, y, 0.0);
+//    std::cout << "Drive Sideways" << endl;
 }
 
 void DriveControl::stop() {
