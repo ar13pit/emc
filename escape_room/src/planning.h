@@ -217,7 +217,7 @@ public:
 
         std::cout << "Exit is " << data->exit.exitPoint_det1.dist << " " << data->exit.exitPoint_det2.dist << " away"<< "\n";
 
-        if ((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) || (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD)){
+        if (!flags->in_corridor &&((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) || (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD))){
 
             if ((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) && (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD)){
 

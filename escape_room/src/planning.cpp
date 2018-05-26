@@ -224,7 +224,9 @@ void Corridor::calculate_setpoint() {
     // else {
     setpoint_ = PointCorridor(x2, 1);
     // }
-//    std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
+
+    std::cout << "Angle 1 = " << setpoint_.get_angle() << std::endl;
+    std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
 
 
 
@@ -281,6 +283,7 @@ void Planning::set_furthest_point(Point_det *point){
 
 // calculate the destination when exit identified
 void Planning::calc_exit_dest (Detection_data *data){
+
     double x;
     double y;
 
@@ -300,6 +303,7 @@ void Planning::calc_exit_dest (Detection_data *data){
 
 // calculate the destination when exit in not identified
 void Planning::calc_furthest_dest (Point_det furthest){
+
     dest.dist = distance_calc(furthest.x/4, furthest.y/4);
     dest.angle = furthest.angle;
 }
@@ -352,7 +356,6 @@ void Planning::exit_center_realign(Detection_data * data){
 
 
 void Planning::room_logic(Detection_data *data, Flags *flags, Destination *far_point){
-
     if (flags->in_corridor == true){
         std::cout << "In corridor = true" <<std::endl;
     } else {
