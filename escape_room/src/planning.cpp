@@ -8,8 +8,8 @@
 -------------------------------------------------------------------------------
 */
 
-void PointCorridor::calculate_angle() {
-    angle_ = ((M_PI/2) - atan(y_/x_));
+void PointCorridor::calculate_xangle() {
+    angle_ = atan(y_/x_);
 };
 
 void PointCorridor::calculate_radius() {
@@ -24,7 +24,7 @@ double PointCorridor::get_y() {
     return y_;
 };
 
-double PointCorridor::get_angle() {
+double PointCorridor::get_xangle() {
     return angle_;
 };
 
@@ -143,7 +143,7 @@ void Corridor::calculate_center_line() {
 
     y2 = left_.get_line_point2().get_y();
     right_.get_line_equation(opposite_wall_equation);
-    right_.print();
+    // right_.print();
 
     if (y1 > y2) {
         center_point1 = left_.get_line_point1();
@@ -157,7 +157,7 @@ void Corridor::calculate_center_line() {
     y1 = right_.get_line_point1().get_y();
     y2 = right_.get_line_point2().get_y();
     left_.get_line_equation(opposite_wall_equation_temp);
-    left_.print();
+    // left_.print();
 
     if (y1 > y2) {
         temp = right_.get_line_point1();
@@ -177,7 +177,7 @@ void Corridor::calculate_center_line() {
         }
     }
 
-    center_point1.print(); std::cout << '\n';
+    // center_point1.print(); std::cout << '\n';
 
     y2 = (center_equation[0]*opposite_wall_equation[2] - opposite_wall_equation[0]*center_equation[2])/(opposite_wall_equation[0]*center_equation[1] - center_equation[0]*opposite_wall_equation[1]);
     x2 = (center_equation[2] + center_equation[1]*y2)/(-center_equation[0]);
@@ -225,8 +225,7 @@ void Corridor::calculate_setpoint() {
     setpoint_ = PointCorridor(x2, 1);
     // }
 
-    std::cout << "Angle 1 = " << setpoint_.get_angle() << std::endl;
-    std::cout << "setpoint 1 (" << setpoint_.get_x() << " " << setpoint_.get_y() << ")"<<"\n";
+    std::cout << "Corridor Setpoint (" << setpoint_.get_x() << " " << setpoint_.get_y() << ") X-Angle: "<< setpoint_.get_xangle() << "\n";
 
 
 
@@ -251,13 +250,29 @@ PointCorridor Corridor::get_corridor_setpoint() {
 
 // trasformation of the corridor representation to Destination format
 void Planning::corrid2dest_transf(Corridor corr, Detection_data *data){
-
+    double temp_angle;
 /*    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
     std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_y() << "\n"<< "\n";
     std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_angle() << "\n"<< "\n";
 */
     dest.dist = distance_calc(corr.get_corridor_setpoint().get_x(), corr.get_corridor_setpoint().get_y());
-    dest.angle = corr.get_corridor_setpoint().get_angle() - M_PI - TURN_COMPLETE;
+    temp_angle = corr.get_corridor_setpoint().get_xangle();
+    if (temp_angle < 0) {
+        // std::cout << "Corridor X-Angle test absolute value: " << -temp_angle << '\n';
+        dest.angle = -(M_PI/2) - temp_angle;
+        // std::cout << "Calculation Test: " << -(M_PI/2) - temp_angle << '\n';
+        std::cout << "Destination Angle to turn: " << dest.angle << '\n';
+
+    }
+    else {
+        // std::cout << "Corridor X-Angle test absolute value: " << temp_angle << '\n';
+        dest.angle = (M_PI/2) - temp_angle;
+        // std::cout << "Calculation Test: " << (M_PI/2) - temp_angle << '\n';
+        std::cout << "Destination Angle to turn: " << dest.angle << '\n';
+
+    }
+
+    // dest.angle = corr.get_corridor_setpoint().get_xangle() - M_PI - TURN_COMPLETE;
 }
 
 

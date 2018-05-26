@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <config.h>
-#include <math.h>
+// #include <math.h>
 #include "detection.h"
 #include "main2.hpp"
 
@@ -28,7 +28,7 @@ class PointCorridor {
 
     double x_, y_, angle_, radius_;
 
-    void calculate_angle();
+    void calculate_xangle();
     void calculate_radius();
 
 public:
@@ -42,13 +42,13 @@ public:
     PointCorridor(double x, double y){
         x_ = x;
         y_ = y;
-        calculate_angle();
+        calculate_xangle();
         calculate_radius();
     };
 
     double get_x();
     double get_y();
-    double get_angle();
+    double get_xangle();
     double get_radius();
     void print();
     // void offset(Point offsetPoint);

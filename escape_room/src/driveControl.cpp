@@ -60,7 +60,7 @@ void DriveControl::picoDrive(Destination *dest, Flags *flags){
 }
 
 void DriveControl::turn_ref(double ref_angle, emc::OdometryData odomCur, double angle, emc::Rate *r){
-    std::cout << "turning" << std::endl;
+    std::cout << "Turning" << std::endl;
     while(abs(ref_angle - odomCur.a) > TURN_COMPLETE)
     {
         angle < 0 ? picoTurnLeft() : picoTurnRight();
@@ -68,6 +68,9 @@ void DriveControl::turn_ref(double ref_angle, emc::OdometryData odomCur, double 
         inOut->readOdometryData(odomCur);
 
     }
+    stop();
+    std::cout << "Turning Complete" << std::endl;
+
 }
 
 
@@ -84,7 +87,7 @@ void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::
         meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
     }
     std::cout << "Measured odometry " <<  meas_dist << std::endl;
-    //    stop();
+    stop();
     std::cout << "stopped driving forward" << std::endl;
 }
 
