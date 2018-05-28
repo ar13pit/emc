@@ -401,11 +401,12 @@ void Planning::room_logic(Detection_data *data, Flags *flags, Destination *far_p
 
             calc_furthest_dest (absolute_furthest);
             far_point = &dest;
-            far_point->angle = far_point->angle + M_PI;
+            far_point->angle = M_PI;//far_point->angle + M_PI;
 
-
+            std::cout << "Turn to " << far_point->angle << std::endl;
             std::cout << "Turn around" <<std::endl;
         } else {
+            std::cout << "Furthest point " << std::endl;
             absolute_furthest.x = far_point->x;
             absolute_furthest.y = far_point->y;
             absolute_furthest.angle = far_point->angle;

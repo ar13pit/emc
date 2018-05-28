@@ -7,6 +7,7 @@
  * */
 
 bool Detection::get_data(emc::Rate *r){
+    r->sleep();
     while(inOut->ok()){
         if (inOut->readLaserData(laser_)){
             std::cout << "reading laser"<< std::endl << std::endl;
@@ -17,7 +18,6 @@ bool Detection::get_data(emc::Rate *r){
         else{
             std::cout << "failed to get data" << std::endl;
         }
-        r->sleep();
     }
     return true;
 }
