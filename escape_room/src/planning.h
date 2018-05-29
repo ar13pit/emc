@@ -237,7 +237,9 @@ public:
         }
 
 
-
+        if (fabs(dest.angle) >= M_PI+TURN_MARGIN){
+            dest.angle = (fabs(dest.angle) - M_PI)*(-1);
+        }
     }
 
 
