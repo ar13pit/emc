@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(visualiser3)
+project(escape_room)
 
 # Include all header files
 include_directories(include)
@@ -9,19 +9,17 @@ set(SOURCES
  src/detection.cpp
  src/driveControl.cpp
  src/main2.cpp
- src/planning.cpp
- src/visualize.cpp)
+ src/planning.cpp)
+# src/myperception.cpp)
 # src/initialization.cpp)
 
-find_package(OpenCV REQUIRED)
-
 # Create executable named "testPlanning"
-add_executable(visualiser3 ${SOURCES})
+add_executable(escape_room ${SOURCES})
+add_executable(myperception src/myperception.cpp)
 
 # Link libraries
-target_link_libraries(visualiser3 emc-framework)
-target_link_libraries(visualiser3 ${OpenCV_LIBS})
+target_link_libraries(escape_room emc-framework)
+target_link_libraries(myperception ${OpenCV_LIBS})
 
 # Create the executable in directory "/bin"
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-
