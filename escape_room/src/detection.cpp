@@ -6,17 +6,21 @@
  *-------------------------------------------------------------------------------
  * */
 
+bool Detection::get_data(emc::Rate *r){
+    r->sleep();
+    while(inOut->ok()){
+        if (inOut->readLaserData(laser_)){
+            std::cout << "reading laser"<< std::endl << std::endl;
 
-bool Detection::getSensorData() {
-    if(inOut->readLaserData(laser_)) {
-        return true;
-    } else {
-        return false;
+//            std::cout << "c = " << c << std::endl;
+            break;
+        }
+        else{
+            std::cout << "failed to get data" << std::endl;
+        }
     }
+    return true;
 }
-
-
-
 
 
 
@@ -39,22 +43,33 @@ void Detection::saveLRFScan() {
     int nFilterPoint_dets = 15;
     double a = (15*laser_.angle_increment) + laser_.angle_min;
 
+    double random;
+
+
+
+//    std::cout << "LatestLaserScan " << inOut->ok() << std::endl;
+//   std::cout << "A value from laser_" << laser_.ranges[100] <<std::endl;
+
+
     for(unsigned int i = nFilterPoint_dets; i < laser_.ranges.size()-nFilterPoint_dets; ++i)
     {
-        if(laser_.ranges[i]>0.001){
+        if(laser_.ranges[i]>0.01){
             LatestLaserScan[i-nFilterPoint_dets].dist = laser_.ranges[i];
             LatestLaserScan[i-nFilterPoint_dets].angle = -a;
             LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * laser_.ranges[i];
             LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * laser_.ranges[i];
         }
         else{ // 30 meters if range is below threshold
-            LatestLaserScan[i-nFilterPoint_dets].dist = 30;
+            random = rand() % 10 + 20;
+            LatestLaserScan[i-nFilterPoint_dets].dist = random;
             LatestLaserScan[i-nFilterPoint_dets].angle = -a;
-            LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * 30;
-            LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * 30;
+            LatestLaserScan[i-nFilterPoint_dets].x = sin(-a) * random;
+            LatestLaserScan[i-nFilterPoint_dets].y = cos(-a) * random;
         }
 
         a += laser_.angle_increment;
+
+
     }
 
 }
@@ -66,6 +81,7 @@ void Detection::saveLRFScan() {
 
 //Find 2 lines of the walls in the corridor
 void Detection::findCorridorWalls() {
+
     bool detectedRight = false;
     bool detectedLeft = false;
     Point_det right1;
@@ -129,29 +145,29 @@ void Detection::findCorridorWalls() {
 
 
 
-void Detection::findExit() {
+bool Detection::findExit() {
 
     double detectLargerThresh = 1.05;
     double detectSmallerThresh = 0.95;
-    int nPoint_detsThresh = 4;                                                      // Amount of Point_dets larger of smaller than expected before action is being undertaken
-    int nPoint_detsSearch = 80;
+    int nPointsThresh = 5; //Amount of points larger of smaller than expected before action is being undertaken
+    int nPointsSearch = 30;
 
     int iExit1 = 0;
     int iExit2 = 0;
 
     double aFit; double bFit;
 
-    for (unsigned int i = 0; i < (1000 - 2*15 - nPoint_detsSearch); i = i+10){
-        if(lineFit(aFit, bFit, i, i+nPoint_detsSearch)){                            // Line found, next: search for deviation in positive direction
-            int nLarger = 0;                                                        // Amount of Point_dets larger than a certain treshold, compared with linefit data
-            int nSmaller = 0;                                                       // Amount of Point_dets smaller than a certain treshold, compared with linefit data
-            for (int j = i+nPoint_detsSearch; j < 1000 - 2*15 - nPoint_detsSearch; ++j){
-                double xLine, yLine, distLine;
-                if(aFit < -1 || aFit > 1){                                          // Evaluate x-coordinates for given y
+    for (unsigned int i = 0; i < (1000 - 2*15 - nPointsSearch); i = i+10){
+        if(lineFit(aFit, bFit, i, i+nPointsSearch)){ //Line found, next: search for deviation in positive direction
+            int nLarger = 0; //Amount of points larger than a certain treshold, compared with linefit data
+            int nSmaller = 0; //Amount of points smaller than a certain treshold, compared with linefit data
+            for (int j = i+nPointsSearch; j < 1000 - 2*15 - nPointsSearch; ++j){
+                double xLine; double yLine; double distLine;
+                if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
                     yLine = LatestLaserScan[j].y;
                     xLine = (yLine - bFit)/aFit;
                 }
-                else{                                                               // Evaluate y-coordinates for given x
+                else{ // Evaluate y-coordinates for given x
                     xLine = LatestLaserScan[j].x;
                     yLine = aFit*xLine + bFit;
 
@@ -170,33 +186,34 @@ void Detection::findExit() {
                     nLarger = 0; nSmaller = 0;
                 }
 
-                if(nSmaller > nPoint_detsThresh){                                   // Corner detected
+                if(nSmaller > nPointsThresh){ // Corner detected
                     i = j - 10;
-                    j = 1000;                                                       // Break out
+                    j = 1000; // Break out
                 }
-                if (nLarger > nPoint_detsThresh){                                   // Exit detected
-//                    std::cout << "ExitPoint_det 1 detected!";
+                if (nLarger > nPointsThresh){ // Exit detected
+//                    std::cout << "Exitpoint 1 detected!" << std::endl;
                     iExit1 = j - 7;
 
-                    // Start searching for the second Point_det of the exit
+                    //Start searching for the second point of the exit
                     int nEqual = 0;
 
-                    for (int k = j; k < 1000 - 2*15 - nPoint_detsSearch; ++k){
+                    for (int k = j; k < 1000 - 2*15 - nPointsSearch; ++k){
 
                         double xLine; double yLine; double distLine;
-                        if(aFit < -1 || aFit > 1){                                  // Evaluate x-coordinates for given y
+                        if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
                             yLine = LatestLaserScan[k].y;
                             xLine = (yLine - bFit)/aFit;
                         }
-                        else{                                                       // Evaluate y-coordinates for given x
+                        else{ // Evaluate y-coordinates for given x
                             xLine = LatestLaserScan[k].x;
                             yLine = aFit*xLine + bFit;
 
                         }
                         distLine = sqrt(pow(xLine,2) + pow(yLine,2));
 
-                        if (distLine * detectLargerThresh > LatestLaserScan[k].dist && distLine * detectSmallerThresh < LatestLaserScan[k].dist){
+                        if (distLine*detectLargerThresh > LatestLaserScan[k].dist && distLine*detectSmallerThresh < LatestLaserScan[k].dist){
                             nEqual = nEqual + 1;
+                    //        std::cout << "ExitPoint "<<nEqual << std::endl;
                         }
                         else{
                             nEqual = 0;
@@ -207,6 +224,9 @@ void Detection::findExit() {
                             data_.exit.exitPoint_det1 = LatestLaserScan[iExit1];
                             data_.exit.exitPoint_det2 = LatestLaserScan[iExit2];
                             data_.exit.detected = true;
+                            //std::cout << "method jari "<<data_.exit.detected << std::endl;
+                            return true;
+
                         }
                     }
 
@@ -219,8 +239,8 @@ void Detection::findExit() {
     data_.exit.exitPoint_det1 = LatestLaserScan[0];
     data_.exit.exitPoint_det2 = LatestLaserScan[0];
     data_.exit.detected = false;
-    //return exit;
-
+    return false;
+    //std::cout << "method jari "<<data_.exit.detected << std::endl;
 }
 
 
@@ -287,6 +307,7 @@ bool Detection::lineFit(double &aFit, double &bFit, int firstPoint_det, int last
 
 
 void Detection::findFurthestPoint_det() {
+
     int imax = 0;
     double max = 0;
     for(int i = 0; i < 1000-2*15; ++i){

@@ -6,7 +6,7 @@
 
 
 #include "driveControl.cpp"
-#include "detection.cpp"
+#include "detection.h"
 #include "worldModel.cpp"
 
 #include "config.h"
@@ -30,13 +30,11 @@ int main(int argc, char *argv[])
     WorldModel worldModel;
     Exit exit;
 
-
-
     while(io.ok()) {
         //pico_drive.driveForward(1.0);
         if(detection.getSensorData()) {
 
-            detection.saveLRFScan(&detection.laser);
+            detection.saveLRFScan();
             int index = 0;
 
             exit = detection.findExit();

@@ -1,8 +1,10 @@
 #include <emc/io.h>
+#include <emc/rate.h>
 #include <cmath>
 #include <iostream>
 #include "config.h"
-#include "main.hpp"
+#include <cstdlib>
+#include "main2.hpp"
 
 #ifndef detection_H
 #define detection_H
@@ -49,6 +51,7 @@ private:
     emc::LaserData laser_;
     Detection_data data_;
     Point_det LatestLaserScan[1000-2*15]; //Deleted first and last 15 Point_dets
+    bool read;
 
     void filterLRFData(int nFilterPoint_dets); // Filter data by sensor measurement
     void saveLRFScan();
@@ -56,26 +59,34 @@ private:
 
     void findCorridorWalls();
     void findFurthestPoint_det();
-    void findExit();
+    bool findExit();
 
 public:
-    Detection(emc::IO *io, Flags *flags) {
+    Detection(emc::Rate *r, emc::IO *io, Flags *flags) {
         inOut = io;
+
+//        std::cout << "read Laser Data "<< temp << std::endl;
+
+        read = get_data(r);
+        saveLRFScan();
 
         if (flags->in_corridor){
             //CorridorWalls cor;
             //data->corridor = Detection::findCorridorWalls();
+
             findCorridorWalls();
         } else {
             //Exit *ex;
             //Point_det far;
+
             findExit();
             findFurthestPoint_det();
-        }
 
+//            std::cout << "Exit detected in the Detection class "<< data_.exit.detected << std::endl << std::endl;
+        }
     };
 
-    bool getSensorData(); // Method to obtain the sensordata
+    bool get_data(emc::Rate *r); // Method to obtain the sensordata
     Detection_data get_Detection_data();
 
 

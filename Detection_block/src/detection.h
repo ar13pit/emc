@@ -2,6 +2,8 @@
 #define detection_H
 
 #include <emc/io.h>
+#include <cmath>
+#include <iostream>
 
 // Point data
 typedef struct {
@@ -40,12 +42,12 @@ public:
         return;
     }
 
-    Point LatestLaserScan[1000-2*15]; //Deleted first and last 15 points
+    Point LatestLaserScan[1200]; //Deleted first and last 15 points
     emc::LaserData laser;
     CorridorWalls findCorridorWalls();
     bool getSensorData(); // Method to obtain the sensordata
-    void filterLRFData(emc::LaserData* laser,int nFilterPoints); // Filter data by sensor measurement
-    void saveLRFScan(emc::LaserData* laser);
+    void filterLRFData(int nFilterPoints); // Filter data by sensor measurement
+    void saveLRFScan();
     bool lineFit(double&, double&, int, int);
     Point findFurthestPoint();
     Exit findExit();

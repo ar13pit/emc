@@ -8,8 +8,8 @@
 -------------------------------------------------------------------------------
 */
 
-void PointCorridor::calculate_angle() {
-    angle_ = ((M_PI/2) - atan(y_/x_));
+void PointCorridor::calculate_xangle() {
+    angle_ = atan(y_/x_);
 };
 
 void PointCorridor::calculate_radius() {
@@ -24,7 +24,7 @@ double PointCorridor::get_y() {
     return y_;
 };
 
-double PointCorridor::get_angle() {
+double PointCorridor::get_xangle() {
     return angle_;
 };
 
@@ -140,8 +140,10 @@ void Corridor::calculate_center_line() {
     // double *center_equation, *center_equation_temp, *opposite_wall_equation, *opposite_wall_equation_temp;
 
     y1 = left_.get_line_point1().get_y();
+
     y2 = left_.get_line_point2().get_y();
     right_.get_line_equation(opposite_wall_equation);
+    // right_.print();
 
     if (y1 > y2) {
         center_point1 = left_.get_line_point1();
@@ -155,6 +157,7 @@ void Corridor::calculate_center_line() {
     y1 = right_.get_line_point1().get_y();
     y2 = right_.get_line_point2().get_y();
     left_.get_line_equation(opposite_wall_equation_temp);
+    // left_.print();
 
     if (y1 > y2) {
         temp = right_.get_line_point1();
@@ -170,45 +173,61 @@ void Corridor::calculate_center_line() {
         for (int i = 0; i < 3; ++i) {
             center_equation[i] = center_equation_temp[i];
             opposite_wall_equation[i] = opposite_wall_equation_temp[i];
+            // std::cout << "/* message */" << '\n';
         }
     }
+
+    // center_point1.print(); std::cout << '\n';
 
     y2 = (center_equation[0]*opposite_wall_equation[2] - opposite_wall_equation[0]*center_equation[2])/(opposite_wall_equation[0]*center_equation[1] - center_equation[0]*opposite_wall_equation[1]);
     x2 = (center_equation[2] + center_equation[1]*y2)/(-center_equation[0]);
 
+/*   std::cout << x2*center_equation[0] + y2*center_equation[1] + center_equation[2] << '\n';
+    std::cout << x2*opposite_wall_equation[0] + y2*opposite_wall_equation[1] + opposite_wall_equation[2] << '\n';
+*/
     center_point2 = PointCorridor(x2, y2);
     center_ = LineCorridor(center_point1, center_point2);
 };
 
 void Corridor::calculate_setpoint() {
-    double x1, x2, y1, y2, a, b, c, c1, discriminant, denominator, setpoint_line_equation[3], center_line_equation[3], val1, val2;
+    // double x1, x2, y1, y2, a, b, c, c1, discriminant, denominator, setpoint_line_equation[3], center_line_equation[3], val1, val2;
+    double x2, y2, a, b, c, setpoint_line_equation[3];
 
     center_.get_line_perpendicular_midpoint(setpoint_line_equation);
-    center_.get_line_perpendicular_midpoint(center_line_equation);
+    // center_.get_line_perpendicular_midpoint(center_line_equation);
 
-    c1 = SETPOINT_CORRIDOR;
+    // c1 = SETPOINT_CORRIDOR;
     a = setpoint_line_equation[0];
     b = setpoint_line_equation[1];
     c = setpoint_line_equation[2];
 
-    denominator = pow(a, 2) + pow(b, 2);
-    discriminant = sqrt(denominator*pow(c1, 2) - pow(c, 2));
+    x2 = (b + c)/-a;
 
-    x1 = (-a*c + b*discriminant)/denominator;
-    x2 = (-a*c - b*discriminant)/denominator;
+    //
+    // denominator = pow(a, 2) + pow(b, 2);
+    // discriminant = sqrt(denominator*pow(c1, 2) - pow(c, 2));
+    //
+    // std::cout << "devision test " << denominator << "\n";
+    //
+    // x1 = (-a*c + b*discriminant)/denominator;
+    // x2 = (-a*c - b*discriminant)/denominator;
+    //
+    // y1 = sqrt(pow(c1, 2) - pow(x1, 2));
+    // y2 = sqrt(pow(c1, 2) - pow(x2, 2));
+    //
+    // val1 = center_line_equation[0]*x1 + center_line_equation[1]*y1 + center_line_equation[2];
+    // val2 = center_line_equation[0]*x2 + center_line_equation[1]*y2 + center_line_equation[2];
+    //
+    // if (val1 > 0) {
+    //     setpoint_ = PointCorridor(x1, y1);
+    // }
+    // else {
+    setpoint_ = PointCorridor(x2, 1);
+    // }
 
-    y1 = sqrt(pow(c1, 2) - pow(x1, 2));
-    y2 = sqrt(pow(c1, 2) - pow(x2, 2));
+    std::cout << "Corridor Setpoint (" << setpoint_.get_x() << " " << setpoint_.get_y() << ") X-Angle: "<< setpoint_.get_xangle() << "\n";
 
-    val1 = center_line_equation[0]*x1 + center_line_equation[1]*y1 + center_line_equation[2];
-    val2 = center_line_equation[0]*x2 + center_line_equation[1]*y2 + center_line_equation[2];
 
-    if (val1 > 0) {
-        setpoint_ = PointCorridor(x1, y1);
-    }
-    else {
-        setpoint_ = PointCorridor(x2, y2);
-    }
 
 };
 
@@ -230,10 +249,30 @@ PointCorridor Corridor::get_corridor_setpoint() {
 
 
 // trasformation of the corridor representation to Destination format
-void Planning::corrid2dest_transf(Corridor corr){
-    dest.x = corr.get_corridor_setpoint().get_x();
-    dest.y = corr.get_corridor_setpoint().get_y();
-    dest.angle = corr.get_corridor_setpoint().get_angle();
+void Planning::corrid2dest_transf(Corridor corr, Detection_data *data){
+    double temp_angle;
+/*    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_y() << "\n"<< "\n";
+    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_angle() << "\n"<< "\n";
+*/
+    dest.dist = distance_calc(corr.get_corridor_setpoint().get_x(), corr.get_corridor_setpoint().get_y());
+    temp_angle = corr.get_corridor_setpoint().get_xangle();
+    if (temp_angle < 0) {
+        // std::cout << "Corridor X-Angle test absolute value: " << -temp_angle << '\n';
+        dest.angle = -(M_PI/2) - temp_angle;
+        // std::cout << "Calculation Test: " << -(M_PI/2) - temp_angle << '\n';
+        std::cout << "Destination Angle to turn: " << dest.angle << '\n';
+
+    }
+    else {
+        // std::cout << "Corridor X-Angle test absolute value: " << temp_angle << '\n';
+        dest.angle = (M_PI/2) - temp_angle;
+        // std::cout << "Calculation Test: " << (M_PI/2) - temp_angle << '\n';
+        std::cout << "Destination Angle to turn: " << dest.angle << '\n';
+
+    }
+
+    // dest.angle = corr.get_corridor_setpoint().get_xangle() - M_PI - TURN_COMPLETE;
 }
 
 
@@ -241,28 +280,50 @@ void Planning::corrid2dest_transf(Corridor corr){
 ---------------------------inside the room-----------------------------------------
 ---------------------------------------------------------------------------------*/
 
+// distance calculation
+double Planning::distance_calc(double x, double y){
+    double dist;
+    dist = sqrt(pow(x,2)+pow(y,2));
+    return dist;
+}
+
 // set furthest point
 void Planning::set_furthest_point(Point_det *point){
     absolute_furthest.dist = point->dist;
     absolute_furthest.x = point->x;
     absolute_furthest.y = point->y;
-    absolute_furthest.angle = point->angle + M_PI; // add pi because we assume turn at next instant
+    absolute_furthest.angle = point->angle; // add pi because we assume turn at next instant
 }
 
 
 // calculate the destination when exit identified
 void Planning::calc_exit_dest (Detection_data *data){
-    dest.x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
-    dest.y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
+
+    double x;
+    double y;
+
+    x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
+    y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
     dest.angle = (data->exit.exitPoint_det1.angle + data->exit.exitPoint_det2.angle)/2;
+
+    dest.dist = distance_calc(x, y);
+
+
+    if (dest.dist > DIST_SETPOINT)
+        dest.dist = DIST_SETPOINT;
+
+
 }
 
 
 // calculate the destination when exit in not identified
 void Planning::calc_furthest_dest (Point_det furthest){
-    dest.x = furthest.x/4;
-    dest.y = furthest.y/4;
+
+    dest.dist = distance_calc(furthest.x/4, furthest.y/4);
     dest.angle = furthest.angle;
+    if (dest.dist > DIST_SETPOINT) {
+        dest.dist = DIST_SETPOINT;
+    }
 }
 
 
@@ -275,15 +336,44 @@ void Planning::compare_furthest_point(Point_det *point){
 
 void Planning::turn_around(){
     dest.angle = M_PI;
-    dest.x = 0;
-    dest.y = 0;
+    dest.dist = 0;
+}
+
+void Planning::exit_center_realign(Detection_data * data){
+    dest.dist = (data->exit.exitPoint_det1.dist - data->exit.exitPoint_det2.dist)/2;
+    if (dest.dist<0) {
+        dest.angle = data->exit.exitPoint_det2.angle;
+    } else {
+        dest.angle = data->exit.exitPoint_det1.angle;
+    }
 }
 
 
+//bool Planning::check_corridor(Detection_data *data){
+//    double dist_x;
+//    double dist_y;
+//    double dist_c;
 
 
-void Planning::room_logic(Detection_data *data, Flags *flags){
+//    dist_x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
+//    dist_y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
 
+//    dist_c = sqrt(pow(dist_x,2)+pow(dist_y,2));
+
+//    std::cout << "distance c " << dist_c << "\n";
+
+//    if (dist_c < THRESHOLD_CORRIDOR ){
+//        std::cout << "Threshold not active" << "\n"<< "\n";
+//        return 1;
+//    } else {
+//        std::cout << "Threshold is active" << "\n" << "\n";
+//        return 0;
+//    }
+//}
+
+
+
+void Planning::room_logic(Detection_data *data, Flags *flags, Destination *far_point){
     if (flags->in_corridor == true){
         std::cout << "In corridor = true" <<std::endl;
     } else {
@@ -299,10 +389,9 @@ void Planning::room_logic(Detection_data *data, Flags *flags){
     Point_det current_furthest = data->furthest_point;
 
     // check if the exit detected
-    if (data->exit.detected) {
+    if (data->exit.detected){
         calc_exit_dest(data);        // define destination
-        std::cout << "Exit points " << data->exit.exitPoint_det1.x << " " << data->exit.exitPoint_det1.y << std::endl;
-
+        flags->drive_frw = true;
     } else {
 
         // check if we have turned around already
@@ -310,20 +399,34 @@ void Planning::room_logic(Detection_data *data, Flags *flags){
             flags->turned_once = true;        // remember that we've turned around
             set_furthest_point(&current_furthest);     // save the furthest point given info from perception
             turn_around();
+            flags->turn = true;
+            flags->drive_frw = false;
 
+            calc_furthest_dest (absolute_furthest);
+            far_point = &dest;
+            far_point->angle = M_PI;//far_point->angle + M_PI;
+
+            std::cout << "Turn to " << far_point->angle << std::endl;
             std::cout << "Turn around" <<std::endl;
         } else {
+            std::cout << "Furthest point " << std::endl;
+            absolute_furthest.x = far_point->x;
+            absolute_furthest.y = far_point->y;
+            absolute_furthest.angle = far_point->angle;
+            absolute_furthest.dist = distance_calc(far_point->x, far_point->y);
+
             compare_furthest_point(&current_furthest);     // check if the first point was further
             calc_furthest_dest(absolute_furthest);             // set the furthest point as a destination
-
+            flags->turned_once = false;
+            flags->drive_frw = true;
         }
     }
 
-    if (dest.angle>M_PI){
+/*    if (dest.angle>M_PI){
         dest.angle = M_PI;
         std::cout << "Reference angle is too large" << std::endl;
     }
-
+*/
 }
 
 

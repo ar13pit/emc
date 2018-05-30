@@ -3,6 +3,7 @@
 #include <emc/odom.h>
 #include <cmath>
 #include <iostream>
+#include <cstdlib>
 
 
 #include "driveControl.h"
@@ -10,25 +11,25 @@
 #include "worldModel.h"
 #include "planning.h"
 #include "config.h"
-
 using namespace std;
+
 
 void initialize(Detection_data *data, Destination *dest, Flags *flags){
 
     // Flags
 
     flags->in_corridor = false;
-    flags->in_process = false;
+    flags->turn = false;
     flags->turned_once = false;
     flags->escaped = false;
+    flags->drive_frw = false;
 
 
 
     // Destination
 
     dest->angle = 0;
-    dest->x = 0;
-    dest->y = 0;
+    dest->dist = 0;
 
 
 
@@ -85,13 +86,14 @@ void initialize(Detection_data *data, Destination *dest, Flags *flags){
 int main(int argc, char *argv[])
 {
     // Initialization of Robot
-    emc::Rate r(1); //EXECUTION_RATE
+    emc::Rate r(2); //EXECUTION_RATE
     emc::IO io;
-    emc::OdometryData odom;
+    //    emc::OdometryData odom;
 
     // Transition values
     Detection_data data;
     Destination dest;
+    Destination far_point;
     Flags flags;
     initialize(&data, &dest, &flags);
 
@@ -99,38 +101,57 @@ int main(int argc, char *argv[])
 
     // Initialize the Classes
     DriveControl pico_drive(&io);
-    Detection detection(&io, &flags);
+    Detection detection(&r, &io, &flags);
 
 
 
     while(io.ok()) {
-        if(detection.getSensorData()) {
+        if(detection.get_data(&r)) {
 
-            /*        // check if escaped the room
-            if (flags.escaped){
-                break;
-            }*/
+//            if (data.exit.detected){
+//                flags.in_corridor = true;
+//            }
 
-            Detection detection(&io, &flags);
+            Detection detection(&r, &io, &flags);
+            //should be function to update flags instead
             data = detection.get_Detection_data();
 
-            cout << "exit (x,y)" << data.exit.exitPoint_det1.x <<" "<< data.exit.exitPoint_det1.y <<endl;
+            if (data.exit.detected){
+                cout << "exit detected: true" << endl;
+            } else{
+                cout << "exit detected: false " << endl;
+            }
 
-            Planning plan(&data, &flags);
+//            if (flags.in_corridor){
+//                data.exit.detected = false;
+//            }
+
+            cout << "exit Point 1 (x,y) " << data.exit.exitPoint_det1.x <<" "<< data.exit.exitPoint_det1.y <<endl;
+            cout << "exit Point 2 (x,y) " << data.exit.exitPoint_det2.x <<" "<< data.exit.exitPoint_det2.y <<endl;
+
+//            cout << "Furthest point (" << data.furthest_point.x << " " << data.furthest_point.y << ")" <<"\n" << "\n";
+
+            cout << "flag in corridor " << flags.in_corridor << "\n";
+
+
+            Planning plan(&data, &flags, &far_point);
             dest = plan.get_Destination();
 
 
             cout << "Relative angle " << dest.angle << endl << endl;
-          //  pico_drive.picoDrive(dest.angle, &flags);
-            //usleep(1000000);
+
+            pico_drive.picoDrive(&dest, &flags);
+
+
+            cout <<"----------------------------" << endl << endl;
         }
 
 
         r.sleep();
+        std::cout << "Press Enter to continue ..." << '\n';
+        cin.get();
     }
 
 
     return 0;
 }
-
-

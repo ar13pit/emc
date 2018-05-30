@@ -8,7 +8,7 @@ include_directories(include)
 set(SOURCES
  src/detection.cpp
  src/driveControl.cpp
- src/main.cpp
+ src/main2.cpp
  src/planning.cpp)
 # src/initialization.cpp)
 

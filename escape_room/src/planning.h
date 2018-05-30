@@ -1,11 +1,9 @@
 #include <cmath>
 #include <iostream>
 #include <config.h>
-#include <math.h>
+// #include <math.h>
 #include "detection.h"
-#include "helper.hpp"
-#include "main.hpp"
-#include "opencv2/opencv.hpp"
+#include "main2.hpp"
 
 
 #ifndef planning_H
@@ -30,7 +28,7 @@ class PointCorridor {
 
     double x_, y_, angle_, radius_;
 
-    void calculate_angle();
+    void calculate_xangle();
     void calculate_radius();
 
 public:
@@ -44,13 +42,13 @@ public:
     PointCorridor(double x, double y){
         x_ = x;
         y_ = y;
-        calculate_angle();
+        calculate_xangle();
         calculate_radius();
     };
 
     double get_x();
     double get_y();
-    double get_angle();
+    double get_xangle();
     double get_radius();
     void print();
     // void offset(Point offsetPoint);
@@ -85,7 +83,7 @@ class LineCorridor {
     void calculate_perpendicular();
 
 public:
-    LineCorridor() {};
+    LineCorridor() {}
 
     LineCorridor(PointCorridor point1, PointCorridor point2) {
         point1_ = point1;
@@ -94,7 +92,7 @@ public:
         calculate_slope();
         calculate_equation();
         calculate_perpendicular();
-    };
+    }
 
     PointCorridor get_line_point1();
     PointCorridor get_line_point2();
@@ -151,8 +149,9 @@ public:
 
 // Destination that is passed to the Control block
 typedef struct {
-    int x;
-    int y;
+    double x;
+    double y;
+    double dist;
     double angle;
 } Destination;
 
@@ -162,8 +161,8 @@ private:
     Destination dest;
     Point_det absolute_furthest;
 
-    void room_logic(Detection_data *data, Flags *flags);
-    void corrid2dest_transf(Corridor corr);
+    void room_logic(Detection_data *data, Flags *flags, Destination *far_point);
+    void corrid2dest_transf(Corridor corr, Detection_data *data);
     void planning(Detection_data *data, Flags* flags);
 
 
@@ -173,31 +172,74 @@ private:
     void calc_furthest_dest (Point_det furthest);
     void compare_furthest_point(Point_det *point);
     void turn_around();
+    void exit_center_realign(Detection_data *data);
+
+    double distance_calc(double x, double y);
+
+    bool check_corridor(Detection_data *data);
 
 public:
 
-    Planning(Detection_data *data, Flags *flags){
+    Planning(Detection_data *data, Flags *flags, Destination *far_point){
 
 
-        if (!flags->in_corridor) {
-            room_logic(data, flags);
-        }
-        else if (flags->in_corridor){
+        if (flags->in_corridor){
+            std::cout << "Corridor detected" << "\n";
+
             PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
             PointCorridor left2(data->corridor.leftWall2.x, data->corridor.leftWall2.y);
             PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
             PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
 
+//            left1.print(); std::cout << '\n';
+//            left2.print(); std::cout << '\n';
+//            right1.print(); std::cout << '\n';
+//            right2.print(); std::cout << '\n';
+
             LineCorridor leftLine(left1, left2);
             LineCorridor rightLine(right1, right2);
+
+            std::cout << "\n Calculating Corridor setpoint" << '\n';
             Corridor corridor(leftLine, rightLine);
 
+//            rightLine.print();
+//            leftLine.print();
+
+//            std::cout << "" << corridor.get_corridor_setpoint()
             // assign destination point
-            corrid2dest_transf(corridor);
-        } else {
-            std::cout << "Fatal error: not in a room and not in a corridor" << std::endl;
+
+            corrid2dest_transf(corridor,data);
+            flags->drive_frw = true;
+
         }
 
+
+
+        std::cout << "Exit is " << data->exit.exitPoint_det1.dist << " " << data->exit.exitPoint_det2.dist << " away"<< "\n";
+
+        if (!flags->in_corridor &&((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) || (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD))){
+
+            if ((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) && (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD)){
+
+                flags->in_corridor = true;
+                std::cout << "corridor detected " << "\n";
+
+            } else {
+
+                exit_center_realign(data);
+                std::cout << "realigning with the corridor" << "\n";
+                flags->drive_frw = true;
+                flags->in_corridor = true;
+            }
+
+        } else {
+            room_logic(data, flags, far_point);
+        }
+
+
+        if (fabs(dest.angle) >= M_PI+TURN_MARGIN){
+            dest.angle = (fabs(dest.angle) - M_PI)*(-1);
+        }
     }
 
 
