@@ -148,8 +148,8 @@ int main(int argc, char *argv[])
 
 
         r.sleep();
-//        std::cout << "Press Enter to continue ..." << '\n';
-//        cin.get();
+        std::cout << "Press Enter to continue ..." << '\n';
+        cin.get();
     }
 
 

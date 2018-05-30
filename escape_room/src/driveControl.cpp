@@ -84,7 +84,8 @@ void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::
     double meas_dist;
     meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
     while(abs(ref_dist - meas_dist) > FRW_COMPLETE){
-        std::cout << "Dist to dest = " << abs(ref_dist - meas_dist) << endl;
+        std::cout << "Dist to dest = " << fabs(ref_dist) - fabs(meas_dist) << endl;
+        std::cout << "Dist measured " << fabs(meas_dist) << endl << endl;
         picoForward();
         r->sleep();
         inOut->readOdometryData(odomCur);
@@ -92,7 +93,7 @@ void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::
         meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
     }
     std::cout << "Measured odometry " <<  meas_dist << std::endl;
-//    stop();
+    stop();
 //    std::cout << "stopped driving forward" << std::endl;
 }
 

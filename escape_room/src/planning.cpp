@@ -321,6 +321,9 @@ void Planning::calc_furthest_dest (Point_det furthest){
 
     dest.dist = distance_calc(furthest.x/4, furthest.y/4);
     dest.angle = furthest.angle;
+    if (dest.dist > DIST_SETPOINT) {
+        dest.dist = DIST_SETPOINT;
+    }
 }
 
 
