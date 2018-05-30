@@ -107,8 +107,8 @@
 
         double detectLargerThresh = 1.05;
         double detectSmallerThresh = 0.95;
-        int nPointsThresh = 4; //Amount of points larger of smaller than expected before action is being undertaken
-        int nPointsSearch = 80;
+        int nPointsThresh = 10; //Amount of points larger of smaller than expected before action is being undertaken
+        int nPointsSearch = 30;
 
         int iExit1 = 0;
         int iExit2 = 0;
@@ -150,7 +150,7 @@
                     }
                     if (nLarger > nPointsThresh){ // Exit detected
                         std::cout << "Exitpoint 1 detected!";
-                        iExit1 = j - 7;
+                        iExit1 = j - nPointsThresh - 2;
 
                         //Start searching for the second point of the exit
                         int nEqual = 0;
@@ -176,13 +176,15 @@
                                 nEqual = 0;
                             }
 
-                            if (nEqual > 5){
-                               iExit2 = k - 5;
+                            if (nEqual > nPointsThresh){
+                               iExit2 = k - nPointsThresh;
                                Exit exit;
                                exit.exitPoint1 = LatestLaserScan[iExit1];
                                exit.exitPoint2 = LatestLaserScan[iExit2];
                                exit.detected = true;
-                               return exit;
+                               if(sqrt(pow(LatestLaserScan[iExit1].x - LatestLaserScan[iExit2].x,2) + pow(LatestLaserScan[iExit1].y - LatestLaserScan[iExit2].y,2)) < 2.0){
+                                return exit;
+                               }
                             }
                         }
 
