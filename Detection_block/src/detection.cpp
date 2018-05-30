@@ -170,8 +170,8 @@
                             }
                             distLine = sqrt(pow(xLine,2) + pow(yLine,2));
 
-                            std::cout << "distLine " << distLine << std::endl;
-                            std::cout << "detectLargerThresh  " << detectLargerThresh << std::endl<< std::endl;
+                            //std::cout << "distLine " << distLine << std::endl;
+                            //std::cout << "detectLargerThresh  " << detectLargerThresh << std::endl<< std::endl;
 
                             bool check1 = distLine*detectLargerThresh > LatestLaserScan[k].dist;
                             bool check2 = distLine*detectSmallerThresh < LatestLaserScan[k].dist;

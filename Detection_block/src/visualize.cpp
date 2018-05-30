@@ -1,26 +1,49 @@
 #include <emc/io.h>
+#include <emc/rate.h>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include "opencv2/imgproc.hpp"
-#include <opencv2/highgui.hpp>
-#include <ros/rate.h>
+
+#include <string>
+#include <sstream>
+#include <iostream>
+
+#include <emc/odom.h>
+#include <cmath>
+#include <cstdlib>
+
+#include "driveControl.h"
+#include "detection.h"
+#include "worldModel.h"
+#include "planning.h"
+#include "config.h"
+#include "visualize.h"
+#include "main2.hpp"
+
+
+using namespace std;
+using namespace cv;
+
+
+
 
 double resolution = 0.01;
 cv::Point2d canvas_center;
 
-// ----------------------------------------------------------------------------------------------------
 
 cv::Point2d worldToCanvas(double x, double y)
 {
     return cv::Point2d(-y / resolution, -x / resolution) + canvas_center;
 }
 
-// ----------------------------------------------------------------------------------------------------
-
-int main(int argc, char **argv)
+//int show_canvas(emc::LaserData scan)
+visualize::visualize()
 {
     emc::IO io;
+    emc::Rate r(30);
 
-    ros::Rate r(30);
     while(io.ok())
     {
         cv::Mat canvas(500, 500, CV_8UC3, cv::Scalar(50, 50, 50));
@@ -63,11 +86,46 @@ int main(int argc, char **argv)
             a += scan.angle_increment;
         }
 
+        PointCorridor corr;
+        // set point
+
+        cv::Point2d setpoint = worldToCanvas(corr.get_x(), corr.get_y());
+        putText(canvas, "Setpoint", cv::Point2d(25,85), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,255,255));
+
+
+        Exit exit;
+        // exit points
+        cv::Point2d exit_1 = worldToCanvas(exit.exitPoint_det1.x, exit.exitPoint_det1.y);
+        
+
+        // corridor detection
+
+
+
+        PointCorridor pointcorridor;
+        Corridor lines;
+        cv::Point2d Wall_left_1 = worldToCanvas(pointcorridor.get_x(), pointcorridor.get_y());
+//        cv::Point2d Wall_left_2 = worldToCanvas(data_.corridor.leftWall2.x, data_.corridor.leftWall2.x);
+//        cv::Point2d Wall_right_1 = worldToCanvas(data_.corridor.rightWall1.x, data_.corridor.rightWall1.y);
+//        cv::Point2d Wall_right_2 = worldToCanvas(data_.corridor.rightWall2.x, data_.corridor.rightWall2.y);
+
+
+        // wall avoidance perimeter
+        double bump_avoidance = 0.5; // adjust avoidance distance (stay away from wall param.)
+        cv::Point2d pico_center = worldToCanvas(0, 0);
+        circle(canvas, pico_center, bump_avoidance/resolution, Scalar(125,125,125),2,8,0);
+
+        // Legend
+        putText(canvas,"PICO", cv::Point2d(25,25), FONT_HERSHEY_SIMPLEX, 0.5, Scalar( 0, 0, 255));
+        putText(canvas,"LRF", cv::Point2d(25,45), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
+
+        // Canvas
         cv::imshow("PICO Visualisation", canvas);
         cv::waitKey(3);
 
         r.sleep();
     }
 
-    return 0;
 }
+
+
