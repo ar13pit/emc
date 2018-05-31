@@ -41,8 +41,9 @@ public:
 
         return;
     }
+public:
+    Point LatestLaserScan[970]; //Deleted first and last 15 points
 
-    Point LatestLaserScan[1200]; //Deleted first and last 15 points
     emc::LaserData laser;
     CorridorWalls findCorridorWalls();
     bool getSensorData(); // Method to obtain the sensordata

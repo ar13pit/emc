@@ -14,13 +14,13 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "driveControl.h"
+//#include "driveControl.h"
 #include "detection.h"
-#include "worldModel.h"
-#include "planning.h"
+//#include "worldModel.h"
+//#include "planning.h"
 #include "config.h"
 #include "visualize.h"
-#include "main2.hpp"
+//#include "main.pp"
 
 
 using namespace std;
@@ -30,102 +30,125 @@ using namespace cv;
 
 
 double resolution = 0.01;
-cv::Point2d canvas_center;
+//double a;
 
-
-cv::Point2d worldToCanvas(double x, double y)
-{
-    return cv::Point2d(-y / resolution, -x / resolution) + canvas_center;
-}
 
 //int show_canvas(emc::LaserData scan)
-visualize::visualize()
+void Visualizer::init_visualize()
 {
-    emc::IO io;
-    emc::Rate r(30);
+    //emc::IO io;
+    //emc::Rate r(30);
 
-    while(io.ok())
+    //canvas_center = cv::Point2d(canvas.rows / 2, canvas.cols / 2);
+    //while(io.ok()){
+
+    cv::Scalar robot_color(0, 0, 255);
+    canvas = cv::Mat(500, 500, CV_8UC3, cv::Scalar(50, 50, 50));
+    //cv::Mat canvas(500, 500, CV_8UC3, cv::Scalar(50, 50, 50));
+
+    canvas_center = cv::Point2d(canvas.rows / 2, canvas.cols / 2);
+
+
+    std::vector<std::pair<double, double> > robot_points;
+    robot_points.push_back(std::pair<double, double>( 0.1,  -0.2));
+    robot_points.push_back(std::pair<double, double>( 0.1,  -0.1));
+    robot_points.push_back(std::pair<double, double>( 0.05, -0.1));
+    robot_points.push_back(std::pair<double, double>( 0.05,  0.1));
+    robot_points.push_back(std::pair<double, double>( 0.1,   0.1));
+    robot_points.push_back(std::pair<double, double>( 0.1,   0.2));
+    robot_points.push_back(std::pair<double, double>(-0.1,   0.2));
+    robot_points.push_back(std::pair<double, double>(-0.1,  -0.2));
+
+    for(unsigned int i = 0; i < robot_points.size(); ++i)
     {
-        cv::Mat canvas(500, 500, CV_8UC3, cv::Scalar(50, 50, 50));
-        canvas_center = cv::Point2d(canvas.rows / 2, canvas.cols / 2);
+        unsigned int j = (i + 1) % robot_points.size();
+        cv::Point2d p1 = worldToCanvas(robot_points[i].first, robot_points[i].second);
+        cv::Point2d p2 = worldToCanvas(robot_points[j].first, robot_points[j].second);
+        cv::line(canvas, p1, p2, robot_color, 2);
+    }
 
-        cv::Scalar robot_color(0, 0, 255);
+    // wall avoidance perimeter
+    double bump_avoidance = 0.5; // adjust avoidance distance (stay away from wall param.)
+    cv::Point2d pico_center = worldToCanvas(0, 0);
+    circle(canvas, pico_center, bump_avoidance/resolution, Scalar(125,125,125),2,8,0);
+    //circle(exi)
 
-        std::vector<std::pair<double, double> > robot_points;
-        robot_points.push_back(std::pair<double, double>( 0.1,  -0.2));
-        robot_points.push_back(std::pair<double, double>( 0.1,  -0.1));
-        robot_points.push_back(std::pair<double, double>( 0.05, -0.1));
-        robot_points.push_back(std::pair<double, double>( 0.05,  0.1));
-        robot_points.push_back(std::pair<double, double>( 0.1,   0.1));
-        robot_points.push_back(std::pair<double, double>( 0.1,   0.2));
-        robot_points.push_back(std::pair<double, double>(-0.1,   0.2));
-        robot_points.push_back(std::pair<double, double>(-0.1,  -0.2));
+    // Legend
+    putText(canvas,"PICO", cv::Point2d(25,25), FONT_HERSHEY_SIMPLEX, 0.5, Scalar( 0, 0, 255));
+    putText(canvas,"LRF", cv::Point2d(25,45), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
 
-        for(unsigned int i = 0; i < robot_points.size(); ++i)
+    //}
+}
+
+/*    // wall avoidance perimeter
+    double bump_avoidance = 0.5; // adjust avoidance distance (stay away from wall param.)
+    cv::Point2d pico_center = worldToCanvas(0, 0);
+    circle(canvas, pico_center, bump_avoidance/resolution, Scalar(125,125,125),2,8,0);
+    //circle(exi)
+
+    // Legend
+    putText(canvas,"PICO", cv::Point2d(25,25), FONT_HERSHEY_SIMPLEX, 0.5, Scalar( 0, 0, 255));
+    putText(canvas,"LRF", cv::Point2d(25,45), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
+
+    // Canvas
+    cv::imshow("PICO Visualisation", canvas);
+    //cv::waitKey(3);
+
+}
+
+
+*/
+/*void Visualizer::LaserData_visualize(){
+    //emc::IO io;
+    //emc::Rate r(30);
+
+    //scan = Detection::LatestLaserScan.length
+
+        //double a = scan.angle_min;
+        for(unsigned int i = 0; i < Detection::LatestLaserScan.size(); ++i)
         {
-            unsigned int j = (i + 1) % robot_points.size();
-            cv::Point2d p1 = worldToCanvas(robot_points[i].first, robot_points[i].second);
-            cv::Point2d p2 = worldToCanvas(robot_points[j].first, robot_points[j].second);
-            cv::line(canvas, p1, p2, robot_color, 2);
-        }
+            std::cout << "UPDATE VISUALIZE";
 
-        emc::LaserData scan;
-        if (!io.readLaserData(scan))
-            continue;
+            double x = Detection::LatestLaserScan[i].x;
+            double y = Detection::LatestLaserScan[i].y;
 
-        double a = scan.angle_min;
-        for(unsigned int i = 0; i < scan.ranges.size(); ++i)
-        {
-            double x = cos(a) * scan.ranges[i];
-            double y = sin(a) * scan.ranges[i];
+            //x = 1; y = 1; a = 1;
 
             cv::Point2d p = worldToCanvas(x, y);
             if (p.x >= 0 && p.y >= 0 && p.x < canvas.cols && p.y < canvas.rows)
                 canvas.at<cv::Vec3b>(p) = cv::Vec3b(0, 255, 0);
 
-            a += scan.angle_increment;
+            //a += scan.angle_increment;
         }
-
-        PointCorridor corr;
-        // set point
-
-        cv::Point2d setpoint = worldToCanvas(corr.get_x(), corr.get_y());
-        putText(canvas, "Setpoint", cv::Point2d(25,85), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,255,255));
-
-
-        Exit exit;
-        // exit points
-        cv::Point2d exit_1 = worldToCanvas(exit.exitPoint_det1.x, exit.exitPoint_det1.y);
-        
-
-        // corridor detection
-
-
-
-        PointCorridor pointcorridor;
-        Corridor lines;
-        cv::Point2d Wall_left_1 = worldToCanvas(pointcorridor.get_x(), pointcorridor.get_y());
-//        cv::Point2d Wall_left_2 = worldToCanvas(data_.corridor.leftWall2.x, data_.corridor.leftWall2.x);
-//        cv::Point2d Wall_right_1 = worldToCanvas(data_.corridor.rightWall1.x, data_.corridor.rightWall1.y);
-//        cv::Point2d Wall_right_2 = worldToCanvas(data_.corridor.rightWall2.x, data_.corridor.rightWall2.y);
-
-
-        // wall avoidance perimeter
-        double bump_avoidance = 0.5; // adjust avoidance distance (stay away from wall param.)
-        cv::Point2d pico_center = worldToCanvas(0, 0);
-        circle(canvas, pico_center, bump_avoidance/resolution, Scalar(125,125,125),2,8,0);
-
-        // Legend
-        putText(canvas,"PICO", cv::Point2d(25,25), FONT_HERSHEY_SIMPLEX, 0.5, Scalar( 0, 0, 255));
-        putText(canvas,"LRF", cv::Point2d(25,45), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
 
         // Canvas
         cv::imshow("PICO Visualisation", canvas);
         cv::waitKey(3);
 
-        r.sleep();
-    }
+}*/
 
+void Visualizer::plot_xy_color(double x, double y, double R, double G, double B){
+    cv::Point2d p = worldToCanvas(x, y);
+    if (p.x >= 0 && p.y >= 0 && p.x < canvas.cols && p.y < canvas.rows)
+        canvas.at<cv::Vec3b>(p) = cv::Vec3b(R, G, B);
 }
+
+void Visualizer::publish(){
+    cv::imshow("PICO Visualisation", canvas);
+    cv::waitKey(3);
+}
+
+cv::Point2d Visualizer::worldToCanvas(double x, double y){
+    return cv::Point2d(x / resolution, -y / resolution) + canvas_center;
+}
+
+        //cv::Point2d exit_1 = worldToCanvas(exit123.exitPoint1.x,exit123.exitPoint1.y);
+
+
+
+
+
+
+
 
 

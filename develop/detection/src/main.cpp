@@ -5,9 +5,10 @@
 #include <iostream>
 
 
-#include "driveControl.cpp"
+//#include "driveControl.cpp"
 #include "detection.h"
-#include "worldModel.cpp"
+//#include "worldModel.cpp"
+#include "visualize.h"
 
 #include "config.h"
 
@@ -24,11 +25,12 @@ int main(int argc, char *argv[])
     emc::IO io;
     emc::OdometryData odom;
 
-    // Initialize the Classes
-    DriveControl pico_drive(&io);
+    // Initialize the Classesr
     Detection detection(&io);
-    WorldModel worldModel;
     Exit exit;
+    Visualizer vis;
+
+    vis.init_visualize();
 
     while(io.ok()) {
         //pico_drive.driveForward(1.0);
@@ -47,7 +49,20 @@ int main(int argc, char *argv[])
             }
 
 
-            //pico_drive.driveBackward(0.1);
+            // UPDATE VISUALIZER
+
+            vis.init_visualize();
+            for(unsigned int i = 0; i < 970 ; ++i)
+            {
+                double x = detection.LatestLaserScan[i].x;
+                double y = detection.LatestLaserScan[i].y;
+                vis.plot_xy_color(x, y,0, 0, 255);
+            }
+            vis.publish();
+
+            //END UPDATE VISUALIZER
+
+
         }
 
 
