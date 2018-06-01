@@ -1,5 +1,6 @@
 #include "worldModel.h"
 
+/*
 double* WorldModel::getMinimumDistance()
 {
     return &minDistance_;
@@ -15,3 +16,4 @@ void WorldModel::setMinimumDistance(emc::LaserData* laser)
         }
       minDistance_ = aux;
 }
+*/
