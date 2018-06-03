@@ -24,11 +24,7 @@ typedef enum {
     GO_TILL_FACED_THE_WALL //for initial phase to count exits in the corridor
 } Low_State;
 
-// to know our location
-typedef struct {
-    bool in_room;
-    bool in_corridor;
-} Location;
+
 
 
 #endif

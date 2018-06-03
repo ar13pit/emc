@@ -22,6 +22,13 @@ typedef struct {
     std::vector<Exit> exits;
 } CCorridor;    //name has to be changed (conflicting class in planning for escape room challenge)
 
+
+// to know our location
+typedef struct {
+    bool in_room;
+    bool in_corridor;
+} Location;
+
 /*
 class WorldModel
         {
