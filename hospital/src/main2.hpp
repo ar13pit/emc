@@ -13,15 +13,23 @@ typedef struct {
 // this are the two main stages (exploring the hospital and then finding the object)
 typedef enum {
     EXPLORE_HOSPITAL,
-    GO_TO_ROOM
+    GO_TO_ROOM,
+    RETURN_TO_INIT,
+    TOO_CLOSE_TO_WALL
 } High_State;
 
 // this are the actions in the rooms
 typedef enum {
+    EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
+    EXIT_CORRIDOR,
+    GO_TO_START,        // after all rooms are located
+    PARKING,            // park backwards
+
     EXPLORE_ROOM,
     GO_TO_NEXT_ROOM,
     EXIT,
-    GO_TILL_FACED_THE_WALL //for initial phase to count exits in the corridor
+
+    STAND_NEXT_TO_OBJECT
 } Low_State;
 
 
