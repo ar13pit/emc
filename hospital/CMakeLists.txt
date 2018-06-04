@@ -11,7 +11,8 @@ set(SOURCES
  src/main2.cpp
  src/planning.cpp
  src/worldModel.cpp
- src/stateMachine.cpp)
+ src/stateMachine.cpp
+ src/monitoring.cpp)
 
 # Create executable named "testPlanning"
 add_executable(escape_room ${SOURCES})

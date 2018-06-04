@@ -53,7 +53,7 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, struct Loc
 
             if (location.in_corridor) {
 
-                if (numb_rooms_detected == 0 && !end_of_corridor){
+                if (numb_rooms_detected == 0 || !end_of_corridor){
                     low_st = EXPLORE_CORRIDOR;
                     std::cout << "Exploring the corridor " << std::endl;
                     break;
@@ -67,27 +67,36 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, struct Loc
                 }
 
                 // command to go to  first exit
-            } else if (location.in_room) {
+            } else if (location.in_room || location.in_nested_room) {
 
                 switch(low_st){
 
                 case EXPLORE_ROOM:
 
-                    // check if all the corners are detected
-                    if (numb_corners_detected == 4){
+                    std::cout << "Exploring the room " << std::endl;
 
-                        // if nested exit detected
-                        if (numb_exits > 1) {
-                            low_st = GO_TO_NEXT_ROOM;
-                            std::cout << "Going to the nested room " << std::endl;
-                        }
-                        else {
-                            low_st = EXIT;
-                            std::cout << "Exiting to the corridor " << std::endl;
+                    // leave the boolean true if we have been to the nested room
+                    // if we have been to the nested room and we are in a room (main room) now...
+                    if (location.in_room && location.in_nested_room){
+                        low_st = EXIT_MAIN_ROOM;
+                        std::cout << "Command to not to explore the room active " << std::endl;
+                    }
+                    else {
+                        // check if all the corners are detected
+                        if (numb_corners_detected == 4){
+
+                            // if nested exit detected
+                            if (numb_exits > 1) {
+                                low_st = GO_TO_NEXT_ROOM;
+                                std::cout << "Going to the nested room " << std::endl;
+                            }
+                            else {
+                                low_st = EXIT;
+                                std::cout << "Exiting to the corridor " << std::endl;
+                            }
                         }
                     }
 
-                    std::cout << "Exploring the room " << std::endl;
                     break;
 
                 case EXIT:
@@ -96,6 +105,13 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, struct Loc
 
                 case GO_TO_NEXT_ROOM:
                     std::cout << "Going to nested room " << std::endl;
+                    if (location.in_nested_room){
+                        low_st = EXPLORE_ROOM;
+                    }
+                    break;
+
+                case EXIT_MAIN_NESTED_ROOM:
+                    std::cout << "Exiting room without exploration " << std::endl;
                     break;
                 }
             }

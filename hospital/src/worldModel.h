@@ -26,6 +26,7 @@ typedef struct {
 // to know our location
 typedef struct {
     bool in_room;
+    bool in_nested_room;
     bool in_corridor;
 } Location;
 

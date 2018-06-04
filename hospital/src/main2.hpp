@@ -28,6 +28,7 @@ typedef enum {
     EXPLORE_ROOM,
     GO_TO_NEXT_ROOM,
     EXIT,
+    EXIT_MAIN_ROOM,      // when returning from the nested room to the main room, don't explore it
 
     STAND_NEXT_TO_OBJECT
 } Low_State;
