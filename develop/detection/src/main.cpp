@@ -58,7 +58,9 @@ int main(int argc, char *argv[])
                 double y = detection.LatestLaserScan[i].y;
                 vis.plot_xy_color(x, y,0, 0, 255);
             }
+            vis.plotExit(exit);
             vis.publish();
+
 
             //END UPDATE VISUALIZER
 

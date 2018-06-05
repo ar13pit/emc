@@ -50,14 +50,14 @@ void Visualizer::init_visualize()
 
 
     std::vector<std::pair<double, double> > robot_points;
-    robot_points.push_back(std::pair<double, double>( 0.1,  -0.2));
-    robot_points.push_back(std::pair<double, double>( 0.1,  -0.1));
-    robot_points.push_back(std::pair<double, double>( 0.05, -0.1));
-    robot_points.push_back(std::pair<double, double>( 0.05,  0.1));
-    robot_points.push_back(std::pair<double, double>( 0.1,   0.1));
-    robot_points.push_back(std::pair<double, double>( 0.1,   0.2));
-    robot_points.push_back(std::pair<double, double>(-0.1,   0.2));
-    robot_points.push_back(std::pair<double, double>(-0.1,  -0.2));
+    robot_points.push_back(std::pair<double, double>(  0.2,  0.1));
+    robot_points.push_back(std::pair<double, double>(  0.1,  0.1));
+    robot_points.push_back(std::pair<double, double>(  0.1,  0.05));
+    robot_points.push_back(std::pair<double, double>( -0.1,  0.05));
+    robot_points.push_back(std::pair<double, double>( -0.1,  0.1));
+    robot_points.push_back(std::pair<double, double>( -0.2,  0.1));
+    robot_points.push_back(std::pair<double, double>( -0.2, -0.1));
+    robot_points.push_back(std::pair<double, double>(  0.2, -0.1));
 
     for(unsigned int i = 0; i < robot_points.size(); ++i)
     {
@@ -136,6 +136,15 @@ void Visualizer::plot_xy_color(double x, double y, double R, double G, double B)
 void Visualizer::publish(){
     cv::imshow("PICO Visualisation", canvas);
     cv::waitKey(3);
+}
+
+void Visualizer::plotExit(Exit exit){
+    if(exit.detected){
+        cv::Point2d exit1 = worldToCanvas(exit.exitPoint1.x, exit.exitPoint1.y);
+        cv::Point2d exit2 = worldToCanvas(exit.exitPoint2.x, exit.exitPoint2.y);
+
+        Visualizer::plot_xy_color(exit.exitPoint2.x, exit.exitPoint2.y,0,255,0);
+    }
 }
 
 cv::Point2d Visualizer::worldToCanvas(double x, double y){
