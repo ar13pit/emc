@@ -22,4 +22,4 @@ rm -r $BUILD
 
 # Execute "main"
 # roscore & rosrun emc_simulator pico_simulator general_files/map1.png & rosrun emc_system emc_viz & $BIN/main; fg
-$BIN/escape_room
+$BIN/hospital_room
