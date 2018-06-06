@@ -5,10 +5,12 @@
 
 #include "detection.h"
 #include "planning.h"
-#include "main2.hpp"
+#include "main.hpp"
 
 #ifndef worldModel_H
 #define worldModel_H
+
+using json = nlohmann::json;
 
 typedef struct {
     std::vector<Point_det> corners;
@@ -24,25 +26,48 @@ typedef struct {
 
 
 // to know our location
-typedef struct {
-    bool in_room;
-    bool in_nested_room;
-    bool in_corridor;
-} Location;
+// struct Location {
+//     bool in_room;
+//     bool in_nested_room;
+//     bool in_corridor;
+// } ;
 
-/*
-class WorldModel
-        {
-private:
-    double minDistance_;
+typedef enum Location {
+    IN_ROOM;
+    IN_NESTED_ROOM;
+    IN_CORRIDOR;
+  };
+
+class WorldModel {
+    emc::IO* io_;
+    emc::rate r_;
+    emc::LaserData laser_;
+
+    // double minDistance_;
+    Point_det closestPointWall_;
+    Point_det destination_;
+    int enteredRooms_;
+    int nestedExits_;
+    Location currentLocation_;
+    json jsonObject_;
+
+    void writeJson();
+    void readJson();
+
 
 public:
-WorldModel(){
-        minDistance_ = MAX_RANGE_LRF;
+WorldModel(emc::IO* IO) : io_(IO), r_(EXECUTION_RATE) {
+        // minDistance_ = MAX_RANGE_LRF;
     }
 
-    double* getMinimumDistance();
-    void setMinimumDistance(emc::LaserData* laser); // Method to determine the minimum distance to a wall
+    // double* getMinimumDistance();
+    // void setMinimumDistance(emc::LaserData* laser); // Method to determine the minimum distance to a wall
+    emc::LaserData get_laser();
+    Point_det get_closestPointWall();
+    Point_det get_destination();
+    int get_enteredRooms();
+    int get_nestedExits();
+    Location get_currentLocation();
 };
-*/
+
 #endif //worldModel_H
