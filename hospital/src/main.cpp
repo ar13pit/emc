@@ -10,6 +10,8 @@
 #include "detection.h"
 #include "worldModel.h"
 #include "planning.h"
+#include "stateMachine.h"
+#include "monitoring.h"
 #include "config.h"
 using namespace std;
 

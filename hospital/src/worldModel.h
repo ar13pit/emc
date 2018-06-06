@@ -52,6 +52,8 @@ class WorldModel {
     int enteredRooms_;
     int nestedExits_;
     Location currentLocation_;
+    High_State current_high_state;
+    Low_State current_low_state;
     json jsonObject_;
 
     void writeJson();
@@ -71,6 +73,8 @@ WorldModel(emc::IO* IO) : io_(IO), r_(EXECUTION_RATE) {
     int get_enteredRooms();
     int get_nestedExits();
     Location get_currentLocation();
+    High_State get_current_high_state();
+    Low_State get_current_low_state();
 };
 
 #endif //worldModel_H
