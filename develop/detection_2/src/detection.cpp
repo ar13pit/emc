@@ -105,9 +105,10 @@
 
     Exit Detection::findExit(){
 
-        double detectLargerThresh = 1.05;
-        double detectSmallerThresh = 0.95;
+        //double errorThresh = 0.05; //Amount of deviation from linefit which is allowed (due to sensor noise)
+        double errorThresh = 0.01; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
         int nPointsThresh = 10; //Amount of points larger of smaller than expected before action is being undertaken
+        int nPointsThreshEqual = 1;
 
         int nPointsSearch = 30;
 
@@ -118,82 +119,79 @@
 
         for (unsigned int i = 0; i < (1000 - 2*15 - nPointsSearch); i = i+1){
             if(lineFit(aFit, bFit, i, i+nPointsSearch)){ //Line found, next: search for deviation in positive direction
-                int nLarger = 0; //Amount of points larger than a certain treshold, compared with linefit data
-                int nSmaller = 0; //Amount of points smaller than a certain treshold, compared with linefit data
+
+                int nDeviations = 0;
+
                 for (int j = i+nPointsSearch; j < 1000 - 2*15; ++j){
-                    double xLine; double yLine; double distLine;
-                    if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
-                        yLine = LatestLaserScan[j].y;
-                        xLine = (yLine - bFit)/aFit;
-                    }
-                    else{ // Evaluate y-coordinates for given x
-                        xLine = LatestLaserScan[j].x;
-                        yLine = aFit*xLine + bFit;
 
-                    }
-                    distLine = sqrt(pow(xLine,2) + pow(yLine,2));
 
-                    if (distLine * detectLargerThresh < LatestLaserScan[j].dist){
-                        nLarger = nLarger + 1;
-                        nSmaller = 0;
-                    }
-                    else if (distLine * detectSmallerThresh > LatestLaserScan[j].dist){
-                        nLarger = 0;
-                        nSmaller = nSmaller + 1;
-                    }
-                    else{
-                        nLarger = 0; nSmaller = 0;
+
+                    double aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
+                    double bFit_perp = LatestLaserScan[j].y - aFit_perp * LatestLaserScan[j].x;
+
+                    double x_intersect = (bFit_perp - bFit)/(aFit - aFit_perp);
+                    double y_intersect = aFit*x_intersect + bFit;
+
+                    double distance_line = sqrt( pow(x_intersect - LatestLaserScan[j].x, 2) + pow(y_intersect - LatestLaserScan[j].y,2)  );
+
+                    //std::cout << distance_line << std::endl;
+
+                    if (distance_line > errorThresh){
+                        nDeviations = nDeviations + 1;
+                    } else{
+                        nDeviations = 0;
                     }
 
-                    if(nSmaller > nPointsThresh){ // Corner detected
-                        i = j - 10;
-                        j = 1000; // Break out
+
+
+                    if(nDeviations > nPointsThresh && LatestLaserScan[j].dist < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                        //Corner detected
+                        //std::cout << "Corner detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << "), point:" << j << std::endl;
+
+                        j = 970; // I know it's ugly, but breaking failed, I deeply apologize for this ugly piece of unscalable code.
                     }
-                    if (nLarger > nPointsThresh){ // Exit detected
-                        std::cout << "Exitpoint 1 detected!";
+
+
+                    if (nDeviations > nPointsThresh && LatestLaserScan[j].dist > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                        // Exit detected
+                        //std::cout << "Exitpoint 1 detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << ")" << std::endl;
+                        //std::cout << j;
                         iExit1 = j - nPointsThresh - 2;
+
+
 
                         //Start searching for the second point of the exit
                         int nEqual = 0;
 
                         for (int k = j; k < 1000 - 2*15 - nPointsSearch; ++k){
 
-                            double xLine; double yLine; double distLine;
-                            if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
-                                yLine = LatestLaserScan[k].y;
-                                xLine = (yLine - bFit)/aFit;
-                            }
-                            else{ // Evaluate y-coordinates for given x
-                                xLine = LatestLaserScan[k].x;
-                                yLine = aFit*xLine + bFit;
+                            aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
+                            bFit_perp = LatestLaserScan[k].y - aFit_perp * LatestLaserScan[k].x;
 
-                            }
-                            distLine = sqrt(pow(xLine,2) + pow(yLine,2));
+                            double x_intersect = (bFit_perp - bFit)/(aFit - aFit_perp);
+                            double y_intersect = aFit*x_intersect + bFit;
 
-                            //std::cout << "distLine " << distLine << std::endl;
-                            //std::cout << "detectLargerThresh  " << detectLargerThresh << std::endl<< std::endl;
+                            double distance_line = sqrt( pow(x_intersect - LatestLaserScan[k].x, 2) + pow(y_intersect - LatestLaserScan[k].y,2)  );
 
-                            bool check1 = distLine*detectLargerThresh > LatestLaserScan[k].dist;
-                            bool check2 = distLine*detectSmallerThresh < LatestLaserScan[k].dist;
-                            //std::cout << "check " << check1 << std::endl;
-                            //std::cout << "check " << check2 << std::endl<< std::endl;
+                            //std::cout << distance_line;
 
-                            if (distLine * detectLargerThresh > LatestLaserScan[k].dist && distLine * detectSmallerThresh < LatestLaserScan[k].dist){
+                            if (distance_line < errorThresh){
                                 nEqual = nEqual + 1;
+                                //std::cout << "You fucked up";
                             }
                             else{
                                 nEqual = 0;
                             }
 
-                            if (nEqual > nPointsThresh){
-                               iExit2 = k - nPointsThresh;
+                            if (nEqual >= nPointsThresh){
+                               iExit2 = k - nPointsThresh - 2;
                                Exit exit;
                                exit.exitPoint1 = LatestLaserScan[iExit1];
                                exit.exitPoint2 = LatestLaserScan[iExit2];
                                exit.detected = true;
-                               if(sqrt(pow(LatestLaserScan[iExit1].x - LatestLaserScan[iExit2].x,2) + pow(LatestLaserScan[iExit1].y - LatestLaserScan[iExit2].y,2)) < 2.0){
+                               //if(sqrt(pow(LatestLaserScan[iExit1].x - LatestLaserScan[iExit2].x,2) + pow(LatestLaserScan[iExit1].y - LatestLaserScan[iExit2].y,2)) < 2.0){
                                 return exit;
-                               }
+                               //}
                             }
                         }
 
