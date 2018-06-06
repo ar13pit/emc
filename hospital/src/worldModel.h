@@ -6,6 +6,7 @@
 #include "detection.h"
 #include "planning.h"
 #include "main.hpp"
+#include "json.hpp"
 
 #ifndef worldModel_H
 #define worldModel_H
@@ -26,17 +27,19 @@ typedef struct {
 
 
 // to know our location
-// struct Location {
-//     bool in_room;
-//     bool in_nested_room;
-//     bool in_corridor;
-// } ;
+struct Location {
+    bool in_room;
+    bool in_nested_room;
+    bool in_corridor;
 
-typedef enum Location {
-    IN_ROOM;
-    IN_NESTED_ROOM;
-    IN_CORRIDOR;
-  };
+    Location() : in_room(false), in_nested_room(false), in_corridor(true) {};
+} ;
+
+// typedef enum Location {
+//     IN_ROOM;
+//     IN_NESTED_ROOM;
+//     IN_CORRIDOR;
+//   };
 
 class WorldModel {
     emc::IO* io_;
