@@ -6,7 +6,6 @@
 #include "detection.h"
 #include "planning.h"
 #include "main.hpp"
-#include "json.hpp"
 
 #ifndef worldModel_H
 #define worldModel_H
@@ -27,19 +26,17 @@ typedef struct {
 
 
 // to know our location
-struct Location {
-    bool in_room;
-    bool in_nested_room;
-    bool in_corridor;
+// struct Location {
+//     bool in_room;
+//     bool in_nested_room;
+//     bool in_corridor;
+// } ;
 
-    Location() : in_room(false), in_nested_room(false), in_corridor(true) {};
-} ;
-
-// typedef enum Location {
-//     IN_ROOM;
-//     IN_NESTED_ROOM;
-//     IN_CORRIDOR;
-//   };
+typedef enum Location {
+    IN_ROOM;
+    IN_NESTED_ROOM;
+    IN_CORRIDOR;
+  };
 
 class WorldModel {
     emc::IO* io_;
@@ -52,8 +49,6 @@ class WorldModel {
     int enteredRooms_;
     int nestedExits_;
     Location currentLocation_;
-    High_State current_high_state;
-    Low_State current_low_state;
     json jsonObject_;
 
     void writeJson();
@@ -73,8 +68,6 @@ WorldModel(emc::IO* IO) : io_(IO), r_(EXECUTION_RATE) {
     int get_enteredRooms();
     int get_nestedExits();
     Location get_currentLocation();
-    High_State get_current_high_state();
-    Low_State get_current_low_state();
 };
 
 #endif //worldModel_H
