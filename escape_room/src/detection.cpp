@@ -145,7 +145,7 @@ void Detection::findCorridorWalls() {
 
 
 
-bool Detection::findExit() {
+/*bool Detection::findExit() {
 
     double detectLargerThresh = 1.05;
     double detectSmallerThresh = 0.95;
@@ -241,6 +241,108 @@ bool Detection::findExit() {
     data_.exit.detected = false;
     return false;
     //std::cout << "method jari "<<data_.exit.detected << std::endl;
+}*/
+bool Detection::findExit(){
+
+    //double errorThresh = 0.05; //Amount of deviation from linefit which is allowed (due to sensor noise)
+    double errorThresh = 0.01; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
+    int nPointsThresh = 10; //Amount of points larger of smaller than expected before action is being undertaken
+    int nPointsThreshEqual = 1;
+
+    int nPointsSearch = 50;
+
+    int iExit1 = 0;
+    int iExit2 = 0;
+
+    double aFit = 0; double bFit = 0;
+
+    for (unsigned int i = 0; i < (1000 - 2*15 - nPointsSearch); i = i+1){
+        if(lineFit(aFit, bFit, i, i+nPointsSearch)){ //Line found, next: search for deviation in positive direction
+
+            int nDeviations = 0;
+
+            for (int j = i+nPointsSearch; j < 1000 - 2*15; ++j){
+
+
+
+                double aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
+                double bFit_perp = LatestLaserScan[j].y - aFit_perp * LatestLaserScan[j].x;
+
+                double x_intersect = (bFit_perp - bFit)/(aFit - aFit_perp);
+                double y_intersect = aFit*x_intersect + bFit;
+
+                double distance_line = sqrt( pow(x_intersect - LatestLaserScan[j].x, 2) + pow(y_intersect - LatestLaserScan[j].y,2)  );
+
+                //std::cout << distance_line << std::endl;
+
+                if (distance_line > errorThresh){
+                    nDeviations = nDeviations + 1;
+                } else{
+                    nDeviations = 0;
+                }
+
+
+
+                if(nDeviations > nPointsThresh && LatestLaserScan[j].dist < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                    //Corner detected
+                    //std::cout << "Corner detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << "), point:" << j << std::endl;
+
+                    j = 970; // I know it's ugly, but breaking failed, I deeply apologize for this ugly piece of unscalable code.
+                }
+
+
+                if (nDeviations > nPointsThresh && LatestLaserScan[j].dist > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                    // Exit detected
+                    //std::cout << "Exitpoint 1 detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << ")" << std::endl;
+                    //std::cout << j;
+                    iExit1 = j - nPointsThresh - 2;
+
+
+
+                    //Start searching for the second point of the exit
+                    int nEqual = 0;
+
+                    for (int k = j; k < 1000 - 2*15 - nPointsSearch; ++k){
+
+                        aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
+                        bFit_perp = LatestLaserScan[k].y - aFit_perp * LatestLaserScan[k].x;
+
+                        double x_intersect = (bFit_perp - bFit)/(aFit - aFit_perp);
+                        double y_intersect = aFit*x_intersect + bFit;
+
+                        double distance_line = sqrt( pow(x_intersect - LatestLaserScan[k].x, 2) + pow(y_intersect - LatestLaserScan[k].y,2)  );
+
+                        //std::cout << distance_line;
+
+                        if (distance_line < errorThresh){
+                            nEqual = nEqual + 1;
+                            //std::cout << "You fucked up";
+                        }
+                        else{
+                            nEqual = 0;
+                        }
+
+                        if (nEqual >= nPointsThreshEqual){
+                           iExit2 = k - nPointsThreshEqual +1;
+                           data_.exit.exitPoint_det1 = LatestLaserScan[iExit1];
+                           data_.exit.exitPoint_det2 = LatestLaserScan[iExit2];
+                           data_.exit.detected = true;
+                           return true;
+                        }
+                    }
+
+
+                }
+
+            }
+        }
+    }
+    Exit exit;
+    data_.exit.exitPoint_det1 = LatestLaserScan[0];
+    data_.exit.exitPoint_det2 = LatestLaserScan[1];
+    data_.exit.detected = false;
+    return false;
+
 }
 
 
@@ -277,7 +379,16 @@ bool Detection::lineFit(double &aFit, double &bFit, int firstPoint_det, int last
 
     double fitError = 0;
 
-    if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
+    for(unsigned int i = 1; i < nFitPoint_dets - 1; ++i){
+        double aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
+        double bFit_perp = lineFitPoint_det[i].y - aFit_perp * lineFitPoint_det[i].x;
+
+        double x_intersect = (bFit_perp - bFit)/(aFit - aFit_perp);
+        double y_intersect = aFit*x_intersect + bFit;
+
+        fitError = fitError = sqrt( pow(x_intersect - lineFitPoint_det[i].x, 2) + pow(y_intersect - lineFitPoint_det[i].y,2)  );
+    }
+    /*if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
         for(unsigned int i = 1; i < nFitPoint_dets - 1; ++i){
             double xEval = (lineFitPoint_det[i].y - bFit)/aFit;
             double errorPoint_det = xEval - lineFitPoint_det[i].x;
@@ -289,7 +400,7 @@ bool Detection::lineFit(double &aFit, double &bFit, int firstPoint_det, int last
             double errorPoint_det = yEval - lineFitPoint_det[i].y;
             fitError = fitError + pow(errorPoint_det,2);
         }
-    }
+    }*/
     double RMSerror = sqrt(fitError);
 
     //Total threshold for linefit (larger when more Point_dets are evaluated or when Point_dets are further apart from each other)

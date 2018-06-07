@@ -7,4 +7,4 @@
 #define MAX_RANGE_LRF 30.0 //[m]
 #define LRF_THRESH 0.05 //[m]
 
-#define LINEFITTHRESH 0.00002 // Higher --> more chance of finding a wall
+#define LINEFITTHRESH 0.00001 // Higher --> more chance of finding a wall

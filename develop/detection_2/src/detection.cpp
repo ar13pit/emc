@@ -110,7 +110,7 @@
         int nPointsThresh = 10; //Amount of points larger of smaller than expected before action is being undertaken
         int nPointsThreshEqual = 1;
 
-        int nPointsSearch = 30;
+        int nPointsSearch = 50;
 
         int iExit1 = 0;
         int iExit2 = 0;
@@ -183,8 +183,8 @@
                                 nEqual = 0;
                             }
 
-                            if (nEqual >= nPointsThresh){
-                               iExit2 = k - nPointsThresh - 2;
+                            if (nEqual >= nPointsThreshEqual){
+                               iExit2 = k - nPointsThreshEqual +1;
                                Exit exit;
                                exit.exitPoint1 = LatestLaserScan[iExit1];
                                exit.exitPoint2 = LatestLaserScan[iExit2];
@@ -211,7 +211,7 @@
 
     //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)
     bool Detection::lineFit(double &aFit, double &bFit, int firstPoint, int lastPoint){
-        unsigned int nFitPoints = 5; //Amount of points that are used to fit line
+        unsigned int nFitPoints = 10; //Amount of points that are used to fit line
 
 
         int nAveragePoints = (lastPoint - firstPoint)/nFitPoints;
@@ -238,7 +238,16 @@
 
         double fitError = 0;
 
-        if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
+        for(unsigned int i = 1; i < nFitPoints - 1; ++i){
+            double aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
+            double bFit_perp = lineFitPoint[i].y - aFit_perp * lineFitPoint[i].x;
+
+            double x_intersect = (bFit_perp - bFit)/(aFit - aFit_perp);
+            double y_intersect = aFit*x_intersect + bFit;
+
+            fitError = fitError = sqrt( pow(x_intersect - lineFitPoint[i].x, 2) + pow(y_intersect - lineFitPoint[i].y,2)  );
+        }
+        /*if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
             for(unsigned int i = 1; i < nFitPoints - 1; ++i){
                 double xEval = (lineFitPoint[i].y - bFit)/aFit;
                 double errorPoint = xEval - lineFitPoint[i].x;
@@ -250,7 +259,7 @@
                 double errorPoint = yEval - lineFitPoint[i].y;
                 fitError = fitError + pow(errorPoint,2);
             }
-        }
+        }*/
         double RMSerror = sqrt(fitError);
 
         //Total threshold for linefit (larger when more points are evaluated or when points are further apart from each other)
