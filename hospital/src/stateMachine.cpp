@@ -1,6 +1,6 @@
 #include "stateMachine.h"
 
-bool state_machine(struct High_state high_st,struct Low_state low_st, struct Location location){
+bool state_machine(struct High_state high_st,struct Low_state low_st, WorldModel * worldModel){
 
     // World model should be read for:
     // 1) number of rooms detected, number of rooms entered
@@ -17,10 +17,11 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, struct Loc
     //                                       //
     //---------------------------------------//
 
-    int numb_rooms_detected = 0;
-    int numb_rooms_entered = 0;
-    int numb_nexted_exits = 0;      // number of total exits in rooms - 1*numb_rooms_entered
+    int numb_rooms_detected = 0;    // total number of rooms detected
+    int numb_rooms_entered = worldModel->get_enteredRooms();
+    int numb_nexted_exits = worldModel->get_nestedExits();      // number of total exits in rooms - 1*numb_rooms_entered
 
+    Location location = worldModel->get_currentLocation();
     bool object_found = false;      // second phase
 
     if (location.in_room){
@@ -32,7 +33,7 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, struct Loc
         bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
         bool at_start = false;              // have we returned back to the initial condition yet?
     }
-    Point_det wall; // has to be assigned as well
+    Point_det wall = worldModel->get_closestPointWall(); // has to be assigned as well
 
 
     //------------end of assigning variables-------------//

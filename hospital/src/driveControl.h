@@ -3,7 +3,7 @@
 
 #include <emc/io.h>
 #include <emc/rate.h>
-#include "main2.hpp"
+#include "main.hpp"
 #include <iostream>
 #include "planning.h"
 #include "config.h"

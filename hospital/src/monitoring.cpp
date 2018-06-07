@@ -1,16 +1,6 @@
 #include "monitoring.h"
 
-/* EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
-EXIT_CORRIDOR,
-GO_TO_START,        // after all rooms are located
-PARKING,            // park backwards
 
-EXPLORE_ROOM,
-GO_TO_NEXT_ROOM,
-EXIT,
-EXIT_MAIN_ROOM,      // when returning from the nested room to the main room, don't explore it
-
-STAND_NEXT_TO_OBJECT */
 
 // explore the rooms in the hospital
 bool explore_hospital(WorldModel * worldModel){
