@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
             detection.findExitsAndCorners();
 
 
-
             // UPDATE VISUALIZER
 
             vis.init_visualize();

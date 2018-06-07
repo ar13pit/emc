@@ -113,11 +113,11 @@
             Corners[l].detected = false;
         }
         //double errorThresh = 0.05; //Amount of deviation from linefit which is allowed (due to sensor noise)
-        double errorThresh = 0.02; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
+        double errorThresh = 0.05; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
         int nPointsThresh = 10; //Amount of points larger of smaller than expected before action is being undertaken
-        int nPointsThreshEqual = 10;
+        int nPointsThreshEqual = 5;
 
-        int nPointsSearch = 80;
+        int nPointsSearch = 50;
 
         int iExit1 = 0;
         int iExit2 = 0;
@@ -153,17 +153,27 @@
                     if(nDeviations > nPointsThresh && LatestLaserScan[j].dist < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
                         //Corner detected
                         //std::cout << "Corner detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << "), point:" << j << std::endl;
+
+                        if(LatestLaserScan[j-nPointsThresh].dist <= 0.9 * LatestLaserScan[j-nPointsThresh - 1].dist ){
+                            i = j;
+                            j = 970;
+                        }
+                        else{
                         Corner corner;
-                        corner.cornerPoint = LatestLaserScan[j-nPointsThresh - 2];
+                        corner.cornerPoint = LatestLaserScan[j-nPointsThresh - 1];
                         corner.detected = true;
 
                         for(int l = 0; l < nCorners; l = l+1){
-                            if(!Corners[l].detected){
+                            if(Corners[l].detected==false){
                                 Corners[l] = corner;
+                                break;
                             }
                         }
 
+
+                        i = j;
                         j = 970; // I know it's ugly, but breaking failed, I deeply apologize for this ugly piece of unscalable code.
+                    }
                     }
 
 
@@ -200,14 +210,16 @@
 
                             if (nEqual >= nPointsThreshEqual){
                                iExit2 = k - nPointsThreshEqual +1;
+                               i = iExit2;
+                               j = 970;
                                Exit exit;
                                exit.exitPoint1 = LatestLaserScan[iExit1];
                                exit.exitPoint2 = LatestLaserScan[iExit2];
                                exit.detected = true;
-                               // HERE, YOU FUCKED UP HERE, YOU HAD AN i INSTEAD OF AN l
                                for(int l = 0; l < nExits; l = l+1){
                                    if(!Exits[l].detected){
                                        Exits[l] = exit;
+                                       break;
                                    }
                                }
                                //if(sqrt(pow(LatestLaserScan[iExit1].x - LatestLaserScan[iExit2].x,2) + pow(LatestLaserScan[iExit1].y - LatestLaserScan[iExit2].y,2)) < 2.0){
@@ -224,6 +236,7 @@
     }
 
 
+    //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)
     //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)
     bool Detection::lineFit(double &aFit, double &bFit, int firstPoint, int lastPoint){
         unsigned int nFitPoints = 10; //Amount of points that are used to fit line
@@ -290,6 +303,7 @@
         }
 
     }
+
 
     Point Detection::findFurthestPoint(){
         int imax = 0;
