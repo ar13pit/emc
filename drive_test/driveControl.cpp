@@ -9,7 +9,7 @@ void DriveControl::picoDrive(double angle_ref, double ref_dist, bool turn, bool 
 
     double angle = angle_ref;
 
-
+    cout << "angle " << angle << "\n";
     //    ref_dist = 1.0 + sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
 
     // prevent situation that angle = nan
@@ -21,6 +21,7 @@ void DriveControl::picoDrive(double angle_ref, double ref_dist, bool turn, bool 
         inOut->readOdometryData(odomRef);
         r.sleep();
         inOut->readOdometryData(odomCur);
+        r.sleep();
         double destA = odomRef.a-angle;
         if( destA < -M_PI )
             destA = M_PI - abs(fmod(destA,M_PI));
@@ -31,6 +32,8 @@ void DriveControl::picoDrive(double angle_ref, double ref_dist, bool turn, bool 
         ref_dist = ref_dist + sqrt(pow(odomCur.x,2) + pow(odomCur.y,2));
 
         std::cout << "ref_angle " << ref_angle << std::endl;
+        std::cout << "read odomRef " << odomRef.a << std::endl;
+        std::cout << "read odomCur " << odomCur.a << std::endl << "\n";
 
 
         if (turn) {
@@ -61,10 +64,13 @@ void DriveControl::turn_ref(double ref_angle, emc::OdometryData odomCur, double 
     while(abs(ref_angle - odomCur.a) > TURN_COMPLETE)
     {
         angle < 0 ? picoTurnLeft() : picoTurnRight();
-        r->sleep();
+
         inOut->readOdometryData(odomCur);
+        r->sleep();
         std::cout << "ref_angle " << ref_angle << std::endl;
         std::cout << "read odometry " << odomCur.a << std::endl;
+
+//        cin.get();
     }
     stop();
     std::cout << "Turning Complete" << std::endl;
