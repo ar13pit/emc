@@ -55,10 +55,16 @@ int main(int argc, char *argv[])
                 double y = detection.LatestLaserScan[i].y;
                 vis.plot_xy_color(x, y,0, 0, 255);
             }
-            for(int l = 0; l < 20; l=l+1){
+            for(unsigned int l = 0; l < 20; l=l+1){
                if(detection.Exits[l].detected){
-                   std::cout << l;
+//                   std::cout << l;
                    vis.plotExit(detection.Exits[l]);
+
+               }
+            }
+            for(unsigned int l = 0; l < 20; l=l+1){
+               if(detection.Corners[l].detected){
+                   vis.plotCorner(detection.Corners[l]);
 
                }
             }

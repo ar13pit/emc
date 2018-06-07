@@ -104,7 +104,7 @@
     }
 
     void Detection::findExitsAndCorners(){
-        std::cout << "TEST TEST BLIEP BLOEP" << std::endl;
+        //std::cout << "TEST" << std::endl;
         int nExits = 20;
         int nCorners = 20;
 
@@ -113,11 +113,11 @@
             Corners[l].detected = false;
         }
         //double errorThresh = 0.05; //Amount of deviation from linefit which is allowed (due to sensor noise)
-        double errorThresh = 0.01; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
+        double errorThresh = 0.02; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
         int nPointsThresh = 10; //Amount of points larger of smaller than expected before action is being undertaken
-        int nPointsThreshEqual = 1;
+        int nPointsThreshEqual = 10;
 
-        int nPointsSearch = 50;
+        int nPointsSearch = 80;
 
         int iExit1 = 0;
         int iExit2 = 0;
@@ -130,7 +130,6 @@
                 int nDeviations = 0;
 
                 for (int j = i+nPointsSearch; j < 1000 - 2*15; ++j){
-
 
 
                     double aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
@@ -156,6 +155,7 @@
                         //std::cout << "Corner detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << "), point:" << j << std::endl;
                         Corner corner;
                         corner.cornerPoint = LatestLaserScan[j-nPointsThresh - 2];
+                        corner.detected = true;
 
                         for(int l = 0; l < nCorners; l = l+1){
                             if(!Corners[l].detected){
@@ -204,7 +204,8 @@
                                exit.exitPoint1 = LatestLaserScan[iExit1];
                                exit.exitPoint2 = LatestLaserScan[iExit2];
                                exit.detected = true;
-                               for(int l = 0; l < nExits; l = i+1){
+                               // HERE, YOU FUCKED UP HERE, YOU HAD AN i INSTEAD OF AN l
+                               for(int l = 0; l < nExits; l = l+1){
                                    if(!Exits[l].detected){
                                        Exits[l] = exit;
                                    }
@@ -221,6 +222,7 @@
             }
         }
     }
+
 
     //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)
     bool Detection::lineFit(double &aFit, double &bFit, int firstPoint, int lastPoint){

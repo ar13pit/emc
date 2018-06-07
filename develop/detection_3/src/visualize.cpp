@@ -151,6 +151,16 @@ void Visualizer::plotExit(Exit exit){
     }
 }
 
+void Visualizer::plotCorner(Corner corner){
+    if(corner.detected){
+        cv::Point2d corner1 = worldToCanvas(corner.cornerPoint.x, corner.cornerPoint.y);
+
+        Visualizer::plot_xy_color(corner.cornerPoint.x, corner.cornerPoint.y,0,255,0);
+        circle(canvas, corner1, 1, cv::Scalar(0,0,255),5,8,0);
+
+    }
+}
+
 void Visualizer::plotLine(double aFit, double bFit, Point firstPoint, Point lastPoint){
     double x1 = -10;
     double x2 = 10;

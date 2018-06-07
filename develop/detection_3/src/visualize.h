@@ -17,6 +17,7 @@ void init_visualize();
 void plot_xy_color(double, double, double, double, double);
 void publish();
 void plotExit(Exit);
+void plotCorner(Corner);
 void plotLine(double, double, Point, Point);
 cv::Point2d canvas_center;
 
