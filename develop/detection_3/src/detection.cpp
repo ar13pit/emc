@@ -114,7 +114,7 @@
         }
         //double errorThresh = 0.05; //Amount of deviation from linefit which is allowed (due to sensor noise)
         double errorThresh = 0.05; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
-        int nPointsThresh = 10; //Amount of points larger of smaller than expected before action is being undertaken
+        int nPointsThresh = 15; //Amount of points larger of smaller than expected before action is being undertaken
         int nPointsThreshEqual = 5;
 
         int nPointsSearch = 50;
@@ -211,6 +211,7 @@
                             if (nEqual >= nPointsThreshEqual){
                                iExit2 = k - nPointsThreshEqual +1;
                                i = iExit2;
+                               k = 970;
                                j = 970;
                                Exit exit;
                                exit.exitPoint1 = LatestLaserScan[iExit1];
@@ -234,6 +235,18 @@
             }
         }
     }
+
+    double Detection::distance_to_front(){
+        double dist_total;
+        for(int i = 450; i < 500; i = i+1 ){
+            dist_total = dist_total = LatestLaserScan[i].dist;
+        }
+        double distance = dist_total/50;
+
+        return distance;
+    }
+
+
 
 
     //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)

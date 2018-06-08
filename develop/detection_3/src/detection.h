@@ -60,6 +60,7 @@ public:
     bool lineFit(double&, double&, int, int);
     Point findFurthestPoint();
     void findExitsAndCorners();
+    double distance_to_front();
 
    // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
 
