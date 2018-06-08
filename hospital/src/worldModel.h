@@ -14,9 +14,11 @@
 using json = nlohmann::json;
 
 typedef struct {
-    std::vector<Point_det> corners;
-    std::vector<Exit> exits;
+    Point_det corners[4];
+    Exit exit_previous; //Exit/entrance towards the lower level room
+    int previousRoom; //The lower level room from which you entered the first time
 } Room;
+
 
 
 // this is based on an assumption that corridor has most of the rooms connected
