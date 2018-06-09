@@ -14,8 +14,7 @@ typedef struct {
 typedef enum {
     EXPLORE_HOSPITAL,
     GO_TO_ROOM,
-    RETURN_TO_INIT,
-    TOO_CLOSE_TO_WALL
+    RETURN_TO_INIT
 } High_State;
 
 // this are the actions in the rooms
@@ -28,7 +27,6 @@ typedef enum {
     EXPLORE_ROOM,
     GO_TO_NEXT_ROOM,
     EXIT,
-    EXIT_MAIN_ROOM,      // when returning from the nested room to the main room, don't explore it
 
     STAND_NEXT_TO_OBJECT
 } Low_State;

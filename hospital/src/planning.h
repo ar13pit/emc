@@ -4,6 +4,7 @@
 // #include <math.h>
 #include "detection.h"
 #include "main.hpp"
+#include "worldModel.h"
 
 
 #ifndef planning_H
@@ -160,6 +161,8 @@ class Planning{
 private:
     Destination dest;
     Point_det absolute_furthest;
+    WorldModel *worldModel;
+
 
     void room_logic(Detection_data *data, Flags *flags, Destination *far_point);
     void corrid2dest_transf(Corridor corr, Detection_data *data);
@@ -180,9 +183,10 @@ private:
 
 public:
 
-    Planning(Detection_data *data, Flags *flags, Destination *far_point){
-
-
+    Planning(WorldModel *data){
+        worldModel = data;
+    }
+    /*
         if (flags->in_corridor){
             std::cout << "Corridor detected" << "\n";
 
@@ -213,8 +217,6 @@ public:
 
         }
 
-
-
         std::cout << "Exit is " << data->exit.exitPoint_det1.dist << " " << data->exit.exitPoint_det2.dist << " away"<< "\n";
 
         if (!flags->in_corridor &&((data->exit.exitPoint_det1.dist < EXIT_THRESHOLD) || (data->exit.exitPoint_det2.dist < EXIT_THRESHOLD))){
@@ -242,8 +244,9 @@ public:
         }
     }
 
+    */
 
-
+    void parking(Point_det *corr_end);  // input is the point of the corridor end relative to PICO
     Destination get_Destination();
 
 

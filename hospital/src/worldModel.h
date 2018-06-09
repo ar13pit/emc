@@ -57,6 +57,9 @@ public:
     Location get_currentLocation();
     High_State get_current_high_state();
     Low_State get_current_low_state();
+
+    void set_destination(Destination dest);
+
 };
 
 #endif //worldModel_H
