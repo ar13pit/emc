@@ -20,6 +20,7 @@
 
 int main(int argc, char *argv[])
 {
+
     // Initialization of Robot
     emc::Rate r(EXECUTION_RATE);
     emc::IO io;
@@ -32,6 +33,7 @@ int main(int argc, char *argv[])
 
     vis.init_visualize();
 
+
     while(io.ok()) {
         //pico_drive.driveForward(1.0);
         if(detection.getSensorData()) {
@@ -39,14 +41,8 @@ int main(int argc, char *argv[])
             detection.saveLRFScan();
             int index = 0;
 
-            exit = detection.findExit();
 
-            if (exit.detected){
-                std::cout << "Exit detected at: (" << exit.exitPoint1.x <<", " << exit.exitPoint1.y << ") and (" << exit.exitPoint2.x <<", " << exit.exitPoint2.y << ")" << std::endl;
-             }
-            else{
-                std::cout << "No exit detected..." << std::endl;
-            }
+            detection.findExitsAndCorners();
 
 
             // UPDATE VISUALIZER
@@ -58,7 +54,20 @@ int main(int argc, char *argv[])
                 double y = detection.LatestLaserScan[i].y;
                 vis.plot_xy_color(x, y,0, 0, 255);
             }
-            vis.plotExit(exit);
+            for(unsigned int l = 0; l < 20; l=l+1){
+               if(detection.Exits[l].detected){
+//                   std::cout << l;
+                   vis.plotExit(detection.Exits[l]);
+
+               }
+            }
+            for(unsigned int l = 0; l < 20; l=l+1){
+               if(detection.Corners[l].detected){
+                   vis.plotCorner(detection.Corners[l]);
+
+               }
+            }
+            //vis.plotExit(exit);
             vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
             vis.publish();
 
@@ -69,7 +78,7 @@ int main(int argc, char *argv[])
         }
 
 
-        r.sleep();
+       r.sleep();
     }
 
 

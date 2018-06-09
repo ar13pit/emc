@@ -5,7 +5,7 @@ project(hospital_challenge)
 include_directories(include)
 
 # Search for all source files of extension ".cc" and add them to $SOURCES
-set(GLOB SOURCES "src/*.cpp")
+file(GLOB SOURCES "src/*.cpp")
 
 # Create executable named "testPlanning"
 add_executable(hospital_room ${SOURCES})

@@ -22,6 +22,11 @@ typedef struct {
 } Exit;
 
 typedef struct {
+    bool detected;
+    Point cornerPoint;
+} Corner;
+
+typedef struct {
     bool escaped;
     Point rightWall1;
     Point rightWall2;
@@ -43,6 +48,8 @@ public:
     }
 public:
     Point LatestLaserScan[970]; //Deleted first and last 15 points
+    Exit Exits[20];
+    Corner Corners[20];
     double aFitPlot;
     double bFitPlot;
     emc::LaserData laser;
@@ -52,7 +59,8 @@ public:
     void saveLRFScan();
     bool lineFit(double&, double&, int, int);
     Point findFurthestPoint();
-    Exit findExit();
+    void findExitsAndCorners();
+    double distance_to_front();
 
    // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
 

@@ -14,9 +14,11 @@
 using json = nlohmann::json;
 
 typedef struct {
-    std::vector<Point_det> corners;
-    std::vector<Exit> exits;
+    Point_det corners[4];
+    Exit exit_previous; //Exit/entrance towards the lower level room
+    int previousRoom; //The lower level room from which you entered the first time
 } Room;
+
 
 
 // this is based on an assumption that corridor has most of the rooms connected
@@ -46,6 +48,8 @@ class WorldModel {
     int enteredRooms_;
     int nestedExits_;
     Location currentLocation_;
+    High_State current_high_state;
+    Low_State current_low_state;
     json jsonObject_;
 
     void writeJson();
@@ -65,6 +69,8 @@ WorldModel(emc::IO* IO) : io_(IO), r_(EXECUTION_RATE) {
     int get_enteredRooms();
     int get_nestedExits();
     Location get_currentLocation();
+    High_State get_current_high_state();
+    Low_State get_current_low_state();
 };
 
 #endif //worldModel_H

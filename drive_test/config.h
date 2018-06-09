@@ -4,7 +4,7 @@
 #define DIST_BACKWARDS 0.1 // [m]
 #define SETPOINT_CORRIDOR   0.25            // [m]
 
-#define MIN_DIST_TO_WALL 0.3 // [m]
+#define MIN_DIST_TO_WALL 0.75 // [m]
 #define MAX_RANGE_LRF 30.0 //[m]
 #define LRF_THRESH 0.05 //[m]
 
