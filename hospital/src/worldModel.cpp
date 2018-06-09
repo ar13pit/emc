@@ -1,5 +1,10 @@
 #include "worldModel.h"
 
+void WorldModel::set_destination(Destination dest){
+    destination_ = dest;
+}
+
+
 /*
 double* WorldModel::getMinimumDistance()
 {

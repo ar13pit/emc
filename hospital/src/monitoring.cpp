@@ -13,8 +13,6 @@ bool explore_hospital(WorldModel * worldModel){
 
     } else if (current_low == GO_TO_NEXT_ROOM){
 
-    } else if (current_low == EXIT_MAIN_ROOM){
-
     }
 
     // corridor-related low controls
@@ -34,7 +32,8 @@ bool return_to_init(WorldModel * worldModel){
     if (current_low == GO_TO_START){
 
     } else if (current_low == PARKING) {
-
+        Planning::parking(worldModel->get_corridor_end());
+        worldModel->set_destination(Planning::get_Destination());
     }
 }
 
