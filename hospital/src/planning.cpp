@@ -1,474 +1,313 @@
 #include "planning.h"
-
-
-
-/*
--------------------------------------------------------------------------------
-                        Class PointCorridor Methods
--------------------------------------------------------------------------------
-*/
-
-void PointCorridor::calculate_xangle() {
-    angle_ = atan(y_/x_);
-};
-
-void PointCorridor::calculate_radius() {
-    radius_ = sqrt(pow(x_, 2) + pow(y_, 2));
-};
-
-double PointCorridor::get_x() {
-    return x_;
-};
-
-double PointCorridor::get_y() {
-    return y_;
-};
-
-double PointCorridor::get_xangle() {
-    return angle_;
-};
-
-double PointCorridor::get_radius() {
-    return radius_;
-};
-
-void PointCorridor::print() {
-    std::cout << "Coordinates: (" << x_ << ", " << y_ << "), Radius: " << radius_ << " Angle: " << angle_ ;
-}
-
-
-/*
--------------------------------------------------------------------------------
-                        Class LineCorridor Methods
--------------------------------------------------------------------------------
-*/
-
-void LineCorridor::calculate_midpoint() {
-    double x_mid, y_mid;
-
-    x_mid = (point1_.get_x() + point2_.get_x())/2;
-    y_mid = (point1_.get_y() + point2_.get_y())/2;
-    midpoint_ = PointCorridor(x_mid, y_mid);
-};
-
-void LineCorridor::calculate_slope() {
-    slope_ = (point1_.get_y() - point2_.get_y())/(point1_.get_x() - point2_.get_x());
-};
-
-void LineCorridor::calculate_equation() {
-    equation[0] = slope_;
-    equation[1] = -1.0;
-    equation[2] = -slope_*point1_.get_x() + point1_.get_y();
-};
-
-void LineCorridor::calculate_perpendicular(){
-    perpendicular_point1[0] = 1.0;
-    perpendicular_point1[1] = slope_;
-    perpendicular_point1[2] = -point1_.get_x() -slope_*point1_.get_y();
-
-    perpendicular_point2[0] = 1.0;
-    perpendicular_point2[1] = slope_;
-    perpendicular_point2[2] = -point2_.get_x() -slope_*point2_.get_y();
-
-    perpendicular_midpoint[0] = 1.0;
-    perpendicular_midpoint[1] = slope_;
-    perpendicular_midpoint[2] = -midpoint_.get_x() -slope_*midpoint_.get_y();
-};
-
-PointCorridor LineCorridor::get_line_point1() {
-    return point1_;
-};
-
-PointCorridor LineCorridor::get_line_point2() {
-    return point2_;
-};
-
-PointCorridor LineCorridor::get_line_midpoint() {
-    return midpoint_;
-};
-
-double LineCorridor::get_line_slope() {
-    return slope_;
-};
-
-void LineCorridor::get_line_equation(double input_array[3]) const {
-    for(int i = 0; i < 3; ++i) {
-        input_array[i] = equation[i];
-    }
-};
-
-void LineCorridor::get_line_perpendicular_point1(double input_array[3]) const {
-    for(int i = 0; i < 3; ++i) {
-        input_array[i] = perpendicular_point1[i];
-    }
-};
-
-void LineCorridor::get_line_perpendicular_point2(double input_array[3]) const {
-    for(int i = 0; i < 3; ++i) {
-        input_array[i] = perpendicular_point2[i];
-    }
-};
-
-void LineCorridor::get_line_perpendicular_midpoint(double input_array[3]) const {
-    for(int i = 0; i < 3; ++i) {
-        input_array[i] = perpendicular_midpoint[i];
-    }
-};
-
-void LineCorridor::print() {
-    std::cout << "Line Point 1: "; point1_.print(); std::cout << '\n';
-    std::cout << "Line Point 2: "; point2_.print(); std::cout << '\n';
-    std::cout << "Line Midpoint: "; midpoint_.print(); std::cout << '\n';
-    std::cout << "Line Slope: " << slope_ << '\n';
-    std::cout << "Line Equation: " << equation[0] << "x + " << equation[1] << "y + " << equation[2] << " = 0" << '\n';
-    std::cout << "Line Perpendicular through Point 1: " << perpendicular_point1[0] << "x + " << perpendicular_point1[1] << "y + " << perpendicular_point1[2] << " = 0" << '\n';
-    std::cout << "Line Perpendicular through Point 2: " << perpendicular_point2[0] << "x + " << perpendicular_point2[1] << "y + " << perpendicular_point2[2] << " = 0" << '\n';
-    std::cout << "Line Perpendicular through Mid-Point: " << perpendicular_midpoint[0] << "x + " << perpendicular_midpoint[1] << "y + " << perpendicular_midpoint[2] << " = 0" << '\n';
-};
-
-
-/*
--------------------------------------------------------------------------------
-                        Class Corridor Methods
--------------------------------------------------------------------------------
-*/
-
-void Corridor::calculate_center_line() {
-    PointCorridor center_point1, center_point2, temp;
-    double x2, y1, y2;
-    double center_equation[3], center_equation_temp[3], opposite_wall_equation[3], opposite_wall_equation_temp[3];
-    // double *center_equation, *center_equation_temp, *opposite_wall_equation, *opposite_wall_equation_temp;
-
-    y1 = left_.get_line_point1().get_y();
-
-    y2 = left_.get_line_point2().get_y();
-    right_.get_line_equation(opposite_wall_equation);
-    // right_.print();
-
-    if (y1 > y2) {
-        center_point1 = left_.get_line_point1();
-        left_.get_line_perpendicular_point1(center_equation);
-    }
-    else {
-        center_point1 = left_.get_line_point2();
-        left_.get_line_perpendicular_point2(center_equation);
-    }
-
-    y1 = right_.get_line_point1().get_y();
-    y2 = right_.get_line_point2().get_y();
-    left_.get_line_equation(opposite_wall_equation_temp);
-    // left_.print();
-
-    if (y1 > y2) {
-        temp = right_.get_line_point1();
-        right_.get_line_perpendicular_point1(center_equation_temp);
-    }
-    else {
-        temp = right_.get_line_point2();
-        right_.get_line_perpendicular_point2(center_equation_temp);
-    }
-
-    if (center_point1.get_radius() > temp.get_radius()) {
-        center_point1 = temp;
-        for (int i = 0; i < 3; ++i) {
-            center_equation[i] = center_equation_temp[i];
-            opposite_wall_equation[i] = opposite_wall_equation_temp[i];
-            // std::cout << "/* message */" << '\n';
-        }
-    }
-
-    // center_point1.print(); std::cout << '\n';
-
-    y2 = (center_equation[0]*opposite_wall_equation[2] - opposite_wall_equation[0]*center_equation[2])/(opposite_wall_equation[0]*center_equation[1] - center_equation[0]*opposite_wall_equation[1]);
-    x2 = (center_equation[2] + center_equation[1]*y2)/(-center_equation[0]);
-
-/*   std::cout << x2*center_equation[0] + y2*center_equation[1] + center_equation[2] << '\n';
-    std::cout << x2*opposite_wall_equation[0] + y2*opposite_wall_equation[1] + opposite_wall_equation[2] << '\n';
-*/
-    center_point2 = PointCorridor(x2, y2);
-    center_ = LineCorridor(center_point1, center_point2);
-};
-
-void Corridor::calculate_setpoint() {
-    // double x1, x2, y1, y2, a, b, c, c1, discriminant, denominator, setpoint_line_equation[3], center_line_equation[3], val1, val2;
-    double x2, y2, a, b, c, setpoint_line_equation[3];
-
-    center_.get_line_perpendicular_midpoint(setpoint_line_equation);
-    // center_.get_line_perpendicular_midpoint(center_line_equation);
-
-    // c1 = SETPOINT_CORRIDOR;
-    a = setpoint_line_equation[0];
-    b = setpoint_line_equation[1];
-    c = setpoint_line_equation[2];
-
-    x2 = (b + c)/-a;
-
-    //
-    // denominator = pow(a, 2) + pow(b, 2);
-    // discriminant = sqrt(denominator*pow(c1, 2) - pow(c, 2));
-    //
-    // std::cout << "devision test " << denominator << "\n";
-    //
-    // x1 = (-a*c + b*discriminant)/denominator;
-    // x2 = (-a*c - b*discriminant)/denominator;
-    //
-    // y1 = sqrt(pow(c1, 2) - pow(x1, 2));
-    // y2 = sqrt(pow(c1, 2) - pow(x2, 2));
-    //
-    // val1 = center_line_equation[0]*x1 + center_line_equation[1]*y1 + center_line_equation[2];
-    // val2 = center_line_equation[0]*x2 + center_line_equation[1]*y2 + center_line_equation[2];
-    //
-    // if (val1 > 0) {
-    //     setpoint_ = PointCorridor(x1, y1);
-    // }
-    // else {
-    setpoint_ = PointCorridor(x2, 1);
-    // }
-
-    std::cout << "Corridor Setpoint (" << setpoint_.get_x() << " " << setpoint_.get_y() << ") X-Angle: "<< setpoint_.get_xangle() << "\n";
-
-
-
-};
-
-LineCorridor Corridor::get_corridor_line_left() {
-    return left_;
-};
-
-LineCorridor Corridor::get_corridor_line_right() {
-    return right_;
-};
-
-LineCorridor Corridor::get_corridor_line_center() {
-    return center_;
-};
-
-PointCorridor Corridor::get_corridor_setpoint() {
-    return setpoint_;
-};
-
-
-// trasformation of the corridor representation to Destination format
-void Planning::corrid2dest_transf(Corridor corr, Detection_data *data){
-    double temp_angle;
-/*    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_x() << "\n"<< "\n";
-    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_y() << "\n"<< "\n";
-    std::cout <<"Corridor setpoint" << corr.get_corridor_setpoint().get_angle() << "\n"<< "\n";
-*/
-    dest.dist = distance_calc(corr.get_corridor_setpoint().get_x(), corr.get_corridor_setpoint().get_y());
-    temp_angle = corr.get_corridor_setpoint().get_xangle();
-    if (temp_angle < 0) {
-        // std::cout << "Corridor X-Angle test absolute value: " << -temp_angle << '\n';
-        dest.angle = -(M_PI/2) - temp_angle;
-        // std::cout << "Calculation Test: " << -(M_PI/2) - temp_angle << '\n';
-        std::cout << "Destination Angle to turn: " << dest.angle << '\n';
-
-    }
-    else {
-        // std::cout << "Corridor X-Angle test absolute value: " << temp_angle << '\n';
-        dest.angle = (M_PI/2) - temp_angle;
-        // std::cout << "Calculation Test: " << (M_PI/2) - temp_angle << '\n';
-        std::cout << "Destination Angle to turn: " << dest.angle << '\n';
-
-    }
-
-    // dest.angle = corr.get_corridor_setpoint().get_xangle() - M_PI - TURN_COMPLETE;
-}
-
-
-/*---------------------------------------------------------------------------------
----------------------------inside the room-----------------------------------------
----------------------------------------------------------------------------------*/
-
-// distance calculation
-double Planning::distance_calc(double x, double y){
-    double dist;
-    dist = sqrt(pow(x,2)+pow(y,2));
-    return dist;
-}
-
-// set furthest point
-void Planning::set_furthest_point(Point_det *point){
-    absolute_furthest.dist = point->dist;
-    absolute_furthest.x = point->x;
-    absolute_furthest.y = point->y;
-    absolute_furthest.angle = point->angle; // add pi because we assume turn at next instant
-}
-
-
-// calculate the destination when exit identified
-void Planning::calc_exit_dest (Detection_data *data){
-
-    double x;
-    double y;
-
-    x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
-    y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
-    dest.angle = (data->exit.exitPoint_det1.angle + data->exit.exitPoint_det2.angle)/2;
-
-    dest.dist = distance_calc(x, y);
-
-
-    if (dest.dist > DIST_SETPOINT)
-        dest.dist = DIST_SETPOINT;
-
-
-}
-
-
-// calculate the destination when exit in not identified
-void Planning::calc_furthest_dest (Point_det furthest){
-
-    dest.dist = distance_calc(furthest.x/4, furthest.y/4);
-    dest.angle = furthest.angle;
-    if (dest.dist > DIST_SETPOINT) {
-        dest.dist = DIST_SETPOINT;
-    }
-}
-
-
-// check whether the new point is further than the saved one
-void Planning::compare_furthest_point(Point_det *point){
-    if (point->dist > absolute_furthest.dist) {
-        set_furthest_point(point);
-    }
-}
-
-void Planning::turn_around(){
-    dest.angle = M_PI;
+#include "main.hpp"
+#include "config.h"
+#include "worldModel.h"
+#include "detection.h"
+#include "iostream"
+#include "math.h"
+#include <cmath>
+#include <vector>
+using namespace std;
+
+Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDetected){//struct High_state highSt, struct Low_state lowSt){
+    std::cout << "High state =  " << highSt << std::endl;
+    std::cout << "Low state =  " << highSt << std::endl;
+
+    Room room;
+    Point_det navigateTo;
+    Destination dest;
+    dest.angle = 0;
     dest.dist = 0;
-}
+    dest.x = 0;
+    dest.y = 0;
 
-void Planning::exit_center_realign(Detection_data * data){
-    dest.dist = (data->exit.exitPoint_det1.dist - data->exit.exitPoint_det2.dist)/2;
-    if (dest.dist<0) {
-        dest.angle = data->exit.exitPoint_det2.angle;
-    } else {
-        dest.angle = data->exit.exitPoint_det1.angle;
+    if(wallDetected){
+        dest = getAwayFromWall(lowSt);
+        std::cout << "WALL DETECT"<<  dest.angle << std::endl;
     }
-}
-
-
-//bool Planning::check_corridor(Detection_data *data){
-//    double dist_x;
-//    double dist_y;
-//    double dist_c;
-
-
-//    dist_x = (data->exit.exitPoint_det1.x + data->exit.exitPoint_det2.x)/2;
-//    dist_y = (data->exit.exitPoint_det1.y + data->exit.exitPoint_det2.y)/2;
-
-//    dist_c = sqrt(pow(dist_x,2)+pow(dist_y,2));
-
-//    std::cout << "distance c " << dist_c << "\n";
-
-//    if (dist_c < THRESHOLD_CORRIDOR ){
-//        std::cout << "Threshold not active" << "\n"<< "\n";
-//        return 1;
-//    } else {
-//        std::cout << "Threshold is active" << "\n" << "\n";
-//        return 0;
-//    }
-//}
-
-
-
-void Planning::room_logic(Detection_data *data, Flags *flags, Destination *far_point){
-    if (flags->in_corridor == true){
-        std::cout << "In corridor = true" <<std::endl;
-    } else {
-        std::cout << "In corridor = false" <<std::endl;
-    }
-
-    if (data->exit.detected == true){
-        std::cout << "Exit detected = true" <<std::endl;
-    } else {
-        std::cout << "Exit detected = false" <<std::endl;
-    }
-
-    Point_det current_furthest = data->furthest_point;
-
-    // check if the exit detected
-    if (data->exit.detected){
-        calc_exit_dest(data);        // define destination
-        flags->drive_frw = true;
-    } else {
-
-        // check if we have turned around already
-        if (!flags->turned_once){
-            flags->turned_once = true;        // remember that we've turned around
-            set_furthest_point(&current_furthest);     // save the furthest point given info from perception
-            turn_around();
-            flags->turn = true;
-            flags->drive_frw = false;
-
-            calc_furthest_dest (absolute_furthest);
-            far_point = &dest;
-            far_point->angle = M_PI;//far_point->angle + M_PI;
-
-            std::cout << "Turn to " << far_point->angle << std::endl;
-            std::cout << "Turn around" <<std::endl;
-        } else {
-            std::cout << "Furthest point " << std::endl;
-            absolute_furthest.x = far_point->x;
-            absolute_furthest.y = far_point->y;
-            absolute_furthest.angle = far_point->angle;
-            absolute_furthest.dist = distance_calc(far_point->x, far_point->y);
-
-            compare_furthest_point(&current_furthest);     // check if the first point was further
-            calc_furthest_dest(absolute_furthest);             // set the furthest point as a destination
-            flags->turned_once = false;
-            flags->drive_frw = true;
+    else{
+        switch(highSt){
+            case EXPLORE_HOSPITAL :                //Exlore_Hospital
+                switch(lowSt){
+                case EXPLORE_CORRIDOR :            //Explore_corridor
+                    dest = setpointInCorridor();
+                    return dest;
+                case EXIT_TO_PREV_ROOM :
+                    room = getRoom();
+                    navigateTo = getNearbyExitPoint(room);
+                    dest = driveToPoint(navigateTo);
+                    return dest;
+                case EXPLORE_ROOM :
+                    room = getRoom();
+                    dest = driveInRoom(room);
+                    return dest;
+                case GO_TO_NEXT_ROOM :
+                    room = get_closestRoom();
+                    navigateTo = getNearbyExitPoint(room);
+                    dest = driveToPoint(navigateTo);
+                    return dest;
+                case GO_INSIDE_ROOM :
+                    // Go through the exit...
+                    break;
+                }
+            case RETURN_TO_INIT :
+                switch(lowSt){
+                case EXIT_TO_PREV_ROOM :
+                    room = getRoom();
+                    navigateTo = getNearbyExitPoint(room);
+                    dest = driveToPoint(navigateTo);
+                    return dest;
+                case GO_TO_START :
+                    navigateTo = getStartPos();
+                    dest = driveToPoint(navigateTo);
+                    return dest;
+                case PARKING :
+                    dest = parkPico();
+                    return dest;
+                }
+            case GO_TO_ROOM :
+                switch(lowSt){
+                case GO_TO_NEXT_EXIT :
+                    room = getMostNestedRoom();
+                    room = getNextRoom(room);
+                    navigateTo = getNearbyExitPoint(room);
+                    dest = driveToPoint(navigateTo);
+                    return dest;
+                case GO_INSIDE_ROOM :
+                    // Go through the exit...
+                    break;
+                case STAND_NEXT_TO_OBJECT :
+                    // Drive to the object...
+                    break;
+                }
         }
     }
 
-/*    if (dest.angle>M_PI){
+    return dest;
+}
+
+Destination Planning::setpointInCorridor(){
+
+    //Move straight ahead, getAwayFromWall prevents from crashing into walls
+    dest.dist = DIST_SETPOINT;
+
+    return dest;
+}
+
+Destination Planning::getAwayFromWall(Low_State lowSt){
+
+    Point_det closestPoint = get_closestPointWall();
+
+    //Move sideways when PICO is inside the corridor OR
+    //When closest point is at the side of PICO
+    if(lowSt == EXPLORE_CORRIDOR || abs(closestPoint.angle) > FRONTWALL_ANGLE){
+        dest.angle = closestPoint.angle < 0 ? MOVESIDEWAYS_FACTOR : -MOVESIDEWAYS_FACTOR;
+        dest.dist = DIST_SETPOINT;
+    }
+    //If closest point is in the front of PICO, then turn around
+    else{
+        dest.angle = closestPoint.angle < 0 ? TURN_WHEN_OBJECT_IN_FRONT : -TURN_WHEN_OBJECT_IN_FRONT;
+        dest.dist = 0;
+    }
+    return dest;
+}
+
+Room Planning::get_closestRoom(){
+
+    Room closestRoom;
+    vector<Room> allRooms = getAllRooms();
+    int curRoom = getCurrentRoom();
+    Point_det curPos = getCurrentPosition();
+    double shortestDist = INFINITY;
+
+    for(int i = 0;i<allRooms.size(); i++){
+        ///////////////////////////  TODO  ///////////////////////////////
+        ///    This works, but better to set closestRoom.corners[0].x
+        ///    to 0 when initialized
+
+        if(allRooms[i].exit_previous.detected && curRoom == allRooms[i].previousRoom &&
+               (abs(closestRoom.corners[0].x) < 0.001 || abs(closestRoom.corners[0].x > 100))){
+            //Get middle point of the exit
+            cout << '1' << endl;
+            double xMid = 0.5*(allRooms[i].exit_previous.exitPoint_det1.x + allRooms[i].exit_previous.exitPoint_det2.x);
+            double yMid = 0.5*(allRooms[i].exit_previous.exitPoint_det1.y + allRooms[i].exit_previous.exitPoint_det2.y);
+
+            double distToRoom = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-yMid, 2));
+            if(distToRoom < shortestDist){
+                shortestDist = distToRoom;
+                closestRoom = allRooms[i];
+            }
+            //cout << "Exit Room " << i << " is at (" << xMid << ',' << yMid << ')' << endl;
+        }
+    }
+    //cout << "Closest Exit is at (" << 0.5*(closestRoom.exit_previous.exitPoint_det1.x + closestRoom.exit_previous.exitPoint_det2.x) << ',' << 0.5*(closestRoom.exit_previous.exitPoint_det1.y + closestRoom.exit_previous.exitPoint_det2.y) << ')' << endl;
+    return closestRoom;
+}
+
+Point_det Planning::getNearbyExitPoint(Room closestRoom){
+
+    Point_det destination;
+    Point_det extPnt1 = closestRoom.exit_previous.exitPoint_det1;
+    Point_det extPnt2 = closestRoom.exit_previous.exitPoint_det2;
+    Point_det curPos = getCurrentPosition();
+
+    double xMid = 0.5*(extPnt1.x + extPnt2.x);
+    double yMid = 0.5*(extPnt1.y + extPnt2.y);
+
+    //Vertical exit
+    if(abs(extPnt1.x - extPnt2.x) > abs(extPnt1.y - extPnt2.y)){
+        destination.x = xMid;
+
+        double distExtSide1 = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-(yMid-WAIT_BEFORE_EXIT), 2));
+        double distExtSide2 = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-(yMid+WAIT_BEFORE_EXIT), 2));
+
+        destination.y = distExtSide1 < distExtSide2 ? yMid-WAIT_BEFORE_EXIT : yMid+WAIT_BEFORE_EXIT;
+    }
+    //Horizontal exit
+    else{
+        destination.y = yMid;
+
+        double distExtSide1 = sqrt(pow(curPos.x-(xMid-WAIT_BEFORE_EXIT), 2) + pow(curPos.y-yMid, 2));
+        double distExtSide2 = sqrt(pow(curPos.x-(xMid+WAIT_BEFORE_EXIT), 2) + pow(curPos.y-yMid, 2));
+
+        destination.x = distExtSide1 < distExtSide2 ? xMid-WAIT_BEFORE_EXIT : xMid+WAIT_BEFORE_EXIT;
+    }
+
+    cout << "Destination Point = (" << destination.x << ',' << destination.y << ')' << endl;
+    return destination;
+}
+
+Destination Planning::driveToPoint(Point_det goToPoint){
+
+    ///////////////////  TODO  //////////////////////////////////////
+    /// Check wheter is works when the relative angle is different
+    /// Unable to check in simulation without other classes...
+    ///
+    Point_det curPos = getCurrentPosition();
+    Destination dest;
+
+    double disX = goToPoint.x-curPos.x;
+    double disY = goToPoint.y-curPos.y;
+
+    if(disX > 0 && disY < 0){
+        cout << "First Quadrant" << endl;
+        dest.angle = -atan(disY/disX);
+    }
+    else if(disX < 0 && disY < 0){
+        cout << "Second Quadrant" << endl;
+        dest.angle = M_PI-atan(disY/disX);
+    }
+    else if(disX < 0 && disY > 0){
+        cout << "Third Quadrant" << endl;
+        dest.angle = M_PI-atan(disY/disX);
+    }
+    else if(disX > 0 && disY > 0){
+        cout << "Fourth Quadrant" << endl;
+        dest.angle = -atan(disY/disX);
+    }
+    dest.dist = DIST_SETPOINT;
+
+
+//    dest.angle = atan(disY/disX);
+
+    cout << "ANGLE = " << dest.angle << endl;
+
+    return dest;
+}
+
+Room Planning::getRoom(){
+
+    Room prevRoom;
+    int curRoom = getCurrentRoom();
+    vector<Room> allRooms = getAllRooms();
+
+    //ASSUMPTION: Rooms are stored in order where the currentRoom == (i+1)'th element in AllRooms
+    if(allRooms.size() >= curRoom-1)
+        prevRoom = allRooms[curRoom-1];
+    else
+        cout << "NO VALID ROOM NUMBER!" << endl;
+
+    return prevRoom;
+}
+
+Destination Planning::driveInRoom(Room curRoom){
+
+    Point_det closestPoint = get_closestPointWall();
+    Destination dest;
+
+    //Turn around when front wall is too close
+    if(abs(closestPoint.angle) < FRONTWALL_ANGLE && closestPoint.dist < DISTANCE_FROM_WALL_IN_ROOM){
         dest.angle = M_PI;
-        std::cout << "Reference angle is too large" << std::endl;
+        dest.dist = DIST_SETPOINT;
     }
-*/
+    else
+        dest.dist = DIST_SETPOINT;
+
+    return dest;
 }
 
+Point_det Planning::getStartPos(){
 
+    Point_det startPos;
+    startPos.x = 0;
+    startPos.y = 0;
 
-
-/*
-// main function for decisions inside the block
-void Planning::planning(Detection_data *data, Flags *flags){
-
-    if (flags->in_corridor == true){
-        std::cout << "signal in corridor = true" <<std::endl;
-    } else {
-        std::cout << "signal in corridor = false" <<std::endl;
-    }
-
-    if (!flags->in_corridor) {
-        room_logic(data, flags);
-    }
-    else if (flags->in_corridor){
-        PointCorridor left1(data->corridor.leftWall1.x, data->corridor.leftWall1.y);
-        PointCorridor left2(data->corridor.leftWall2.x, data->corridor.leftWall2.y);
-        PointCorridor right1(data->corridor.rightWall1.x, data->corridor.rightWall1.y);
-        PointCorridor right2(data->corridor.rightWall2.x, data->corridor.rightWall2.y);
-
-        LineCorridor leftLine(left1, left2);
-        LineCorridor rightLine(right1, right2);
-        Corridor corridor(leftLine, rightLine);
-
-        // assign destination point
-        corrid2dest_transf(corridor);
-    } else {
- //       std::cout << "Fatal error: not in a room and not in a corridor" << endl;
-    }
-
+    return startPos;
 }
-*/
 
-void Planning::parking(Point_det * corr_end){
-    dest.dist = distance_calc(corr_end->x,corr_end->y);
-    dest.angle = corr_end->angle;
+Room Planning::getMostNestedRoom(){
+
+    vector<Room> allRooms = getAllRooms();
+    Room mostNestedRoom;
+    int highestNesting = 0;
+
+    for(int i=0; i<allRooms.size(); i++){
+        int countNesting = 0;
+        Room lowerRoom = allRooms[i];
+
+        //While previousRoom is not the corridor
+        while(lowerRoom.previousRoom != 0){
+            //ASSUMPTION: Rooms are stored in order where the currentRoom == (i+1)'th element in AllRooms
+            lowerRoom = allRooms[lowerRoom.previousRoom-1];
+            countNesting++;
+        }
+        if(countNesting > highestNesting){
+            mostNestedRoom = allRooms[i];
+        }
+    }
+    cout << "MostNestedRoom = Room nested in Nr " << mostNestedRoom.previousRoom << endl;
+    return mostNestedRoom;
 }
+
+Room Planning::getNextRoom(Room mostNestedRoom){
+
+    int curRoom = getCurrentRoom();
+    vector<Room> allRooms = getAllRooms();
+    Room nextRoom;
+
+    while(nextRoom.previousRoom != curRoom){
+        nextRoom = allRooms[nextRoom.previousRoom-1];
+    }
+    return nextRoom;
+}
+
+Destination Planning::parkPico(){
+
+    ////////////////// TODO  /////////////////////////////////////////
+    ///         Needs to be tested
+    ///     What should the distance be? Drive backwards?
+    Point_det curPos = getCurrentPosition();
+    Destination dest;
+
+    //Should let pico set with his head to the front
+    dest.angle = -curPos.angle;
+
+    //UNKNOW because PICO has to drive backwards
+    dest.dist = DIST_SETPOINT;
+}
+
 
 Destination Planning::get_Destination(){
     return dest;
 }
+

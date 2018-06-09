@@ -2,6 +2,7 @@
 #include <emc/io.h>
 #include <emc/rate.h>
 #include <emc/odom.h>
+#include <vector>
 
 #include "detection.h"
 #include "planning.h"
@@ -57,6 +58,11 @@ public:
     Location get_currentLocation();
     High_State get_current_high_state();
     Low_State get_current_low_state();
+
+    Point_det getCurrentPosition();                 //Absolute position of PICO
+    int getCurrentRoom();                           //Room number where PICO is in
+    std::vector<Room> getAllRooms();                //Vector of all rooms
+    Point_det get_closestPointWall();               //Closest point to the wall
 
     void set_destination(Destination dest);
 

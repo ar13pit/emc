@@ -45,10 +45,6 @@ void DriveControl::picoDrive(Destination *dest){
         {
             picoSideDrive(ref_dist, odomCur, angle, &r);
         }
-
-
-
-            //        picoSideDrive(angle);
     }
     stop();
     return;

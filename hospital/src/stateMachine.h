@@ -1,7 +1,7 @@
 #ifndef SM_HPP_INCLUDED
 #define SM_HPP_INCLUDED
 
-#include "main2.hpp"
+#include "main.hpp"
 #include "worldModel.h"
 #include "config.h"
 

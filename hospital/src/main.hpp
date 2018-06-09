@@ -21,17 +21,18 @@ typedef enum {
 typedef enum {
     EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
     EXIT_CORRIDOR,
+    EXIT_TO_PREV_ROOM,  //-- Added-- Go to room/corridor of lower nesting level
+                        //     Instead of EXIT_CORRIDOR & EXIT states
     GO_TO_START,        // after all rooms are located
     PARKING,            // park backwards
 
     EXPLORE_ROOM,
     GO_TO_NEXT_ROOM,
     EXIT,
+    GO_INSIDE_ROOM,      //-- Added-- Moving through the entrance/exit of a room
 
     STAND_NEXT_TO_OBJECT
 } Low_State;
-
-
 
 
 #endif
