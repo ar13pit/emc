@@ -464,6 +464,11 @@ void Planning::planning(Detection_data *data, Flags *flags){
 }
 */
 
+void Planning::parking(Point_det * corr_end){
+    dest.dist = distance_calc(corr_end->x,corr_end->y);
+    dest.angle = corr_end->angle;
+}
+
 Destination Planning::get_Destination(){
     return dest;
 }

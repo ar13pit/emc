@@ -77,6 +77,9 @@ WorldModel(emc::IO* IO) : io_(IO), r_(EXECUTION_RATE) {
     Location get_currentLocation();
     High_State get_current_high_state();
     Low_State get_current_low_state();
+
+    void set_destination(Destination dest);
+
 };
 
 #endif //worldModel_H
