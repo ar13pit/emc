@@ -35,12 +35,6 @@ struct Location {
     Location() : in_room(false), in_nested_room(false), in_corridor(true) {};
 } ;
 
-// typedef enum Location {
-//     IN_ROOM;
-//     IN_NESTED_ROOM;
-//     IN_CORRIDOR;
-//   };
-
 class WorldModel {
     emc::IO* io_;
     emc::rate r_;
