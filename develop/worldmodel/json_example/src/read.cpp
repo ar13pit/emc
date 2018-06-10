@@ -20,6 +20,7 @@ int main()
   for (const auto& c : j)
   {
     assert(c.is_object());
+    std::cout << c.is_object() << '\n';
     assert(c.find("x") != c.end());  // check for key x
     assert(c.find("y") != c.end());  // check for key y
 

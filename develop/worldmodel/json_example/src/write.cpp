@@ -21,9 +21,14 @@ int main()
     j.push_back(c);
   }
 
+  json o = j[0];
+
+  for (json::iterator it = o.begin(); it != o.end(); ++it) {
+    std::cout << it.key() << " : " << it.value() << "\n";
+  }
   // serialize the json to a file
   std::ofstream output("corners.json");
   output << std::setw(4) << j << std::endl;
-
+  // std::cout << o.find("x") << '\n';
   std::cout << "Done!" << std::endl;
 }
