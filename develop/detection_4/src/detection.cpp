@@ -281,14 +281,19 @@
         int iExit1_LR = 0;
         int iExit2_LR = 0;
 
+
+
+
         double aFit = 0; double bFit = 0;
 
-        for (unsigned int i = 970; i > 2*15 + nPointsSearch; i = i-1){
-            if(lineFit(aFit, bFit, i, i+nPointsSearch)){ //Line found, next: search for deviation in positive direction
+        for (unsigned int i = 970; i > 0 + nPointsSearch; i = i-1){
+            std::cout << "Hello" << std::endl;
+
+            if(lineFit(aFit, bFit, i-nPointsSearch, i)){ //Line found, next: search for deviation in positive direction
 
                 int nDeviations = 0;
 
-                for (int j = i-nPointsSearch; j > 2*15; --j){
+                for (int j = i-nPointsSearch; j > 0; --j){
 
                    //std::cout << j << std::endl;
                     double aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
@@ -312,13 +317,13 @@
                         //Corner detected
                         //std::cout << "Corner detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << "), point:" << j << std::endl;
 
-                        if(LatestLaserScan[j-nPointsThresh].dist <= 0.9 * LatestLaserScan[j-nPointsThresh - 1].dist ){
+                        if(LatestLaserScan[j+nPointsThresh].dist <= 0.9 * LatestLaserScan[j+nPointsThresh + 1].dist ){
                             i = j;
-                            j = 2*15;
+                            j = 0;
                         }
                         else{
                         Corner_LR corner;
-                        corner.cornerPoint_LR = LatestLaserScan[j-nPointsThresh - 1];
+                        corner.cornerPoint_LR = LatestLaserScan[j+nPointsThresh + 1];
                         corner.detected = true;
 
                         for(int l = 0; l < nCorners; l = l+1){
@@ -330,7 +335,7 @@
 
 //                       std::cout << "Hello" << std::endl;
                         i = j;
-                        j = 2*15; // I know it's ugly, but breaking failed, I deeply apologize for this ugly piece of unscalable code.
+                        j = 0; // I know it's ugly, but breaking failed, I deeply apologize for this ugly piece of unscalable code.
                     }
                     }
 
@@ -346,7 +351,7 @@
                         //Start searching for the second point of the exit
                         int nEqual = 0;
 
-                        for (int k = j; k > 0 + 2*15 + nPointsSearch; --k){
+                        for (int k = j; k > 0 + nPointsSearch; --k){
 
                             aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
                             bFit_perp = LatestLaserScan[k].y - aFit_perp * LatestLaserScan[k].x;
@@ -367,10 +372,10 @@
                             }
 
                             if (nEqual >= nPointsThreshEqual){
-                               iExit2_LR = k - nPointsThreshEqual +1;
+                               iExit2_LR = k + nPointsThreshEqual -1;
                                i = iExit2_LR;
-                               k = 2*15;
-                               j = 2*15;
+                               k = 0;
+                               j = 0;
                                Exit_LR exit;
                                exit.exitPoint1_LR = LatestLaserScan[iExit1_LR];
                                exit.exitPoint2_LR = LatestLaserScan[iExit2_LR];
