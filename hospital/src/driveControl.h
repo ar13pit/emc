@@ -35,8 +35,10 @@ public:
         return;
     }
 
-    void picoDrive(Destination *dest);       // Main method to let pico turn for an angle and then drive
-    void picoDriveBackwards(Destination * dest);
+
+    void drive(Low_State low_st, WorldModel* worldModel);  // Method to decide what orientation to drive with
+    void picoDrive(Destination *dest);       // Method to let pico turn for an angle and then drive
+    void picoDriveBackwards(Destination * dest); // Method to let pico turn for an angle and then drive backwards
 };
 
 #endif //driveControl_H

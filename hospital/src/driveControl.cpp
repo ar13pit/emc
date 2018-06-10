@@ -2,8 +2,16 @@
 #include <cmath>
 using namespace std;
 
+void DriveControl::drive(Low_State low_st, WorldModel* worldModel){
+    Destination dest = worldModel->get_destination();
 
-//Main method
+    if (low_st != PARKING){
+        picoDrive(dest);
+    } else {
+        picoDriveBackwards(dest);
+    }
+}
+
 void DriveControl::picoDrive(Destination *dest){
     emc::OdometryData odomRef;
     emc::OdometryData odomCur;

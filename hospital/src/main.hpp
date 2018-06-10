@@ -28,7 +28,6 @@ typedef enum {
 
     EXPLORE_ROOM,
     GO_TO_NEXT_ROOM,
-    EXIT,
     GO_INSIDE_ROOM,      //-- Added-- Moving through the entrance/exit of a room
 
     STAND_NEXT_TO_OBJECT

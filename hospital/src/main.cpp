@@ -93,12 +93,9 @@ int main(int argc, char *argv[])
     //    emc::OdometryData odom;
 
     // Transition values
-    Detection_data data;
-    Destination dest;
-    Destination far_point;
-    Flags flags;
-    initialize(&data, &dest, &flags);
-
+    WorldModel worldModel;
+    High_State high_st;
+    Low_State low_st;
 
 
     // Initialize the Classes
@@ -109,14 +106,25 @@ int main(int argc, char *argv[])
 
     while(io.ok()) {
 
-        cout <<"----------------------------" << endl << endl;
+
 
         detection();
-        monitoring();
-        state_machine(high_st, low_st);
-        drive();
+
+        // low level control
+        if (wall_detected){
+            worldModel.set_destination(Planning::getAwayFromWall(low_st));
+            std::cout << "WALL DETECT"<<  dest.angle << std::endl;
+        } else {
+            monitoring(&worldModel);
+        }
+
+        state_machine(high_st, low_st, &worldModel);
+
+        pico_drive.drive(low_st,&worldModel);
 
         r.sleep();
+        cout <<"----------------------------" << endl << endl;
+
         /*std::cout << "Press Enter to continue ..." << '\n';
         cin.get();*/
     }
