@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
 
 
-            //detection.saveLRFScan();
+            detection.saveLRFScan();
             int index = 0;
 
 

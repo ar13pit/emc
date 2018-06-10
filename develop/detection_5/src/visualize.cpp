@@ -43,7 +43,7 @@ void Visualizer::init_visualize()
     //while(io.ok()){
 
     cv::Scalar robot_color(0, 0, 255);
-    canvas = cv::Mat(1100, 1100, CV_8UC3, cv::Scalar(50, 50, 50));
+    canvas = cv::Mat(550, 1000, CV_8UC3, cv::Scalar(50, 50, 50));
     //cv::Mat canvas(500, 500, CV_8UC3, cv::Scalar(50, 50, 50));
 
     canvas_center = cv::Point2d(canvas.rows / 2, canvas.cols / 2);
