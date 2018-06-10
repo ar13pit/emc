@@ -83,7 +83,8 @@ public:
     Low_State get_current_low_state();
 
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
-
+    std::vector<int> get_explorationStack();
+    
 
     // Set Methods
     void set_globalPosition(Point updatedGlobalPosition);
