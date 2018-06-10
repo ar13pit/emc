@@ -36,7 +36,7 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, WorldModel
         bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
         bool at_start = false;              // have we returned back to the initial condition yet?
     }
-    Point_det wall = worldModel->get_closestPointWall(); // has to be assigned as well
+    Point wall = worldModel->get_closestPointWall(); // has to be assigned as well
 
 
     //------------end of assigning variables-------------//

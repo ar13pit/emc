@@ -15,7 +15,7 @@
 using json = nlohmann::json;
 
 typedef struct {
-    Point_det corners[4];
+    Point corners[4];
     Exit exit;
     int previousRoom;   // Corridor is 0
 } Room;
@@ -35,8 +35,8 @@ class WorldModel {
 private:
 
     // double minDistance_;
-    Point_det closestPointWall_;
-    Point_det pointStraightAhead;
+    Point closestPointWall_;
+    Point pointStraightAhead;
     Destination destination_;
     int enteredRooms_;
     int nestedExits_;
@@ -53,8 +53,8 @@ public:
     WorldModel() : currentLocation_(IN_CORRIDOR) { };
 
     emc::LaserData get_laser();
-    Point_det get_closestPointWall();
-    Point_det get_pointStraightAhead();
+    Point get_closestPointWall();
+    Point get_pointStraightAhead();
     Destination get_destination();
     int get_enteredRooms();
     int get_nestedExits();
@@ -62,10 +62,10 @@ public:
     High_State get_current_high_state();
     Low_State get_current_low_state();
 
-    Point_det getCurrentPosition();                 //Absolute position of PICO
+    Point getCurrentPosition();                 //Absolute position of PICO
     int getCurrentRoom();                           //Room number where PICO is in
     std::vector<Room> getAllRooms();                //Vector of all rooms
-    Point_det get_closestPointWall();               //Closest point to the wall
+    Point get_closestPointWall();               //Closest point to the wall
 
     void set_destination(Destination dest);
 

@@ -25,7 +25,7 @@ private:
 public:
 
 
-    Destination driveToPoint(Point_det navigateTo);
+    Destination driveToPoint(Point navigateTo);
     Destination setpointInCorridor();               //Navigate Pico through Corridor
     Destination getAwayFromWall(Low_State lowSt);
     Destination driveInRoom(Room curRoom);
@@ -38,8 +38,8 @@ public:
     Room getNextRoom(Room mostNestedRoom);
     Room getRoom();
 
-    Point_det getNearbyExitPoint(Room closestRoom);
-    Point_det getStartPos();
+    Point getNearbyExitPoint(Room closestRoom);
+    Point getStartPos();
 
 
     Planning(){

@@ -7,7 +7,7 @@ bool explore_hospital(WorldModel * worldModel){
 
     Room room;
     Destination dest;
-    Point_det navigateTo;
+    Point navigateTo;
     Low_State current_low = worldModel->get_current_low_state();
 
 
@@ -48,7 +48,7 @@ bool explore_hospital(WorldModel * worldModel){
 bool return_to_init(WorldModel * worldModel){
 
     Destination dest;
-    Point_det navigateTo;
+    Point navigateTo;
     Low_State current_low = worldModel->get_current_low_state();
 
     if (current_low == GO_TO_START){
