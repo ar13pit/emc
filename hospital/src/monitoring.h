@@ -1,7 +1,7 @@
 #ifndef MONITORS_HPP_INCLUDED
 #define MONITORS_HPP_INCLUDED
 
-#include "main.hpp"
+#include "stateMachine.h"
 #include "worldModel.h"
 
 // detection part

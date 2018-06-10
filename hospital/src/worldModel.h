@@ -6,7 +6,7 @@
 
 #include "detection.h"
 #include "planning.h"
-#include "main.hpp"
+#include "stateMachine.h"
 #include "json.hpp"
 
 #ifndef worldModel_H

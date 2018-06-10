@@ -1,6 +1,6 @@
 #include "stateMachine.h"
 
-bool state_machine(struct High_state high_st,struct Low_state low_st, WorldModel * worldModel){
+bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldModel * worldModel){
 
     // World model should be read for:
     // 1) number of rooms detected, number of rooms entered
@@ -28,24 +28,28 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, WorldModel
     bool near_object = false;
 
 
-    vector<Room> allRooms = WorldModel::getAllRooms();
-    int current_room_number = WorldModel::getCurrentRoom();
+    vector<Room> allRooms = WorldModel::get_globalRooms();
+    int current_room_number = WorldModel::get_currentRoom();
     Room current_room = allRooms[current_room_number];
 
     int numb_corners_detected = 0;
     int numb_exits = 0;
+
+    vector<int> explorationStack = WorldModel::get_explorationStack();
     if (location == IN_ROOM){
         numb_corners_detected = current_room.corners.size();
-        numb_exits = ;// assigned from the world model
+        numb_exits = explorationStack.size();// assigned from the world model
     }
+
 
     bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
     bool at_start = false;              // have we returned back to the initial condition yet?
+
     if (location == IN_CORRIDOR){
         if (current_room.corners[1].dist < DIST_SETPOINT || current_room.corners[2].dist <DIST_SETPOINT){
             end_of_corridor = true;
         }
-        if (WorldModel::getCurrentPosition() < DIST_SETPOINT) {
+        if (WorldModel::get_globalPosition() < DIST_SETPOINT) {
             at_start = true;
         }
 
@@ -226,6 +230,7 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, WorldModel
 
         break;
     }
-    return end_of_program;
 
+
+    return end_of_program;
 }

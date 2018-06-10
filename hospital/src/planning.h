@@ -1,7 +1,7 @@
 #ifndef planning_H
 #define planning_H
 
-#include "main.hpp"
+#include "stateMachine.h"
 #include "detection.h"
 #include "worldModel.h"
 #include <vector>
