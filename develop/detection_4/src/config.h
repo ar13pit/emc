@@ -1,4 +1,4 @@
-#define EXECUTION_RATE 10000 // [Hz]
+#define EXECUTION_RATE 60 // [Hz]
 
 #define FORWARD_SPEED  0.5 // [m/s]
 #define ROTATE_SPEED   -0.7 // [rad/s]

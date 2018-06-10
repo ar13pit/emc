@@ -10,9 +10,11 @@
     void Detection::average_CornersAndExits(){
         emc::Rate rate(EXECUTION_RATE);
 
+
+
         //Magic numbers
         int nAverages = 10;
-        double distance_thresh = 0.0001;
+        double distance_thresh = 0.1;
         int nLarger = 5;
         //End Magic numbers
 
@@ -29,19 +31,29 @@
 
         //Right to left
         for (int i = 0; i < nAverages; ++i){
-            Detection::saveLRFScan();
+
+            rate.sleep();
+            if(inOut->ok()){
+            if(getSensorData()){
+                std::cout << "Heuj" << std::endl;
+                saveLRFScan();
+            }
+            }
+
+            std::cout << LatestLaserScan[0].dist << std::endl;
+
 
             rate.sleep();
 
 
 
-            Detection::findExitsAndCorners_RL();
+            findExitsAndCorners_RL();
 
 
             for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
 
                 if(Corners_RL[j].detected){
-                    std::cout << j << std::endl;
+                    //std::cout << j << std::endl;
                     bool corner_detected = false;
                     for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
                         if(AverageCornerPoint_RL[k].detected){
@@ -89,7 +101,7 @@
         for(int i = 0; i < 100; ++i){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
             if(nAverageCornerPoint_RL[i] > nLarger){
 
-                std::cout << nAverageCornerPoint_RL[i] << std::endl;
+                //std::cout << nAverageCornerPoint_RL[i] << std::endl;
 
                 Corners_RL[j] = AverageCornerPoint_RL[i];
                 AverageCornerPoint_RL_final[j] = AverageCornerPoint_RL[i];
