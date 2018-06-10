@@ -8,8 +8,10 @@
 #include <cmath>
 #include <vector>
 using namespace std;
+using namespace WorldModel;
 
-Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDetected){//struct High_state highSt, struct Low_state lowSt){
+
+Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDetected){
     std::cout << "High state =  " << highSt << std::endl;
     std::cout << "Low state =  " << highSt << std::endl;
 
@@ -96,7 +98,7 @@ Destination Planning::setpointInCorridor(){
 
 Destination Planning::getAwayFromWall(Low_State lowSt){
 
-    Point_det closestPoint = get_closestPointWall();
+    Point_det closestPoint = WorldModel::get_closestPointWall();
 
     //Move sideways when PICO is inside the corridor OR
     //When closest point is at the side of PICO
@@ -115,15 +117,15 @@ Destination Planning::getAwayFromWall(Low_State lowSt){
 Room Planning::get_closestRoom(){
 
     Room closestRoom;
-    vector<Room> allRooms = getAllRooms();
-    int curRoom = getCurrentRoom();
-    Point_det curPos = getCurrentPosition();
+    vector<Room> allRooms = WorldModel::getAllRooms();
+    int curRoom = WorldModel::getCurrentRoom();
+    Point_det curPos = WorldModel::getCurrentPosition();
     double shortestDist = INFINITY;
 
     for(int i = 0;i<allRooms.size(); i++){
-        ///////////////////////////  TODO  ///////////////////////////////
-        ///    This works, but better to set closestRoom.corners[0].x
-        ///    to 0 when initialized
+//        ///////////////////////////  TODO  ///////////////////////////////
+//        ///    This works, but better to set closestRoom.corners[0].x
+//        ///    to 0 when initialized
 
         if(allRooms[i].exit_previous.detected && curRoom == allRooms[i].previousRoom &&
                (abs(closestRoom.corners[0].x) < 0.001 || abs(closestRoom.corners[0].x > 100))){
@@ -149,7 +151,7 @@ Point_det Planning::getNearbyExitPoint(Room closestRoom){
     Point_det destination;
     Point_det extPnt1 = closestRoom.exit_previous.exitPoint_det1;
     Point_det extPnt2 = closestRoom.exit_previous.exitPoint_det2;
-    Point_det curPos = getCurrentPosition();
+    Point_det curPos = WorldModel::getCurrentPosition();
 
     double xMid = 0.5*(extPnt1.x + extPnt2.x);
     double yMid = 0.5*(extPnt1.y + extPnt2.y);
@@ -179,11 +181,11 @@ Point_det Planning::getNearbyExitPoint(Room closestRoom){
 
 Destination Planning::driveToPoint(Point_det goToPoint){
 
-    ///////////////////  TODO  //////////////////////////////////////
-    /// Check wheter is works when the relative angle is different
-    /// Unable to check in simulation without other classes...
-    ///
-    Point_det curPos = getCurrentPosition();
+//    ///////////////////  TODO  //////////////////////////////////////
+//    /// Check wheter is works when the relative angle is different
+//    /// Unable to check in simulation without other classes...
+//    ///
+    Point_det curPos = WorldModel::getCurrentPosition();
     Destination dest;
 
     double disX = goToPoint.x-curPos.x;
@@ -218,8 +220,8 @@ Destination Planning::driveToPoint(Point_det goToPoint){
 Room Planning::getRoom(){
 
     Room prevRoom;
-    int curRoom = getCurrentRoom();
-    vector<Room> allRooms = getAllRooms();
+    int curRoom = WorldModel::getCurrentRoom();
+    vector<Room> allRooms = WorldModel::getAllRooms();
 
     //ASSUMPTION: Rooms are stored in order where the currentRoom == (i+1)'th element in AllRooms
     if(allRooms.size() >= curRoom-1)
@@ -232,7 +234,7 @@ Room Planning::getRoom(){
 
 Destination Planning::driveInRoom(Room curRoom){
 
-    Point_det closestPoint = get_closestPointWall();
+    Point_det closestPoint = WorldModel::get_closestPointWall();
     Destination dest;
 
     //Turn around when front wall is too close
@@ -257,7 +259,7 @@ Point_det Planning::getStartPos(){
 
 Room Planning::getMostNestedRoom(){
 
-    vector<Room> allRooms = getAllRooms();
+    vector<Room> allRooms = WorldModel::getAllRooms();
     Room mostNestedRoom;
     int highestNesting = 0;
 
@@ -281,8 +283,8 @@ Room Planning::getMostNestedRoom(){
 
 Room Planning::getNextRoom(Room mostNestedRoom){
 
-    int curRoom = getCurrentRoom();
-    vector<Room> allRooms = getAllRooms();
+    int curRoom = WorldModel::getCurrentRoom();
+    vector<Room> allRooms = WorldModel::getAllRooms();
     Room nextRoom;
 
     while(nextRoom.previousRoom != curRoom){
@@ -293,17 +295,19 @@ Room Planning::getNextRoom(Room mostNestedRoom){
 
 Destination Planning::parkPico(){
 
-    ////////////////// TODO  /////////////////////////////////////////
-    ///         Needs to be tested
-    ///     What should the distance be? Drive backwards?
-    Point_det curPos = getCurrentPosition();
+//    ////////////////// TODO  /////////////////////////////////////////
+//    ///         Needs to be tested
+//   ///     What should the distance be? Drive backwards?
+
+
+    Point_det corr_end = worldModel->get_pointStraightAhead();
     Destination dest;
 
-    //Should let pico set with his head to the front
-    dest.angle = -curPos.angle;
+    //Pico is backwards to the back wall
+    dest.angle = M_PI - corr_end.angle;
 
-    //UNKNOW because PICO has to drive backwards
-    dest.dist = DIST_SETPOINT;
+    //Move the distance to the back wall - 5cm
+    dest.dist = corr_end.dist-0.05;
 }
 
 

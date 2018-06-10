@@ -32,10 +32,12 @@ enum Location {IN_CORRIDOR, IN_ROOM};
 
 
 class WorldModel {
+private:
 
     // double minDistance_;
     Point_det closestPointWall_;
-    Point_det destination_;
+    Point_det pointStraightAhead;
+    Destination destination_;
     int enteredRooms_;
     int nestedExits_;
     Location currentLocation_;
@@ -52,7 +54,8 @@ public:
 
     emc::LaserData get_laser();
     Point_det get_closestPointWall();
-    Point_det get_destination();
+    Point_det get_pointStraightAhead();
+    Destination get_destination();
     int get_enteredRooms();
     int get_nestedExits();
     Location get_currentLocation();
