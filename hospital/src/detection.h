@@ -4,7 +4,7 @@
 #include <iostream>
 #include "config.h"
 #include <cstdlib>
-#include "main.hpp"
+#include "stateMachine.h"
 
 #ifndef detection_H
 #define detection_H

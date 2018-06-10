@@ -38,8 +38,10 @@ class WorldModel {
     std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
 
     Point closestPointWall_;
-    Point destination_;
     Point globalPosition_;
+    Point pointStraightAhead_;
+
+    Destination destination_;
 
     int enteredRooms_;
     int nestedExits_;
@@ -64,18 +66,30 @@ public:
     WorldModel();
 
     // Get Methods
-    Point get_globalPosition();
     Point get_closestPointWall();
-    Point get_destination();
+    Point get_globalPosition();                     // Renamed from     Point getCurrentPosition();
+    Point get_pointStraightAhead();
+
+    Destination get_destination();
+
     int get_enteredRooms();
     int get_nestedExits();
+    int get_currentRoom();                          // Renamed from     int getCurrentRoom();
+    int get_roomsFound();
+
     Location get_currentLocation();
+
     High_State get_current_high_state();
     Low_State get_current_low_state();
+
+    std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
+    std::vector<int> get_explorationStack();
+
 
     // Set Methods
     void set_globalPosition(Point updatedGlobalPosition);
     void set_currentLocation(Location newLocation);
+    void set_destination(Destination dest);
 
 };
 

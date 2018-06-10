@@ -1,12 +1,5 @@
 #include "planning.h"
-#include "main.hpp"
-#include "config.h"
-#include "worldModel.h"
-#include "detection.h"
-#include "iostream"
-#include "math.h"
-#include <cmath>
-#include <vector>
+
 using namespace std;
 using namespace WorldModel;
 
@@ -117,9 +110,9 @@ Destination Planning::getAwayFromWall(Low_State lowSt){
 Room Planning::get_closestRoom(){
 
     Room closestRoom;
-    vector<Room> allRooms = WorldModel::getAllRooms();
-    int curRoom = WorldModel::getCurrentRoom();
-    Point curPos = WorldModel::getCurrentPosition();
+    vector<Room> allRooms = WorldModel::get_globalRooms();
+    int curRoom = WorldModel::get_CurrentRoom();
+    Point curPos = WorldModel::get_globalPosition();
     double shortestDist = INFINITY;
 
     for(int i = 0;i<allRooms.size(); i++){
@@ -151,7 +144,7 @@ Point Planning::getNearbyExitPoint(Room closestRoom){
     Point destination;
     Point extPnt1 = closestRoom.exit_previous.exitPoint1;
     Point extPnt2 = closestRoom.exit_previous.exitPoint2;
-    Point curPos = WorldModel::getCurrentPosition();
+    Point curPos = WorldModel::get_globalPosition();
 
     double xMid = 0.5*(extPnt1.x + extPnt2.x);
     double yMid = 0.5*(extPnt1.y + extPnt2.y);
@@ -185,7 +178,7 @@ Destination Planning::driveToPoint(Point goToPoint){
 //    /// Check wheter is works when the relative angle is different
 //    /// Unable to check in simulation without other classes...
 //    ///
-    Point curPos = WorldModel::getCurrentPosition();
+    Point curPos = WorldModel::get_globalPosition();
     Destination dest;
 
     double disX = goToPoint.x-curPos.x;
@@ -220,8 +213,8 @@ Destination Planning::driveToPoint(Point goToPoint){
 Room Planning::getRoom(){
 
     Room prevRoom;
-    int curRoom = WorldModel::getCurrentRoom();
-    vector<Room> allRooms = WorldModel::getAllRooms();
+    int curRoom = WorldModel::get_globalPosition();
+    vector<Room> allRooms = WorldModel::get_globalRooms();
 
     //ASSUMPTION: Rooms are stored in order where the currentRoom == (i+1)'th element in AllRooms
     if(allRooms.size() >= curRoom-1)
@@ -259,7 +252,7 @@ Point Planning::getStartPos(){
 
 Room Planning::getMostNestedRoom(){
 
-    vector<Room> allRooms = WorldModel::getAllRooms();
+    vector<Room> allRooms = WorldModel::get_globalRooms();
     Room mostNestedRoom;
     int highestNesting = 0;
 
@@ -283,8 +276,8 @@ Room Planning::getMostNestedRoom(){
 
 Room Planning::getNextRoom(Room mostNestedRoom){
 
-    int curRoom = WorldModel::getCurrentRoom();
-    vector<Room> allRooms = WorldModel::getAllRooms();
+    int curRoom = WorldModel::get_currentRoom();
+    vector<Room> allRooms = WorldModel::get_globalRooms();
     Room nextRoom;
 
     while(nextRoom.previousRoom != curRoom){

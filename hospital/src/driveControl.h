@@ -3,7 +3,7 @@
 
 #include <emc/io.h>
 #include <emc/rate.h>
-#include "main.hpp"
+#include "stateMachine.h"
 #include <iostream>
 #include "planning.h"
 #include "config.h"

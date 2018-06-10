@@ -66,6 +66,22 @@ bool return_to_init(WorldModel * worldModel){
     return true;
 }
 
+bool search_for_object(WorldModel * worldModel){
+    Destination dest;
+    Point navigateTo;
+    Low_State current_low = worldModel->get_current_low_state();
+
+    if (current_low == EXIT_CORRIDOR){
+        // to be filled in
+    } else if(current_low == GO_TO_NEXT_ROOM){
+        // to be filled in
+    } else if(current_low == GO_INSIDE_ROOM){
+        // to be filled in
+    } else if (current_low == STAND_NEXT_TO_OBJECT){
+        // to be filled in
+    }
+}
+
 // main function in monitoring
 bool monitoring(WorldModel * worldModel){
 
@@ -80,6 +96,10 @@ bool monitoring(WorldModel * worldModel){
     } else if (current_high == RETURN_TO_INIT) {
 
         return_to_init(worldModel);
+
+    } else if (current_high == GO_TO_ROOM){
+
+        search_for_object(worldModel);
 
     } else {
         std::cout << "Error in monitoring function" <<"\n";

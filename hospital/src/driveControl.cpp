@@ -17,12 +17,9 @@ void DriveControl::picoDrive(Destination *dest){
     emc::OdometryData odomCur;
     emc::Rate r(20);
     r.sleep();
-    double ref_dist;
+    double ref_dist = dest->dist;
     double angle = dest->angle;
 
-
-    ref_dist = dest->dist;
-    //    ref_dist = 1.0 + sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
 
     // prevent situation that angle = nan
     if (angle != angle) {

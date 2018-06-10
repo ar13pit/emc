@@ -1,9 +1,15 @@
 #ifndef planning_H
 #define planning_H
 
-#include "main.hpp"
+#include "stateMachine.h"
 #include "detection.h"
 #include "worldModel.h"
+#include "config.h"
+#include "detection.h"
+#include "iostream"
+#include "math.h"
+
+#include <cmath>
 #include <vector>
 
 
