@@ -15,7 +15,8 @@
 using json = nlohmann::json;
 
 struct Room {
-    Point_det corners[4];
+    int roomID;
+    Point corners[4];
     Exit exit;
     int previousRoom;   // Corridor is 0
 
@@ -24,12 +25,8 @@ struct Room {
 } ;
 
 typedef struct Room Room;
-// this is based on an assumption that corridor has most of the rooms connected
-// we first explore the corridor (assume it is straight, any T-junctions are rooms)
-// typedef struct {
-//     std::vector<Exit> exits;
-// } CCorridor;    //name has to be changed (conflicting class in planning for escape room challenge)
 
+// Define a structure to contain corridor data
 
 // to know our location
 enum Location {IN_CORRIDOR, IN_ROOM};
@@ -37,14 +34,17 @@ enum Location {IN_CORRIDOR, IN_ROOM};
 
 class WorldModel {
 
-    std::vector<Room> rooms_;
+    std::vector<Room> globalRooms_;
+    std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
 
-    Point_det closestPointWall_;
-    Point_det destination_;
+    Point closestPointWall_;
+    Point destination_;
+    Point globalPosition_;
 
     int enteredRooms_;
     int nestedExits_;
     int currentRoom_;
+    int roomsFound_;
 
     Location currentLocation_;
 
@@ -54,17 +54,19 @@ class WorldModel {
     json jsonObject_;
 
     // Private Methods
-    void writeJson();
-    void readJson();
-
+    void writeJsonFile();
+    void readJsonFile();
+    void createJson();
+    void extractJson();
 
 public:
     // Class Constructor
     WorldModel();
 
     // Get Methods
-    Point_det get_closestPointWall();
-    Point_det get_destination();
+    Point get_globalPosition();
+    Point get_closestPointWall();
+    Point get_destination();
     int get_enteredRooms();
     int get_nestedExits();
     Location get_currentLocation();
@@ -72,6 +74,7 @@ public:
     Low_State get_current_low_state();
 
     // Set Methods
+    void set_globalPosition(Point updatedGlobalPosition);
     void set_currentLocation(Location newLocation);
 
 };

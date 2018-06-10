@@ -9,5 +9,5 @@ add_executable(${PROJECT_NAME}_write ${HEADERS} src/write.cpp)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
-set(DATADIR data)
-file(MAKE_DIRECTORY ${DATADIR})
+#set(DATADIR data)
+#file(MAKE_DIRECTORY ${DATADIR})
