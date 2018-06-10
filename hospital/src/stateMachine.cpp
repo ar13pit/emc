@@ -27,16 +27,29 @@ bool state_machine(struct High_state high_st,struct Low_state low_st, WorldModel
     bool object_found = false;      // second phase
     bool near_object = false;
 
+
+    vector<Room> allRooms = WorldModel::getAllRooms();
+    int current_room_number = WorldModel::getCurrentRoom();
+    Room current_room = allRooms[current_room_number];
+
+    int numb_corners_detected = 0;
+    int numb_exits = 0;
     if (location == IN_ROOM){
-        int current_room = worldModel->getCurrentRoom();       // number of the room in which we are located now
-        int numb_corners_detected = 0;
-        int numb_exits = 0;
+        numb_corners_detected = current_room.corners.size();
+        numb_exits = ;// assigned from the world model
     }
+
+    bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
+    bool at_start = false;              // have we returned back to the initial condition yet?
     if (location == IN_CORRIDOR){
-        bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
-        bool at_start = false;              // have we returned back to the initial condition yet?
+        if (current_room.corners[1].dist < DIST_SETPOINT || current_room.corners[2].dist <DIST_SETPOINT){
+            end_of_corridor = true;
+        }
+        if (WorldModel::getCurrentPosition() < DIST_SETPOINT) {
+            at_start = true;
+        }
+
     }
-    Point wall = worldModel->get_closestPointWall(); // has to be assigned as well
 
 
     //------------end of assigning variables-------------//
