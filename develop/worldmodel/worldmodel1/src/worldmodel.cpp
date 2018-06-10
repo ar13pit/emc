@@ -49,19 +49,57 @@ void WorldModel::readJsonFile() {
 
 void WorldModel::createJson() {
 
-    // int roomID;
-    // Point corners[4];
-    // Exit exit;
-    // int previousRoom;   // Corridor is 0
-
     for (auto i : rooms)
     {
-      json r = { {"Room_ID", i.roomID}, {"Corners", {} },{ "x", i.x_ }, { "y", i.y_ } };
+      json r =  {
+                    {"Room_ID", i.roomID},
+                    {"Corners", {
+                                    {"0",   {
+                                                {"x", i.corners[0].x},
+                                                {"y", i.corners[0].y}
+                                            }
+                                    },
+                                    {"1",   {
+                                                {"x", i.corners[1].x},
+                                                {"y", i.corners[1].y}
+                                            }
+                                    },
+                                    {"2",   {
+                                                {"x", i.corners[2].x},
+                                                {"y", i.corners[2].y}
+                                            }
+                                    },
+                                    {"3",   {
+                                                {"x", i.corners[3].x},
+                                                {"y", i.corners[3].y}
+                                            }
+                                    }
+                                }
+                    },
+                    {"Exit",    {
+                                    {"0",   {
+                                                {"x", i.exit.exitPoint1.x},
+                                                {"y", i.exit.exitPoint1.y}
+                                            }
+                                    },
+                                    {"1",   {
+                                                {"x", i.exit.exitPoint2.x},
+                                                {"y", i.exit.exitPoint2.y}
+                                            }
+                                    }
+                                }
+                    },
+                    {"Previous_Room", i.previousRoom}
+                };
       jsonObject_.push_back(r);
     }
 
 };
 
+void WorldModel::extractJson() {
+
+    // Come up with some fancy way of extracting information from JSON object
+}
 /*
 --------------------------------------------------------------------------------
                             Public Methods
