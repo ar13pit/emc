@@ -2,21 +2,16 @@
 #include "config.h"
 
 
-    //void getAverageCornersAndExits(){
-
-
-    //}
-
     void Detection::average_CornersAndExits(){
-        emc::Rate rate(EXECUTION_RATE);
+         emc::Rate rate(EXECUTION_RATE);
 
-        //Magic numbers
+
+        // AVERAGING MAGIC NUMBERS
         int nAverages = 10;
-        double distance_thresh = 0.0001;
+        double distance_thresh = 0.01;
         int nLarger = 5;
-        //End Magic numbers
 
-
+        // RIGHT-LEFT AVERAGING INITILISING
         Corner AverageCornerPoint_RL[100];
         Corner AverageCornerPoint_RL_final[20];
         int nAverageCornerPoint_RL[100];
@@ -26,32 +21,100 @@
             AverageCornerPoint_RL[i].detected = false;
         }
 
+        // LEFT-RIGHT AVERAGING INITILISING
+        Corner_LR AverageCornerPoint_LR[100];
+        Corner_LR AverageCornerPoint_LR_final[20];
+        int nAverageCornerPoint_LR[100];
 
-        //Right to left
+        for (int i = 0; i < 100; ++i){
+            nAverageCornerPoint_LR[i] = 0;
+            AverageCornerPoint_LR[i].detected = false;
+        }
+
+
         for (int i = 0; i < nAverages; ++i){
-            Detection::saveLRFScan();
+
+            rate.sleep();
+            if(inOut->ok()){
+            if(getSensorData()){
+                saveLRFScan();
+            }
+            }
 
             rate.sleep();
 
 
-
-            Detection::findExitsAndCorners_RL();
-
+        // RIGHT-LEFT AVG. EXITS AND CORNERS
+        findExitsAndCorners_RL();
 
             for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
 
                 if(Corners_RL[j].detected){
-                    std::cout << j << std::endl;
                     bool corner_detected = false;
                     for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
                         if(AverageCornerPoint_RL[k].detected){
                            double distance = sqrt( pow(AverageCornerPoint_RL[k].cornerPoint.x - Corners_RL[j].cornerPoint.x,2) +  pow(AverageCornerPoint_RL[k].cornerPoint.y - Corners_RL[j].cornerPoint.y,2));
-                           //std::cout<< distance << std::endl;
+
 
                             if(distance < distance_thresh){
                                 ++nAverageCornerPoint_RL[k];
                                 AverageCornerPoint_RL[k].cornerPoint.x = (AverageCornerPoint_RL[k].cornerPoint.x * (nAverageCornerPoint_RL[k] - 1) + Corners_RL[j].cornerPoint.x)/nAverageCornerPoint_RL[k]; //Weighted average over x of cornerPoints
                                 AverageCornerPoint_RL[k].cornerPoint.y = (AverageCornerPoint_RL[k].cornerPoint.y * (nAverageCornerPoint_RL[k] - 1) + Corners_RL[j].cornerPoint.y)/nAverageCornerPoint_RL[k]; //Weighted average over y of cornerPoints
+
+                                corner_detected = true;
+                                break;
+                            }
+                    }
+                        else{
+                             break;
+                        }
+                    }
+
+                    if(corner_detected==false){
+                        for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
+                           if(AverageCornerPoint_RL[k].detected == false){
+                               AverageCornerPoint_RL[k].detected = true;
+                               AverageCornerPoint_RL[k] = Corners_RL[j];
+                               nAverageCornerPoint_RL[k] = 1;
+                               break;
+                           }
+                        }
+                    }
+                }
+            }
+
+            for(int i = 0; i < 20; ++i){
+                    Corners_RL[i].detected = false;
+
+            }
+
+            int j = 0;
+            for(int i = 0; i < 100; ++i){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
+                if(nAverageCornerPoint_RL[i] > nLarger){
+                    Corners_RL[j] = AverageCornerPoint_RL[i];
+                    AverageCornerPoint_RL_final[j] = AverageCornerPoint_RL[i];
+                    ++j;
+                }
+            }
+
+            // LEFT-RIGHT AVG. EXITS AND CORNERS
+            findExitsAndCorners_LR();
+
+
+            for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
+
+                if(Corners_LR[j].detected){
+                    //std::cout << j << std::endl;
+                    bool corner_detected = false;
+                    for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
+                        if(AverageCornerPoint_LR[k].detected){
+                           double distance = sqrt( pow(AverageCornerPoint_LR[k].cornerPoint_LR.x - Corners_LR[j].cornerPoint_LR.x,2) +  pow(AverageCornerPoint_LR[k].cornerPoint_LR.y - Corners_LR[j].cornerPoint_LR.y,2));
+                           //std::cout<< distance << std::endl;
+
+                            if(distance < distance_thresh){
+                                ++nAverageCornerPoint_LR[k];
+                                AverageCornerPoint_LR[k].cornerPoint_LR.x = (AverageCornerPoint_LR[k].cornerPoint_LR.x * (nAverageCornerPoint_LR[k] - 1) + Corners_LR[j].cornerPoint_LR.x)/nAverageCornerPoint_LR[k]; //Weighted average over x of cornerPoints
+                                AverageCornerPoint_LR[k].cornerPoint_LR.y = (AverageCornerPoint_LR[k].cornerPoint_LR.y * (nAverageCornerPoint_LR[k] - 1) + Corners_LR[j].cornerPoint_LR.y)/nAverageCornerPoint_LR[k]; //Weighted average over y of cornerPoints
 
                                 corner_detected = true;
                                 break;
@@ -64,40 +127,31 @@
                     }
                     if(corner_detected==false){
                         for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                           if(AverageCornerPoint_RL[k].detected == false){
-                               AverageCornerPoint_RL[k].detected = true;
-                               AverageCornerPoint_RL[k] = Corners_RL[j];
-                               nAverageCornerPoint_RL[k] = 1;
+                           if(AverageCornerPoint_LR[k].detected == false){
+                               AverageCornerPoint_LR[k].detected = true;
+                               AverageCornerPoint_LR[k] = Corners_LR[j];
+                               nAverageCornerPoint_LR[k] = 1;
                                break;
                            }
                         }
                     }
-
                 }
-
             }
-
         }
 
-
         for(int i = 0; i < 20; ++i){
-                Corners_RL[i].detected = false;
-
+                Corners_LR[i].detected = false;
         }
 
         int j = 0;
         for(int i = 0; i < 100; ++i){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-            if(nAverageCornerPoint_RL[i] > nLarger){
+            if(nAverageCornerPoint_LR[i] > nLarger){
 
-                std::cout << nAverageCornerPoint_RL[i] << std::endl;
-
-                Corners_RL[j] = AverageCornerPoint_RL[i];
-                AverageCornerPoint_RL_final[j] = AverageCornerPoint_RL[i];
-                //std::cout << nAverageCornerPoint_RL[i] << std::endl;
+                Corners_LR[j] = AverageCornerPoint_LR[i];
+                AverageCornerPoint_LR_final[j] = AverageCornerPoint_LR[i];
                 ++j;
             }
         }
-
     }
 
     bool Detection::getSensorData() {
@@ -113,14 +167,6 @@
            laser.ranges[i] = laser.ranges[nFilterPoints];
            laser.ranges[laser.ranges.size()-1-i] = laser.ranges[laser.ranges.size()-1-nFilterPoints];
         }
-
-        /*for(int i = 16; i < laser->ranges.size()-15; ++i) {
-               if(laser->ranges[i] < aux && laser->ranges[i] > LRF_THRESH) {
-                   aux = laser->ranges[i];
-               }
-           }
-         minDistance_ = aux;*/
-
     }
 
     void Detection::saveLRFScan(){
@@ -143,10 +189,7 @@
 
             a += laser.angle_increment;
         }
-
     }
-
-
 
     //Find 2 lines of the walls in the corridor
     CorridorWalls Detection::findCorridorWalls(){
@@ -157,15 +200,11 @@
         Point left1;
         Point left2;
 
-//        Point right1_LR;
-//        Point right2_LR;
-//        Point left1_LR;
-//        Point left2_LR;
         double aFit;
         double bFit;
         int nPointsSearch = 80;
 
-        //Look for left wall (RL SCAN)
+        // Look for left wall (RL SCAN)
         for(unsigned int i = 700; i < 940; i = i + 20){
             if(LatestLaserScan[i].dist < 1.5){
                 if(Detection::lineFit(aFit, bFit, i-nPointsSearch, i) ){
@@ -180,24 +219,9 @@
             }
         }
 
-//        //Look for left wall (LR SCAN)
-//        for(unsigned int i = 300; i < 940; i = i + 20){
-//            if(LatestLaserScan[i].dist < 1.5){
-//                if(Detection::lineFit(aFit, bFit, i-nPointsSearch, i) ){
-//                    left1_LR.y = -1;
-//                    left2_LR.y = 1;
-//                    left1_LR.x = (left1_LR.y - bFit)/aFit;
-//                    left2_LR.x = (left2_LR.y - bFit)/aFit;
-//                    detectedLeft = true;
-//                    std::cout << "Detected left wall" << std::endl;
-//                    i = 941;
-//                }
-//            }
-//        }
 
-
-        //Look for right wall (RL SCAN)
-        for(unsigned int i = 300; i > 50; i = i - 20){                          // why 50?
+        // Look for right wall (RL SCAN)
+        for(unsigned int i = 300; i > 50; i = i - 20){
             if(LatestLaserScan[i].dist < 1.5){
                 if(Detection::lineFit(aFit, bFit, i, i+nPointsSearch) ){
                     right1.y = -1;
@@ -211,7 +235,6 @@
             }
         }
 
-
         CorridorWalls walls;
         walls.rightWall1 = right1;
         walls.rightWall2 = right2;
@@ -219,7 +242,6 @@
         walls.leftWall2 = left2;
         walls.escaped = !(detectedRight && detectedLeft);
         return walls;
-
     }
 
     void Detection::findExitsAndCorners_RL(){
@@ -268,11 +290,9 @@
                     }
 
 
-
                     if(nDeviations > nPointsThresh && LatestLaserScan[j].dist < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
-                        //Corner detected
-                        //std::cout << "Corner detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << "), point:" << j << std::endl;
 
+                        //Corner detected
                         if(LatestLaserScan[j-nPointsThresh].dist <= 0.9 * LatestLaserScan[j-nPointsThresh - 1].dist ){
                             i = j;
                             j = 970;
@@ -289,7 +309,6 @@
                             }
                         }
 
-
                         i = j;
                         j = 970; // I know it's ugly, but breaking failed, I deeply apologize for this ugly piece of unscalable code.
                     }
@@ -297,12 +316,9 @@
 
 
                     if (nDeviations > nPointsThresh && LatestLaserScan[j].dist > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+
                         // Exit detected
-                        //std::cout << "Exitpoint 1 detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << ")" << std::endl;
-                        //std::cout << j;
                         iExit1 = j - nPointsThresh - 2;
-
-
 
                         //Start searching for the second point of the exit
                         int nEqual = 0;
@@ -317,11 +333,9 @@
 
                             double distance_line = sqrt( pow(x_intersect - LatestLaserScan[k].x, 2) + pow(y_intersect - LatestLaserScan[k].y,2)  );
 
-                            //std::cout << distance_line;
 
                             if (distance_line < errorThresh){
                                 nEqual = nEqual + 1;
-                                //std::cout << "You fucked up";
                             }
                             else{
                                 nEqual = 0;
@@ -342,25 +356,17 @@
                                        break;
                                    }
                                }
-                               //if(sqrt(pow(LatestLaserScan[iExit1].x - LatestLaserScan[iExit2].x,2) + pow(LatestLaserScan[iExit1].y - LatestLaserScan[iExit2].y,2)) < 2.0){
-                               //}
                             }
                         }
-
-
                     }
-
                 }
             }
         }
     }
 
 
-
-
-
     void Detection::findExitsAndCorners_LR(){ // LR SCAN
-        //std::cout << "TEST" << std::endl;
+
         int nExits = 20;
         int nCorners = 20;
 
@@ -368,7 +374,6 @@
             Exits_LR[l].detected = false;
             Corners_LR[l].detected = false;
         }
-        //double errorThresh = 0.05; //Amount of deviation from linefit which is allowed (due to sensor noise)
         double errorThresh = 0.05; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
         int nPointsThresh = 15; //Amount of points larger of smaller than expected before action is being undertaken
         int nPointsThreshEqual = 5;
@@ -379,12 +384,9 @@
         int iExit2_LR = 0;
 
 
-
-
         double aFit = 0; double bFit = 0;
 
         for (unsigned int i = 970; i > 0 + nPointsSearch; i = i-1){
-            //std::cout << "Hello" << std::endl;
 
             if(lineFit(aFit, bFit, i-nPointsSearch, i)){ //Line found, next: search for deviation in positive direction
 
@@ -392,7 +394,6 @@
 
                 for (int j = i-nPointsSearch; j > 0; --j){
 
-                   //std::cout << j << std::endl;
                     double aFit_perp = -1/aFit; //Slope of the line perpendicular to fitted line
                     double bFit_perp = LatestLaserScan[j].y - aFit_perp * LatestLaserScan[j].x;
 
@@ -400,8 +401,6 @@
                     double y_intersect = aFit*x_intersect + bFit;
 
                     double distance_line = sqrt( pow(x_intersect - LatestLaserScan[j].x, 2) + pow(y_intersect - LatestLaserScan[j].y,2)  );
-
-//                    std::cout << distance_line << std::endl;
 
                     if (distance_line > errorThresh){
                         nDeviations = nDeviations + 1;
@@ -411,9 +410,8 @@
 
 
                     if(nDeviations > nPointsThresh && LatestLaserScan[j].dist < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
-                        //Corner detected
-                        //std::cout << "Corner detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << "), point:" << j << std::endl;
 
+                        //Corner detected
                         if(LatestLaserScan[j+nPointsThresh].dist <= 0.9 * LatestLaserScan[j+nPointsThresh + 1].dist ){
                             i = j;
                             j = 0;
@@ -430,7 +428,6 @@
                             }
                         }
 
-//                       std::cout << "Hello" << std::endl;
                         i = j;
                         j = 0; // I know it's ugly, but breaking failed, I deeply apologize for this ugly piece of unscalable code.
                     }
@@ -438,11 +435,9 @@
 
 
                     if (nDeviations > nPointsThresh && LatestLaserScan[j].dist > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
-                        // Exit detected
-                        //std::cout << "Exitpoint 1 detected! (" << LatestLaserScan[j].x << ", " << LatestLaserScan[j].y << ")" << std::endl;
-                        //std::cout << j;
-                        iExit1_LR = j + nPointsThresh + 2;
 
+                        // Exit detected
+                        iExit1_LR = j + nPointsThresh + 2;
 
 
                         //Start searching for the second point of the exit
@@ -458,11 +453,9 @@
 
                             double distance_line = sqrt( pow(x_intersect - LatestLaserScan[k].x, 2) + pow(y_intersect - LatestLaserScan[k].y,2)  );
 
-                            //std::cout << distance_line;
 
                             if (distance_line < errorThresh){
                                 nEqual = nEqual + 1;
-                                //std::cout << "You fucked up";
                             }
                             else{
                                 nEqual = 0;
@@ -483,25 +476,13 @@
                                        break;
                                    }
                                }
-                               //if(sqrt(pow(LatestLaserScan[iExit1].x - LatestLaserScan[iExit2].x,2) + pow(LatestLaserScan[iExit1].y - LatestLaserScan[iExit2].y,2)) < 2.0){
-                               //}
                             }
                         }
-
-
                     }
-
                 }
-
             }
-
         }
-
     }
-
-
-
-
 
 
     double Detection::distance_to_front(){
@@ -515,9 +496,6 @@
     }
 
 
-
-
-    //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)
     //Fit a line y = a*x + b between a set of specified points (LatestLaserScan points between index firstPoint and lastPoint)
     bool Detection::lineFit(double &aFit, double &bFit, int firstPoint, int lastPoint){
         unsigned int nFitPoints = 10; //Amount of points that are used to fit line
@@ -535,10 +513,7 @@
             }
             lineFitPoint[i].x = sumx/nAveragePoints;
             lineFitPoint[i].y = sumy/nAveragePoints;
-
-            //std::cout << "Point " << i << ": (" << lineFitPoint[i].x << ", " << lineFitPoint[i].y << ")" << std::endl;
         }
-
 
         //Fit line y = a*x + b through the first and last (averaged) point
 
@@ -556,19 +531,7 @@
 
             fitError = fitError = sqrt( pow(x_intersect - lineFitPoint[i].x, 2) + pow(y_intersect - lineFitPoint[i].y,2)  );
         }
-        /*if(aFit < -1 || aFit > 1){ // Evaluate x-coordinates for given y
-            for(unsigned int i = 1; i < nFitPoints - 1; ++i){
-                double xEval = (lineFitPoint[i].y - bFit)/aFit;
-                double errorPoint = xEval - lineFitPoint[i].x;
-                fitError = fitError + pow(errorPoint,2);
-            }
-        } else{ // Evaluate y-coordinates for given x
-            for(unsigned int i = 1; i < nFitPoints - 1; ++i){
-                double yEval = aFit * lineFitPoint[i].x + bFit;
-                double errorPoint = yEval - lineFitPoint[i].y;
-                fitError = fitError + pow(errorPoint,2);
-            }
-        }*/
+
         double RMSerror = sqrt(fitError);
 
         //Total threshold for linefit (larger when more points are evaluated or when points are further apart from each other)
@@ -585,7 +548,6 @@
 
     }
 
-
     Point Detection::findFurthestPoint(){
         int imax = 0;
         double max = 0;
@@ -597,13 +559,3 @@
         }
         return LatestLaserScan[imax];
     }
-
-
-
-    /*bool Detection::wallDetected(double minDistance) {
-        if(minDistance < MIN_DIST_TO_WALL) {
-            return true;
-        } else {
-            return false;
-        }
-    }*/

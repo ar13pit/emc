@@ -10,38 +10,59 @@
     void Detection::average_CornersAndExits(){
         emc::Rate rate(EXECUTION_RATE);
 
+
+
         //Magic numbers
         int nAverages = 10;
-        double distance_thresh = 0.0001;
+        double distance_thresh = 0.01;
         int nLarger = 5;
         //End Magic numbers
 
 
         Corner AverageCornerPoint_RL[100];
         Corner AverageCornerPoint_RL_final[20];
+        Exit AverageExit_RL[100];
+        Exit AverageExit_RL_final[20];
         int nAverageCornerPoint_RL[100];
+        int nAverageExit_RL[100];
 
         for (int i = 0; i < 100; ++i){
             nAverageCornerPoint_RL[i] = 0;
             AverageCornerPoint_RL[i].detected = false;
+            nAverageExit_RL[i] = 0;
+            AverageExit_RL[i].detected = false;
         }
 
 
-        //Right to left
         for (int i = 0; i < nAverages; ++i){
-            Detection::saveLRFScan();
+
+            rate.sleep();
+            if(inOut->ok()){
+            if(getSensorData()){
+                std::cout << "Heuj" << std::endl;
+                saveLRFScan();
+            }
+            }
+
+
+
+            std::cout << LatestLaserScan[0].dist << std::endl;
+
 
             rate.sleep();
 
 
 
-            Detection::findExitsAndCorners_RL();
+            findExitsAndCorners_RL();
+
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////// CORNERS R_L ->
 
 
             for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
 
                 if(Corners_RL[j].detected){
-                    std::cout << j << std::endl;
+                    //std::cout << j << std::endl;
                     bool corner_detected = false;
                     for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
                         if(AverageCornerPoint_RL[k].detected){
@@ -77,22 +98,93 @@
 
             }
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////// EXITS R_L ->
+
+            for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
+
+                if(Exits_RL[j].detected){
+                    //std::cout << j << std::endl;
+                    bool exit_detected = false;
+                    for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
+                        if(AverageExit_RL[k].detected){
+                           double centerExitx = 0.5 * Exits_RL[j].exitPoint1.x + 0.5 * Exits_RL[j].exitPoint2.x;
+                           double centerExity = 0.5 * Exits_RL[j].exitPoint1.y + 0.5 * Exits_RL[j].exitPoint2.y;
+                           double average_centerExitx = 0.5 * AverageExit_RL[j].exitPoint1.x + 0.5 * AverageExit_RL[j].exitPoint2.x;
+                           double average_centerExity = 0.5 * AverageExit_RL[j].exitPoint1.y + 0.5 * AverageExit_RL[j].exitPoint2.y;
+                           double distance = sqrt( pow(centerExitx - average_centerExitx,2) +  pow(centerExity - average_centerExity,2));
+                           //std::cout<< distance << std::endl;
+
+                            if(distance < distance_thresh){
+                                ++nAverageExit_RL[k];
+                                AverageExit_RL[k].exitPoint1.x = (AverageExit_RL[k].exitPoint1.x * (nAverageExit_RL[k] - 1) + Exits_RL[j].exitPoint1.x)/nAverageExit_RL[k]; //Weighted average over x of cornerPoints
+                                AverageExit_RL[k].exitPoint2.x = (AverageExit_RL[k].exitPoint2.x * (nAverageExit_RL[k] - 1) + Exits_RL[j].exitPoint2.x)/nAverageExit_RL[k]; //Weighted average over x of cornerPoints
+
+                                AverageExit_RL[k].exitPoint1.y = (AverageExit_RL[k].exitPoint1.y * (nAverageExit_RL[k] - 1) + Exits_RL[j].exitPoint1.y)/nAverageExit_RL[k]; //Weighted average over y of cornerPoints
+                                AverageExit_RL[k].exitPoint2.y = (AverageExit_RL[k].exitPoint2.y * (nAverageExit_RL[k] - 1) + Exits_RL[j].exitPoint2.y)/nAverageExit_RL[k]; //Weighted average over y of cornerPoints
+
+                                exit_detected = true;
+                                break;
+
+                            }
+                        }
+                        else{
+                            break;
+                        }
+                    }
+                    if(exit_detected==false){
+                        for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
+                           if(AverageExit_RL[k].detected == false){
+                               AverageExit_RL[k].detected = true;
+                               AverageExit_RL[k] = Exits_RL[j];
+                               nAverageExit_RL[k] = 1;
+                               break;
+                           }
+                        }
+                    }
+
+                }
+
+            }
+
+            ///////////////////////////////////////////////////////////////////////////////////////
+
         }
 
+        /////////////////////////////////////////////////////////////////////////
 
         for(int i = 0; i < 20; ++i){
                 Corners_RL[i].detected = false;
+                Exits_RL[i].detected = false;
 
         }
+
+
+        /////////////////////////////////////////////// Corners R -> L
 
         int j = 0;
         for(int i = 0; i < 100; ++i){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
             if(nAverageCornerPoint_RL[i] > nLarger){
 
-                std::cout << nAverageCornerPoint_RL[i] << std::endl;
+                //std::cout << nAverageCornerPoint_RL[i] << std::endl;
 
                 Corners_RL[j] = AverageCornerPoint_RL[i];
                 AverageCornerPoint_RL_final[j] = AverageCornerPoint_RL[i];
+                //std::cout << nAverageCornerPoint_RL[i] << std::endl;
+                ++j;
+            }
+        }
+
+
+        ///////////////////////////////////////////// Exits R -> L
+
+        j = 0;
+        for(int i = 0; i < 100; ++i){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
+            if(nAverageExit_RL[i] > nLarger){
+
+                //std::cout << nAverageCornerPoint_RL[i] << std::endl;
+
+                Exits_RL[j] = AverageExit_RL[i];
+                AverageExit_RL_final[j] = AverageExit_RL[i];
                 //std::cout << nAverageCornerPoint_RL[i] << std::endl;
                 ++j;
             }
