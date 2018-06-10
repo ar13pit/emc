@@ -96,6 +96,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
             case GO_INSIDE_ROOM:
                 location = IN_ROOM;
                 low_st = EXPLORE_ROOM;
+                WorldModel::set_currentLocation(location);
                 std::cout << "Exploring the room " << std::endl;
                 break;
             }
@@ -119,14 +120,21 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
                     }
                     else {
                         low_st = EXIT_TO_PREV_ROOM;
-                        std::cout << "Exiting to the corridor " << std::endl;
+                        std::cout << "Exiting to the previous room " << std::endl;
                     }
                 }
 
                 break;
 
             case GO_INSIDE_ROOM:
-                low_st = EXPLORE_ROOM;
+                if (current_room.previousRoom == 0) {
+                    low_st = GO_TO_NEXT_ROOM;
+                    location = IN_CORRIDOR;
+                    WorldModel::set_currentLocation(location);
+                    std::cout << "Going into the corridor " << std::endl;
+                } else {
+                    low_st = EXPLORE_ROOM;
+                }
                 break;
 
             case GO_TO_NEXT_ROOM:

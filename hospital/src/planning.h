@@ -4,6 +4,12 @@
 #include "stateMachine.h"
 #include "detection.h"
 #include "worldModel.h"
+#include "config.h"
+#include "detection.h"
+#include "iostream"
+#include "math.h"
+
+#include <cmath>
 #include <vector>
 
 
