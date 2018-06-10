@@ -16,7 +16,7 @@ Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDete
     std::cout << "Low state =  " << highSt << std::endl;
 
     Room room;
-    Point_det navigateTo;
+    Point navigateTo;
     Destination dest;
     dest.angle = 0;
     dest.dist = 0;
@@ -98,7 +98,7 @@ Destination Planning::setpointInCorridor(){
 
 Destination Planning::getAwayFromWall(Low_State lowSt){
 
-    Point_det closestPoint = WorldModel::get_closestPointWall();
+    Point closestPoint = WorldModel::get_closestPointWall();
 
     //Move sideways when PICO is inside the corridor OR
     //When closest point is at the side of PICO
@@ -119,7 +119,7 @@ Room Planning::get_closestRoom(){
     Room closestRoom;
     vector<Room> allRooms = WorldModel::getAllRooms();
     int curRoom = WorldModel::getCurrentRoom();
-    Point_det curPos = WorldModel::getCurrentPosition();
+    Point curPos = WorldModel::getCurrentPosition();
     double shortestDist = INFINITY;
 
     for(int i = 0;i<allRooms.size(); i++){
@@ -131,8 +131,8 @@ Room Planning::get_closestRoom(){
                (abs(closestRoom.corners[0].x) < 0.001 || abs(closestRoom.corners[0].x > 100))){
             //Get middle point of the exit
             cout << '1' << endl;
-            double xMid = 0.5*(allRooms[i].exit_previous.exitPoint_det1.x + allRooms[i].exit_previous.exitPoint_det2.x);
-            double yMid = 0.5*(allRooms[i].exit_previous.exitPoint_det1.y + allRooms[i].exit_previous.exitPoint_det2.y);
+            double xMid = 0.5*(allRooms[i].exit_previous.exitPoint1.x + allRooms[i].exit_previous.exitPoint2.x);
+            double yMid = 0.5*(allRooms[i].exit_previous.exitPoint1.y + allRooms[i].exit_previous.exitPoint2.y);
 
             double distToRoom = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-yMid, 2));
             if(distToRoom < shortestDist){
@@ -142,16 +142,16 @@ Room Planning::get_closestRoom(){
             //cout << "Exit Room " << i << " is at (" << xMid << ',' << yMid << ')' << endl;
         }
     }
-    //cout << "Closest Exit is at (" << 0.5*(closestRoom.exit_previous.exitPoint_det1.x + closestRoom.exit_previous.exitPoint_det2.x) << ',' << 0.5*(closestRoom.exit_previous.exitPoint_det1.y + closestRoom.exit_previous.exitPoint_det2.y) << ')' << endl;
+    //cout << "Closest Exit is at (" << 0.5*(closestRoom.exit_previous.exitPoint1.x + closestRoom.exit_previous.exitPoint2.x) << ',' << 0.5*(closestRoom.exit_previous.exitPoint1.y + closestRoom.exit_previous.exitPoint2.y) << ')' << endl;
     return closestRoom;
 }
 
-Point_det Planning::getNearbyExitPoint(Room closestRoom){
+Point Planning::getNearbyExitPoint(Room closestRoom){
 
-    Point_det destination;
-    Point_det extPnt1 = closestRoom.exit_previous.exitPoint_det1;
-    Point_det extPnt2 = closestRoom.exit_previous.exitPoint_det2;
-    Point_det curPos = WorldModel::getCurrentPosition();
+    Point destination;
+    Point extPnt1 = closestRoom.exit_previous.exitPoint1;
+    Point extPnt2 = closestRoom.exit_previous.exitPoint2;
+    Point curPos = WorldModel::getCurrentPosition();
 
     double xMid = 0.5*(extPnt1.x + extPnt2.x);
     double yMid = 0.5*(extPnt1.y + extPnt2.y);
@@ -179,13 +179,13 @@ Point_det Planning::getNearbyExitPoint(Room closestRoom){
     return destination;
 }
 
-Destination Planning::driveToPoint(Point_det goToPoint){
+Destination Planning::driveToPoint(Point goToPoint){
 
 //    ///////////////////  TODO  //////////////////////////////////////
 //    /// Check wheter is works when the relative angle is different
 //    /// Unable to check in simulation without other classes...
 //    ///
-    Point_det curPos = WorldModel::getCurrentPosition();
+    Point curPos = WorldModel::getCurrentPosition();
     Destination dest;
 
     double disX = goToPoint.x-curPos.x;
@@ -234,7 +234,7 @@ Room Planning::getRoom(){
 
 Destination Planning::driveInRoom(Room curRoom){
 
-    Point_det closestPoint = WorldModel::get_closestPointWall();
+    Point closestPoint = WorldModel::get_closestPointWall();
     Destination dest;
 
     //Turn around when front wall is too close
@@ -248,9 +248,9 @@ Destination Planning::driveInRoom(Room curRoom){
     return dest;
 }
 
-Point_det Planning::getStartPos(){
+Point Planning::getStartPos(){
 
-    Point_det startPos;
+    Point startPos;
     startPos.x = 0;
     startPos.y = 0;
 
@@ -300,7 +300,7 @@ Destination Planning::parkPico(){
 //   ///     What should the distance be? Drive backwards?
 
 
-    Point_det corr_end = worldModel->get_pointStraightAhead();
+    Point corr_end = worldModel->get_pointStraightAhead();
     Destination dest;
 
     //Pico is backwards to the back wall
@@ -314,4 +314,3 @@ Destination Planning::parkPico(){
 Destination Planning::get_Destination(){
     return dest;
 }
-

@@ -64,15 +64,15 @@ void initialize(Detection_data *data, Destination *dest, Flags *flags){
     // exit initialization
     data->exit.detected = false;
 
-    data->exit.exitPoint_det1.angle = 0;
-    data->exit.exitPoint_det1.dist = 0;
-    data->exit.exitPoint_det1.x = 0;
-    data->exit.exitPoint_det1.y = 0;
+    data->exit.exitPoint1.angle = 0;
+    data->exit.exitPoint1.dist = 0;
+    data->exit.exitPoint1.x = 0;
+    data->exit.exitPoint1.y = 0;
 
-    data->exit.exitPoint_det2.angle = 0;
-    data->exit.exitPoint_det2.dist = 0;
-    data->exit.exitPoint_det2.x = 0;
-    data->exit.exitPoint_det2.y = 0;
+    data->exit.exitPoint2.angle = 0;
+    data->exit.exitPoint2.dist = 0;
+    data->exit.exitPoint2.x = 0;
+    data->exit.exitPoint2.y = 0;
 
 
     // furthest point initialization

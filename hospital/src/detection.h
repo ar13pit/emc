@@ -10,28 +10,28 @@
 #define detection_H
 
 
-// Point_det data
+// Point data
 typedef struct {
     double x;
     double y;
     double angle;
     double dist;
-} Point_det;
+} Point;
 
 
 // Store exit data: two corners, angles and a flag whether detected
 typedef struct {
     bool detected;
-    Point_det exitPoint_det1;
-    Point_det exitPoint_det2;
+    Point exitPoint1;
+    Point exitPoint2;
 } Exit;
 
 typedef struct {
     bool escaped;
-    Point_det rightWall1;
-    Point_det rightWall2;
-    Point_det leftWall1;
-    Point_det leftWall2;
+    Point rightWall1;
+    Point rightWall2;
+    Point leftWall1;
+    Point leftWall2;
 } CorridorWalls;
 
 
@@ -39,7 +39,7 @@ typedef struct {
 typedef struct {
     Exit exit;
     CorridorWalls corridor;
-    Point_det furthest_point;
+    Point furthest_point;
 } Detection_data;
 
 
@@ -50,15 +50,15 @@ private:
     emc::IO *inOut;
     emc::LaserData laser_;
     Detection_data data_;
-    Point_det LatestLaserScan[1000-2*15]; //Deleted first and last 15 Point_dets
+    Point LatestLaserScan[1000-2*15]; //Deleted first and last 15 Points
     bool read;
 
-    void filterLRFData(int nFilterPoint_dets); // Filter data by sensor measurement
+    void filterLRFData(int nFilterPoints); // Filter data by sensor measurement
     void saveLRFScan();
     bool lineFit(double&, double&, int, int);
 
     void findCorridorWalls();
-    void findFurthestPoint_det();
+    void findFurthestPoint();
     bool findExit();
 
 public:
@@ -77,10 +77,10 @@ public:
             findCorridorWalls();
         } else {
             //Exit *ex;
-            //Point_det far;
+            //Point far;
 
             findExit();
-            findFurthestPoint_det();
+            findFurthestPoint();
 
 //            std::cout << "Exit detected in the Detection class "<< data_.exit.detected << std::endl << std::endl;
         }
