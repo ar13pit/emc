@@ -21,16 +21,16 @@
 
         Corner AverageCornerPoint_RL[100];
         Corner AverageCornerPoint_RL_final[20];
-        Exit AverageExit_RL[100];
-        Exit AverageExit_RL_final[20];
+        Exit AverageExit_RL[100]; //
+        Exit AverageExit_RL_final[20]; //
         int nAverageCornerPoint_RL[100];
-        int nAverageExit_RL[100];
+        int nAverageExit_RL[100]; //
 
         for (int i = 0; i < 100; ++i){
             nAverageCornerPoint_RL[i] = 0;
             AverageCornerPoint_RL[i].detected = false;
-            nAverageExit_RL[i] = 0;
-            AverageExit_RL[i].detected = false;
+            nAverageExit_RL[i] = 0; //
+            AverageExit_RL[i].detected = false; //
         }
 
 
@@ -154,7 +154,7 @@
 
         for(int i = 0; i < 20; ++i){
                 Corners_RL[i].detected = false;
-                Exits_RL[i].detected = false;
+                Exits_RL[i].detected = false;//
 
         }
 
@@ -189,6 +189,7 @@
                 ++j;
             }
         }
+        ///////////////////////////////////////////////////////////////////////
 
     }
 
