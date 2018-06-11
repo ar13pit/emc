@@ -7,6 +7,7 @@
 #include "detection.h"
 #include "planning.h"
 #include "stateMachine.h"
+
 //#include "json.hpp"
 
 #ifndef worldModel_H
@@ -88,6 +89,7 @@ public:
 
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
+    std::vector<Exit> getAllDetectedExits();
     
 
     // Set Methods
