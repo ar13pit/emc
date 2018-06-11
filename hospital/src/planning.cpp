@@ -125,7 +125,7 @@ Room Planning::get_closestRoom(){
 //        ///    to 0 when initialized
 
         if(allRooms[i].exit_previous.detected && curRoom == allRooms[i].previousRoom &&
-               (abs(closestRoom.corners[0].x) < 0.001 || abs(closestRoom.corners[0].x > 100))){
+               closestRoom.corners.size()){
             //Get middle point of the exit
             cout << '1' << endl;
             double xMid = 0.5*(allRooms[i].exit_previous.exitPoint1.x + allRooms[i].exit_previous.exitPoint2.x);

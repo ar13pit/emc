@@ -7,7 +7,6 @@
 #include "detection.h"
 #include "planning.h"
 #include "stateMachine.h"
-
 //#include "json.hpp"
 
 #ifndef worldModel_H
@@ -17,7 +16,7 @@ using json = nlohmann::json;
 
 struct Room {
     int roomID;
-    Point corners[4];
+    std::vector<Point> corners;
     Exit exit;
     int previousRoom;   // Corridor is 0
 
