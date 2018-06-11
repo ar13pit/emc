@@ -42,7 +42,9 @@ Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDete
                     dest = driveToPoint(navigateTo);
                     return dest;
                 case GO_INSIDE_ROOM :
-                    // Go through the exit...
+                    room = get_closestRoom();
+                    navigateTo = getThroughtExitPoint(room);
+                    dest = driveToPoint(navigateTo);
                     break;
                 }
             case RETURN_TO_INIT :
@@ -69,7 +71,9 @@ Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDete
                     dest = driveToPoint(navigateTo);
                     return dest;
                 case GO_INSIDE_ROOM :
-                    // Go through the exit...
+                    room = get_closestRoom();
+                    navigateTo = getThroughtExitPoint(room);
+                    dest = driveToPoint(navigateTo);
                     break;
                 case STAND_NEXT_TO_OBJECT :
                     // Drive to the object...
@@ -302,6 +306,44 @@ Destination Planning::parkPico(){
     //Move the distance to the back wall - 5cm
     dest.dist = corr_end.dist-0.05;
 }
+
+Point Planning::getThroughtExitPoint(Room roomFromMapping){
+
+    Point_det navigateTo;
+
+    double closestX = INFINITY;
+    double closestY = INFINITY;
+
+    vector<Exit> allDetectedExits = getAllDetectedExits();
+
+    Point extPntMap1 = roomFromMapping.exit_previous.exitPoint_det1;
+    Point extPntMap2 = roomFromMapping.exit_previous.exitPoint_det2;
+    Point curPos = getCurrentPosition();
+
+    //Get the middle point of the exit from the mapping
+    double xMidMap = 0.5*(extPntMap1.x + extPntMap2.x);
+    double yMidMap = 0.5*(extPntMap1.y + extPntMap2.y);
+
+    //In case multiple exits are found, select the correct one
+    for(int i=0;i<allDetectedExits.size();i++){
+        Point extPntDet1 = allDetectedExits[i].exitPoint_det1;
+        Point extPntDet2 = allDetectedExits[i].exitPoint_det2;
+
+        //Get the middle point of the exit from the detection
+        double xMidDet = 0.5*(extPntDet1.x + extPntDet2.x);
+        double yMidDet = 0.5*(extPntDet1.y + extPntDet2.y);
+
+        if(abs(xMidMap - xMidDet) + abs(yMidMap - xMidDet) < abs(closestX) + abs(closestY)){
+            closestX = xMidDet;
+            closestY = yMidDet;
+        }
+    }
+    navigateTo.x = closestX;
+    navigateTo.y = closestY;
+
+    return navigateTo;
+}
+
 
 
 Destination Planning::get_Destination(){
