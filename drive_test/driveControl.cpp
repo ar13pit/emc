@@ -10,8 +10,11 @@ void DriveControl::picoTurning(Destination *dest){
     while (!inOut->readOdometryData(odomRef)){r.sleep();}
     while (!inOut->readOdometryData(odomCur)){r.sleep();}
 
+    double angle_cur = odomRef.a - odomCur.a;
+
     bool left = calibrate_angle(dest->angle);
-    while (fabs(odomCur.a - odomRef.a) < fabs(dest->angle) - TURN_COMPLETE){
+
+    while (fabs(angle_cur) < fabs(ref_angle) - TURN_COMPLETE){
         if (left){
             picoTurnLeft();
         } else {
@@ -19,11 +22,15 @@ void DriveControl::picoTurning(Destination *dest){
         }
         while (!inOut->readOdometryData(odomCur)){r.sleep();}
         r.sleep();
+        angle_cur = odomRef.a - odomCur.a;
+        std::cout << "absolute odomCur angle " << fabs(odomCur.a) << std::endl;
+        std::cout << "absolute odomRef angle " << fabs(odomRef.a) << std::endl;
+        std::cout << "absolute dest angle " << fabs(dest->angle) << std::endl;
     }
     stop();
 }
 
-void DriveControl::picoDrive(Destination * dest){
+void DriveControl::picoDrive(Destination * dest, bool back){
     emc::OdometryData odomRef;
     emc::OdometryData odomCur;
     emc::Rate r(40);
@@ -31,15 +38,22 @@ void DriveControl::picoDrive(Destination * dest){
     while (!inOut->readOdometryData(odomRef)){r.sleep();}
     while (!inOut->readOdometryData(odomCur)){r.sleep();}
 
-    double dist_cur = sqrt(pow(odomCur.x,2) + pow(odomCur.y,2));
-    double dist_ref = sqrt(pow(odomRef.x,2) + pow(odomRef.y,2));
+    double dist_cur = sqrt(pow((odomCur.x - odomRef.x),2) + pow((odomCur.y-odomRef.y),2));
+//    double dist_ref = sqrt(pow(odomRef.x,2) + pow(odomRef.y,2));
 
 
-    while (fabs(dist_cur - dist_ref) < fabs(dest->dist) - FRW_COMPLETE){
-        picoForward();
+    while (fabs(dist_cur) < fabs(dest->dist) - FRW_COMPLETE){
+        if (!back){
+            picoForward();
+        } else {
+            picoBackwards();
+        }
         while (!inOut->readOdometryData(odomCur)){r.sleep();}
-        dist_cur = sqrt(pow(odomCur.x,2) + pow(odomCur.y,2));
+        dist_cur = sqrt(pow((odomCur.x-odomRef.x),2) + pow((odomCur.y-odomRef.y),2));
         r.sleep();
+        std::cout << "absolute odomCur distance " << fabs(dist_cur) << std::endl;
+//        std::cout << "absolute odomRef distance " << fabs(dist_ref) << std::endl;
+        std::cout << "absolute dest distance " << fabs(dest->dist) << std::endl;
     }
     stop();
 }
@@ -51,6 +65,7 @@ bool DriveControl::calibrate_angle(double destA){
         destA = M_PI - abs(fmod(destA,M_PI));
     if( destA > M_PI )
         destA = -1*fmod(destA,M_PI);
+    ref_angle = destA;
 
     if (destA < 0) {
         left = true;
@@ -59,168 +74,31 @@ bool DriveControl::calibrate_angle(double destA){
     }
 }
 
-//void DriveControl::picoDrive(Destination *dest){
-//    emc::OdometryData odomRef;
-//    emc::OdometryData odomCur;
-//    emc::Rate r(40);
+void DriveControl::picoSideDrive(Destination *dest) {
 
-//    double ref_dist = dest->dist;
-//    double angle = dest->angle;
+    emc::OdometryData odomRef;
+    emc::OdometryData odomCur;
+    emc::Rate r(40);
 
-//    std::cout << "Destination angle " << angle << std::endl;
-//    std::cout << "Destination distance " << ref_dist << std::endl;
-//    std::cout << "Odometry current angle " << odomCur.a << std::endl;
+    while (!inOut->readOdometryData(odomRef)){r.sleep();}
+    while (!inOut->readOdometryData(odomCur)){r.sleep();}
 
+    double x = FORWARD_SPEED*cos(dest->angle);
+    double y = -1*FORWARD_SPEED*cos(0.5*M_PI-dest->angle);
 
-//    // prevent situation that angle = nan
-//    if (angle != angle) {
-//        r.sleep();
-//    } else {
+    double dist_cur = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
+    double dist_ref = sqrt(pow(odomRef.x,2)+pow(odomRef.y,2));
 
-//        while (!inOut->readOdometryData(odomRef)){r.sleep();}
-//        while (!inOut->readOdometryData(odomCur)){r.sleep();}
-//        double destA = odomRef.a-angle;
-//        if( destA < -M_PI )
-//            destA = M_PI - abs(fmod(destA,M_PI));
-//        if( destA > M_PI )
-//            destA = -1*fmod(destA,M_PI);
-//        ref_angle = destA;
+    while(fabs(dist_ref - dist_cur) > fabs(dest->dist) - FRW_COMPLETE){
+        inOut->sendBaseReference(x, y, 0.0);
+        while (!inOut->readOdometryData(odomCur)){r.sleep();}
+        dist_cur = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
+        r.sleep();
+    }
+    stop();
 
+}
 
-//        std::cout << "odom x " << odomCur.x << std::endl;
-//        std::cout << "odom y " << odomCur.y << std::endl;
-//        ref_dist = ref_dist + sqrt(pow(odomCur.x,2) + pow(odomCur.y,2));
-
-//        std::cout << "ref angle " << ref_angle << std::endl;
-//        std::cout << "odometry angle " << odomCur.a << std::endl;
-
-//        if ( abs(angle) > TURN_MARGIN )
-//        {
-//            turn_ref(ref_angle, odomCur, angle, &r);
-//            travel_dist(ref_dist, odomCur,&r,false);
-//        }
-//        else
-//        {
-//            std::cout << "Side drive is active" <<"\n";
-//            picoSideDrive(ref_dist, odomCur, angle, &r);
-//        }
-//    }
-//    stop();
-//    return;
-//}
-
-//void DriveControl::picoDriveBackwards(Destination * dest){
-//    emc::OdometryData odomRef;
-//    emc::OdometryData odomCur;
-//    emc::Rate r(20);
-//    r.sleep();
-
-//    double ref_dist = dest->dist;
-//    double angle = dest->angle + M_PI; // stand backwards to the destination point
-//    bool back = true;       // to drive backwards
-
-
-//    // prevent situation that angle = nan
-//    if (angle != angle) {
-//        r.sleep();
-//    } else {
-
-//        while (!inOut->readOdometryData(odomRef)){r.sleep();}
-//        while (!inOut->readOdometryData(odomCur)){r.sleep();}
-
-//        double destA = odomRef.a-angle;
-//        if( destA < -M_PI )
-//            destA = M_PI - abs(fmod(destA,M_PI));
-//        if( destA > M_PI )
-//            destA = -1*fmod(destA,M_PI);
-//        ref_angle = destA;
-
-//        ref_dist = ref_dist + sqrt(pow(odomCur.x,2) + pow(odomCur.y,2));
-
-//        std::cout << "ref_dist " << ref_dist << std::endl;
-
-//        if ( abs(angle) > TURN_MARGIN )
-//        {
-//            turn_ref(ref_angle, odomCur, angle, &r);
-//        }
-
-//        picoSideDrive(ref_dist, odomCur, angle, &r);
-
-//    }
-//    stop();
-//    return;
-
-//}
-
-
-//void DriveControl::turn_ref(double ref_angle, emc::OdometryData & odomCur, double angle, emc::Rate *r){
-//    std::cout << "Turning" << std::endl;
-//    while(abs(ref_angle - odomCur.a) > TURN_COMPLETE)
-//    {
-//        if (inOut->readOdometryData(odomCur)){
-//            angle < 0 ? picoTurnLeft() : picoTurnRight();
-//            r->sleep();
-//            //        inOut->readOdometryData(odomCur);
-//            std::cout << "ref_angle " << ref_angle << std::endl;
-//            std::cout << "read odometry " << odomCur.a << std::endl;
-
-//        } else {
-//            r->sleep();
-//        }
-//    }
-//    stop();
-//    std::cout << "Turning Complete" << std::endl;
-
-//}
-
-//void DriveControl::picoSideDrive(double ref_dist, emc::OdometryData odomCur, double angle, emc::Rate *r) {
-//    double x = FORWARD_SPEED*cos(angle);
-//    double y = -1*FORWARD_SPEED*cos(0.5*M_PI-angle);
-
-//    double meas_dist;
-//    meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
-
-//    while(fabs(ref_dist - meas_dist) > FRW_COMPLETE){
-//        std::cout << "Dist to dest = " << fabs(ref_dist - meas_dist) << endl;
-//        std::cout << "Dist measured " << fabs(meas_dist) << endl << endl;
-//        inOut->sendBaseReference(x, y, 0.0);
-//        r->sleep();
-//        inOut->readOdometryData(odomCur);
-//        r->sleep();
-
-//        meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
-//    }
-//    std::cout << "Measured odometry " <<  meas_dist << std::endl;
-//    stop();
-
-//}
-
-
-//void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::Rate *r, bool back){
-
-//    double meas_dist;
-//    meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
-
-
-//    while(fabs(ref_dist - meas_dist) > FRW_COMPLETE){
-//        std::cout << "Dist to dest = " << fabs(ref_dist - meas_dist) << endl;
-//        std::cout << "Dist measured " << fabs(meas_dist) << endl << endl;
-
-//        if (!back){
-//            picoForward();
-//        } else {
-//            picoBackwards();
-//        }
-//        r->sleep();
-//        inOut->readOdometryData(odomCur);
-//        r->sleep();
-
-//        meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
-//    }
-//    std::cout << "Measured odometry " <<  meas_dist << std::endl;
-//    stop();
-//    //    std::cout << "stopped driving forward" << std::endl;
-//}
 
 void DriveControl::picoTurnRight() {
     inOut->sendBaseReference(0.0, 0.0, ROTATE_SPEED);
@@ -260,9 +138,10 @@ int main(int argc, char *argv[])
     // Transition values
     Destination dest;
     dest.dist = 0;
-    dest.angle = M_PI/2;
+    dest.angle = M_PI*0.5;
     dest.x = 0;
     dest.y = 0;
+    bool back = true;
     DriveControl pico_drive(&io);
 
     int counter = 0;
@@ -271,13 +150,12 @@ int main(int argc, char *argv[])
     while(io.ok()) {
 
         pico_drive.picoTurning(&dest);
-        pico_drive.picoDrive(&dest);
-        dest.angle = dest.angle - (M_PI/2);
+        pico_drive.picoDrive(&dest, back);
+        dest.angle = dest.angle + (M_PI*counter/10);
         dest.dist = 0.2;
-//        pico_drive.picoDriveBackwards(&dest);
         counter++;
         cin.get();
-        if (counter>2){
+        if (counter>3){
             break;
         }
 

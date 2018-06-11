@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
         end_of_program = state_machine(high_st, low_st, &worldModel);
 
-        pico_drive.drive(low_st,&worldModel);
+        pico_drive.driveDecision(low_st,&worldModel);
 
         if (end_of_program) {
             io.speak(&talking);
