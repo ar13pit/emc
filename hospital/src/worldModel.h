@@ -83,8 +83,8 @@ public:
 
     Location get_currentLocation();
 
-    High_State get_current_high_state();
-    Low_State get_current_low_state();
+    High_State get_currentHighState();              // Renamed from     High_State get_current_high_state();
+    Low_State get_currentLowState();                // Renamed from     Low_State get_current_low_state();
 
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
@@ -102,7 +102,7 @@ public:
 
     void set_enteredRooms(int updatedEnteredRooms);
     void set_nestedExits(int updatedNestedExits);
-    void set_currentRoom(int updatedCurrentRoom);                          // Renamed from     int getCurrentRoom();
+    void set_currentRoom(int updatedCurrentRoom);
     void set_roomsFound(int updatedRoomsFound);
 
     void set_currentLocation(Location newLocation);
@@ -110,7 +110,7 @@ public:
     void set_currentHighState(High_State updatedCurrentHighState);
     void set_currentLowState(Low_State updatedCurrentLowState);
 
-    void set_globalRooms(Room newRoomData);            // Renamed from     std::vector<Room> getAllRooms();
+    void set_globalRooms(Room newRoomData);
     void set_explorationStack(int newRoomToBeExplored);
     void setAllDetectedExits();
 
