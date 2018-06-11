@@ -25,12 +25,6 @@
 
 
 using namespace std;
-//using namespace cv;
-
-
-
-
-//double a;
 
 
 //int show_canvas(emc::LaserData scan)
@@ -52,7 +46,19 @@ void Mapping::init_map()
 }
 
 void Mapping::update_global_pos(){
+    global_pos.x = odom_diff.x + latest_odom.x;
+    global_pos.y = odom_diff.y + latest_odom.y;
+    global_pos.angle = odom_diff.angle + latest_odom.angle;
+}
 
+void Mapping::update_Odometry(){
+    while(!inOut->readOdometryData(odom));
+}
+
+void Mapping::delta_Odometry(){
+    odom_diff.x = global_pos.x - latest_odom.x;
+    odom_diff.y = global_pos.y - latest_odom.y;
+    odom_diff.angle = global_pos.angle - latest_odom.angle;
 }
 
 

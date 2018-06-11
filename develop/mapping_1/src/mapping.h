@@ -24,7 +24,7 @@ typedef struct {
 } Exit_map;
 
 typedef struct {
-    Vector<Point> corners;
+    std::vector<Point> corners;
     Exit_map exit;
 } Room;
 
@@ -47,6 +47,11 @@ public:
     }
 
 void init_map();
+void update_global_pos();
+void update_Odometry();
+void delta_Odometry();
+
+
 Position global_pos;
 Position latest_odom;
 Position odom_diff;
