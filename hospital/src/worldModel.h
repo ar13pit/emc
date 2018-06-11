@@ -7,7 +7,7 @@
 #include "detection.h"
 #include "planning.h"
 #include "stateMachine.h"
-#include "json.hpp"
+//#include "json.hpp"
 
 #ifndef worldModel_H
 #define worldModel_H
@@ -16,13 +16,13 @@ using json = nlohmann::json;
 
 struct Room {
     int roomID;
-    Point corners[4];
+    std::vector<Point> corners;
     Exit exit;
     int previousRoom;   // Corridor is 0
 
     Room() {};
     Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {};
-} ;
+};
 
 typedef struct Room Room;
 
@@ -43,6 +43,8 @@ class WorldModel {
 
     Destination destination_;
 
+    Detection_data localDetection_;
+
     int enteredRooms_;
     int nestedExits_;
     int currentRoom_;
@@ -50,8 +52,8 @@ class WorldModel {
 
     Location currentLocation_;
 
-    High_State current_high_state;
-    Low_State current_low_state;
+    High_State currentHighState_;
+    Low_State currentLowState_;
 
     json jsonObject_;
 
@@ -72,6 +74,8 @@ public:
 
     Destination get_destination();
 
+    Detection_data get_localDetection();
+
     int get_enteredRooms();
     int get_nestedExits();
     int get_currentRoom();                          // Renamed from     int getCurrentRoom();
@@ -79,17 +83,36 @@ public:
 
     Location get_currentLocation();
 
-    High_State get_current_high_state();
-    Low_State get_current_low_state();
+    High_State get_currentHighState();              // Renamed from     High_State get_current_high_state();
+    Low_State get_currentLowState();                // Renamed from     Low_State get_current_low_state();
 
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
-    
+    std::vector<Exit> getAllDetectedExits();
+
 
     // Set Methods
+    void set_closestPointWall(Point updatedClosestPointWall);
     void set_globalPosition(Point updatedGlobalPosition);
-    void set_currentLocation(Location newLocation);
+    void set_pointStraightAhead(Point updatedPointStraightAhead);
+
     void set_destination(Destination dest);
+
+    void set_localDetection(Detection_data updatedLocalDetection);
+
+    void set_enteredRooms(int updatedEnteredRooms);
+    void set_nestedExits(int updatedNestedExits);
+    void set_currentRoom(int updatedCurrentRoom);
+    void set_roomsFound(int updatedRoomsFound);
+
+    void set_currentLocation(Location newLocation);
+
+    void set_currentHighState(High_State updatedCurrentHighState);
+    void set_currentLowState(Low_State updatedCurrentLowState);
+
+    void set_globalRooms(Room newRoomData);
+    void set_explorationStack(int newRoomToBeExplored);
+    void setAllDetectedExits();
 
 };
 

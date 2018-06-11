@@ -62,6 +62,7 @@ std::vector<Room> map; // Just for Nazar
 std::vector<Point_map> totalCorners;
 std::vector<Exit_map> totalExits;
 
+
 Position global_pos;
 Position latest_odom;
 Position odom_diff;

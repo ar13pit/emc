@@ -25,12 +25,6 @@
 
 
 using namespace std;
-//using namespace cv;
-
-
-
-
-//double a;
 
 
 //int show_canvas(emc::LaserData scan)
@@ -154,6 +148,7 @@ Point_map Mapping::local2global(Point local){ //Convert local into global coordi
 }
 
 void Mapping::update_global_pos(){
+
     update_global_pos();
 
     //First thing you check if results are total crap
@@ -166,6 +161,7 @@ void Mapping::update_global_pos(){
     //global_pos.x = odom_diff.x + global_pos.x;
     //global_pos.y = odom_diff.y + global_pos.y;
     //global_pos.angle = odom_diff.angle + global_pos.angle;
+
 }
 
 void Mapping::update_Odometry(){
@@ -173,9 +169,11 @@ void Mapping::update_Odometry(){
 }
 
 void Mapping::delta_Odometry(){
+
     //odom_diff.x = global_pos.x - latest_odom.x;
     //odom_diff.y = global_pos.y - latest_odom.y;
     //odom_diff.angle = global_pos.angle - latest_odom.angle;
+
 }
 
 

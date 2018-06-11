@@ -46,6 +46,7 @@ public:
 
     Point getNearbyExitPoint(Room closestRoom);
     Point getStartPos();
+    Point getThroughtExitPoint(Room roomFromMapping);
 
 
     Planning(){
