@@ -28,6 +28,7 @@ private:
     void picoBackwards();               // Method to let pico drive backwards
     void picoSideDrive(double ref_dist, emc::OdometryData odomCur, double angle, emc::Rate *r);   // Method to let pico drive side ways
     void stop();                        // Method to stop moving with the robot
+    bool calibrate_angle(double destA);
 
     // complete a turn
     void turn_ref(double ref_angle, emc::OdometryData &odomCur, double angle, emc::Rate *r);
@@ -45,7 +46,7 @@ public:
 
 //    void drive(Low_State low_st, WorldModel* worldModel);  // Method to decide what orientation to drive with
     void picoDrive(Destination *dest);       // Method to let pico turn for an angle and then drive
-    void picoDriveBackwards(Destination * dest); // Method to let pico turn for an angle and then drive backwards
+    void picoTurning(Destination * dest); // Method to let pico turn for an angle and then drive backwards
 };
 
 #endif //driveControl_H
