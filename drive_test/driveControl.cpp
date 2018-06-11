@@ -11,7 +11,8 @@ void DriveControl::picoDrive(Destination *dest){
     double ref_dist = dest->dist;
     double angle = dest->angle;
 
-    std::cout << "Destination " << angle << std::endl;
+    std::cout << "Destination angle " << angle << std::endl;
+    std::cout << "Destination distance " << ref_dist << std::endl;
 //    std::cout << "Odometry current angle " << odomCur.a << std::endl;
 
 
@@ -107,7 +108,6 @@ void DriveControl::turn_ref(double ref_angle, emc::OdometryData & odomCur, doubl
             std::cout << "ref_angle " << ref_angle << std::endl;
             std::cout << "read odometry " << odomCur.a << std::endl;
 
-            std::cout << "Odometry reference timestamp " << odomCur.timestamp << std::endl;
         } else {
             r->sleep();
         }
@@ -124,8 +124,8 @@ void DriveControl::picoSideDrive(double ref_dist, emc::OdometryData odomCur, dou
     double meas_dist;
     meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
 
-    while(abs(ref_dist - meas_dist) > FRW_COMPLETE){
-        std::cout << "Dist to dest = " << fabs(ref_dist) - fabs(meas_dist) << endl;
+    while(fabs(ref_dist - meas_dist) > FRW_COMPLETE){
+        std::cout << "Dist to dest = " << fabs(ref_dist - meas_dist) << endl;
         std::cout << "Dist measured " << fabs(meas_dist) << endl << endl;
         inOut->sendBaseReference(x, y, 0.0);
         r->sleep();
@@ -146,8 +146,8 @@ void DriveControl::travel_dist(double ref_dist, emc::OdometryData odomCur, emc::
     meas_dist = sqrt(pow(odomCur.x,2)+pow(odomCur.y,2));
 
 
-    while(abs(ref_dist - meas_dist) > FRW_COMPLETE){
-        std::cout << "Dist to dest = " << fabs(ref_dist) - fabs(meas_dist) << endl;
+    while(fabs(ref_dist - meas_dist) > FRW_COMPLETE){
+        std::cout << "Dist to dest = " << fabs(ref_dist - meas_dist) << endl;
         std::cout << "Dist measured " << fabs(meas_dist) << endl << endl;
 
         if (!back){
