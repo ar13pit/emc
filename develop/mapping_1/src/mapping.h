@@ -53,15 +53,20 @@ void init_map();
 void update_global_pos();
 void update_Odometry();
 void delta_Odometry();
+
 void update_corners(int);
 void update_map(int);
 void update_rooms(int);
 
+void update_worldModel();
+
+
+
 Point_map local2global(Point);
+
 std::vector<Room> map; // Just for Nazar
 std::vector<Point_map> totalCorners;
 std::vector<Exit_map> totalExits;
-
 
 Position global_pos;
 Position latest_odom;

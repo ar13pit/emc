@@ -50,15 +50,18 @@ void Mapping::init_map()
     corridorExit.point2 = exitPoint_corr2;
     vector<Point_map> corridorcorners;
     Room corridor;
-    corridor.corners = corridorcorners;
+    corridor.corners = corridorcorners; // this definition might not work, I expect an error here
     corridor.exit = corridorExit;
     corridor.previousRoom  = -1; //DEFINITION: -1 means no room below this room --> Corridor
     corridor.previousRoom = 0;
     map[map.size()] = corridor;
 }
 
-void Mapping::update_corners(int currentRoom){ //Update corners in the total corner vector and the current room vector based on current room
+//Update corners in the total corner vector and the current room vector based on current room
+void Mapping::update_corners(int currentRoom){
 
+    //better use this
+    int currentRoom = WorldModel::get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
@@ -82,14 +85,17 @@ void Mapping::update_corners(int currentRoom){ //Update corners in the total cor
                 totalCorners[totalCorners.size()] = corner_found;
              }
 
-         }else{
+         } else{
              break;
          }
     }
 }
 
+//Update corners in the total corner vector and the current room vector based on current room
+void Mapping::update_rooms(int currentRoom){
 
-void Mapping::update_rooms(int currentRoom){ //Update corners in the total corner vector and the current room vector based on current room
+    // better use this
+//    int currentRoom = WorldModel::get_currentRoom();
 
     double distance_thresh = 0.3;
 
@@ -130,14 +136,15 @@ void Mapping::update_rooms(int currentRoom){ //Update corners in the total corne
                 map[map.size()+1].exit = exit_found;
              }
 
-         }else{
+         } else {
              break;
          }
     }
 }
 
 
-Point_map Mapping::local2global(Point local){ //Convert local into global coordinate
+// Convert local into global coordinate
+Point_map Mapping::local2global(Point local){
     int i  = 0;
 
     Point_map global;
@@ -148,6 +155,10 @@ Point_map Mapping::local2global(Point local){ //Convert local into global coordi
 }
 
 void Mapping::update_global_pos(){
+
+    // this is a function that is completely unclear for me
+    // why would you call it again inside?
+    // why would you change the coordinates x to y and vice versa? at least, put an if statement
 
     update_global_pos();
 
@@ -176,6 +187,10 @@ void Mapping::delta_Odometry(){
 
 }
 
+
+void Mapping::update_worldModel(){
+    // WorldModel::set_...
+}
 
 
 

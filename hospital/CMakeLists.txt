@@ -15,7 +15,8 @@ src/monitoring.cpp
 src/worldModel.cpp
 src/planning.cpp
 src/stateMachine.cpp
-src/visualize.cpp
+#src/visualize.cpp
+src/mapping.cpp
 src/main_explore.cpp)
 # Create executable named "testPlanning"
 add_executable(hospital_room ${SOURCES})

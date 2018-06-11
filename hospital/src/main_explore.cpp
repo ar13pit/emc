@@ -14,7 +14,8 @@
 #include "stateMachine.h"
 #include "monitoring.h"
 #include "config.h"
-#include "visualize.h"
+#include "mapping.h"
+//#include "visualize.h"
 using namespace std;
 
 
