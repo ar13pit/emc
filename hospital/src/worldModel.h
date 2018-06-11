@@ -52,8 +52,8 @@ class WorldModel {
 
     Location currentLocation_;
 
-    High_State current_high_state;
-    Low_State current_low_state;
+    High_State currentHighState_;
+    Low_State currentLowState_;
 
     json jsonObject_;
 
@@ -73,7 +73,7 @@ public:
     Point get_pointStraightAhead();
 
     Destination get_destination();
-    
+
     Detection_data get_localDetection();
 
     int get_enteredRooms();
@@ -89,13 +89,31 @@ public:
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
     std::vector<Exit> getAllDetectedExits();
-    
+
 
     // Set Methods
+    void set_closestPointWall(Point updatedClosestPointWall);
     void set_globalPosition(Point updatedGlobalPosition);
-    void set_currentLocation(Location newLocation);
+    void set_pointStraightAhead(Point updatedPointStraightAhead);
+
     void set_destination(Destination dest);
+
     void set_localDetection(Detection_data updatedLocalDetection);
+
+    void set_enteredRooms(int updatedEnteredRooms);
+    void set_nestedExits(int updatedNestedExits);
+    void set_currentRoom(int updatedCurrentRoom);                          // Renamed from     int getCurrentRoom();
+    void set_roomsFound(int updatedRoomsFound);
+
+    void set_currentLocation(Location newLocation);
+
+    void set_currentHighState(High_State updatedCurrentHighState);
+    void set_currentLowState(Low_State updatedCurrentLowState);
+
+    void set_globalRooms(Room newRoomData);            // Renamed from     std::vector<Room> getAllRooms();
+    void set_explorationStack(int newRoomToBeExplored);
+    void setAllDetectedExits();
+
 };
 
 #endif //worldModel_H
