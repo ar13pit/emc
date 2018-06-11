@@ -76,7 +76,6 @@ int main(int argc, char *argv[])
 
             for(unsigned int l = 0; l < 20; l=l+1){
                if(detection.Exits_LR[l].detected){
-//                   std::cout << l;
                    vis.plotExit_LR(detection.Exits_LR[l]);
 
                }
