@@ -16,4 +16,4 @@
 #define FRW_COMPLETE 0.05 // [m] - margin for distance competion
 #define THRESHOLD_CORRIDOR 0.5
 #define EXIT_THRESHOLD 0.5 //[m] - distance at which to switch to corridor escape phase
-#define DIST_SETPOINT 0.2 // [m] - distnace between the setpoints
+#define DIST_SETPOINT 0.02 // [m] - distnace between the setpoints

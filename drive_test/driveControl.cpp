@@ -215,8 +215,8 @@ int main(int argc, char *argv[])
     while(io.ok()) {
 
         pico_drive.picoDrive(&dest);
-        dest.angle = dest.angle - 1;
-        dest.dist = 0;
+        dest.angle = dest.angle - (M_PI/2);
+        dest.dist = 0.2;
 //        pico_drive.picoDriveBackwards(&dest);
         counter++;
         cin.get();
