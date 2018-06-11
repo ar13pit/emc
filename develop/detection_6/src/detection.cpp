@@ -70,7 +70,6 @@
                                 ++nAverageCornerPoint_RL[k];
                                 AverageCornerPoint_RL[k].cornerPoint.x = (AverageCornerPoint_RL[k].cornerPoint.x * (nAverageCornerPoint_RL[k] - 1) + Corners_RL[j].cornerPoint.x)/nAverageCornerPoint_RL[k]; //Weighted average over x of cornerPoints
                                 AverageCornerPoint_RL[k].cornerPoint.y = (AverageCornerPoint_RL[k].cornerPoint.y * (nAverageCornerPoint_RL[k] - 1) + Corners_RL[j].cornerPoint.y)/nAverageCornerPoint_RL[k]; //Weighted average over y of cornerPoints
-
                                 corner_detected = true;
                                 break;
                             }
@@ -112,6 +111,8 @@
 
                                 AverageExit_RL[k].exitPoint1.y = (AverageExit_RL[k].exitPoint1.y * (nAverageExit_RL[k] - 1) + Exits_RL[j].exitPoint1.y)/nAverageExit_RL[k]; //Weighted average over y of cornerPoints
                                 AverageExit_RL[k].exitPoint2.y = (AverageExit_RL[k].exitPoint2.y * (nAverageExit_RL[k] - 1) + Exits_RL[j].exitPoint2.y)/nAverageExit_RL[k]; //Weighted average over y of cornerPoints
+//                                std::cout << "x1_RL = " << AverageExit_RL_final[k].exitPoint1.x << " y_RL = " << AverageExit_RL_final[k].exitPoint1.y << std::endl;
+//                                std::cout << "x2_RL = " << AverageExit_RL_final[k].exitPoint2.x << " y2_RL = " << AverageExit_RL_final[k].exitPoint2.y << std::endl;
 
                                 exit_detected = true;
                                 break;
@@ -251,6 +252,7 @@
 
                 Exits_RL[j] = AverageExit_RL[i];
                 AverageExit_RL_final[j] = AverageExit_RL[i];
+                //std::cout << nAverageExit_RL[i] << std::endl;
                 ++j;
             }
         }
@@ -273,7 +275,7 @@
 
         j = 0;
         for(int i = 0; i < 100; ++i){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-            if(nAverageExit_RL[i] > nLarger){
+            if(nAverageExit_LR[i] > nLarger){
 
                 Exits_LR[j] = AverageExit_LR[i];
                 AverageExit_LR_final[j] = AverageExit_LR[i];
