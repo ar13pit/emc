@@ -7,10 +7,11 @@
 #include "detection.h"
 #include "planning.h"
 #include "stateMachine.h"
-//#include "json.hpp"
+#include "json.hpp"
 
 #ifndef worldModel_H
 #define worldModel_H
+
 
 using json = nlohmann::json;
 
@@ -88,6 +89,7 @@ public:
 
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
+    std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
     std::vector<Exit> getAllDetectedExits();
 
 
@@ -96,16 +98,16 @@ public:
     void set_globalPosition(Point updatedGlobalPosition);
     void set_pointStraightAhead(Point updatedPointStraightAhead);
 
-    void set_destination(Destination dest);
+    void set_destination(Destination updatedDestination);
 
     void set_localDetection(Detection_data updatedLocalDetection);
 
-    void set_enteredRooms(int updatedEnteredRooms);
-    void set_nestedExits(int updatedNestedExits);
+    void set_enteredRooms(bool newRoomEntered);
+    void set_nestedExits(bool newNestedExitFound);
     void set_currentRoom(int updatedCurrentRoom);
-    void set_roomsFound(int updatedRoomsFound);
+    void set_roomsFound(bool newRoomFound);
 
-    void set_currentLocation(Location newLocation);
+    void set_currentLocation(Location updatedLocation);
 
     void set_currentHighState(High_State updatedCurrentHighState);
     void set_currentLowState(Low_State updatedCurrentLowState);
