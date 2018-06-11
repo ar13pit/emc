@@ -22,7 +22,7 @@ struct Room {
 
     Room() {};
     Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {};
-} ;
+};
 
 typedef struct Room Room;
 
@@ -42,6 +42,8 @@ class WorldModel {
     Point pointStraightAhead_;
 
     Destination destination_;
+
+    Detection_data localDetection_;
 
     int enteredRooms_;
     int nestedExits_;
@@ -71,6 +73,8 @@ public:
     Point get_pointStraightAhead();
 
     Destination get_destination();
+    
+    Detection_data get_localDetection();
 
     int get_enteredRooms();
     int get_nestedExits();
@@ -90,7 +94,7 @@ public:
     void set_globalPosition(Point updatedGlobalPosition);
     void set_currentLocation(Location newLocation);
     void set_destination(Destination dest);
-
+    void set_localDetection(Detection_data updatedLocalDetection);
 };
 
 #endif //worldModel_H
