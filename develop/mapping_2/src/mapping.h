@@ -11,10 +11,6 @@
 #include <iostream>
 
 
-typedef struct {
-    double x;
-    double y;
-} Point_map;
 
 typedef struct {
     double x;
@@ -23,16 +19,17 @@ typedef struct {
 } Position;
 
 typedef struct {
-    Point_map point1;
-    Point_map point2;
+    Point point1;
+    Point point2;
 } Exit_map;
 
 typedef struct {
-    std::vector<Point_map> corners;
+    Vector<Point> corners;
     Exit_map exit;
-    int roomID;
-    int previousRoom; //-1 if corridor
 } Room;
+
+
+std::vector<Room> map; // Just for Nazar
 
 
 class Mapping
@@ -50,18 +47,6 @@ public:
     }
 
 void init_map();
-void update_global_pos();
-void update_Odometry();
-void delta_Odometry();
-void update_corners(int);
-void update_map(int);
-void update_rooms(int);
-
-Point_map local2global(Point);
-std::vector<Room> map; // Just for Nazar
-std::vector<Point_map> totalCorners;
-std::vector<Exit_map> totalExits;
-
 Position global_pos;
 Position latest_odom;
 Position odom_diff;
