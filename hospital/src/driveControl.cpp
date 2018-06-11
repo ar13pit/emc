@@ -5,7 +5,7 @@ using namespace std;
 void DriveControl::picoTurning(Destination *dest){
     emc::OdometryData odomRef;
     emc::OdometryData odomCur;
-    emc::Rate r(40);
+    emc::Rate r(DRIVE_RATE);
 
     while (!inOut->readOdometryData(odomRef)){r.sleep();}
     while (!inOut->readOdometryData(odomCur)){r.sleep();}
@@ -33,7 +33,7 @@ void DriveControl::picoTurning(Destination *dest){
 void DriveControl::picoDrive(Destination * dest, bool back){
     emc::OdometryData odomRef;
     emc::OdometryData odomCur;
-    emc::Rate r(40);
+    emc::Rate r(DRIVE_RATE);
 
     while (!inOut->readOdometryData(odomRef)){r.sleep();}
     while (!inOut->readOdometryData(odomCur)){r.sleep();}
@@ -78,7 +78,7 @@ void DriveControl::picoSideDrive(Destination *dest) {
 
     emc::OdometryData odomRef;
     emc::OdometryData odomCur;
-    emc::Rate r(40);
+    emc::Rate r(DRIVE_RATE);
 
     while (!inOut->readOdometryData(odomRef)){r.sleep();}
     while (!inOut->readOdometryData(odomCur)){r.sleep();}
@@ -147,43 +147,3 @@ bool DriveControl::driveDecision(Low_State low_st, WorldModel * worldModel){
 }
 
 
-
-int main(int argc, char *argv[])
-{
-    // Initialization of Robot
-    emc::Rate r(2); //EXECUTION_RATE
-    emc::IO io;
-    //    emc::OdometryData odom;
-
-    // Transition values
-    Destination dest;
-    dest.dist = 0;
-    dest.angle = M_PI*0.5;
-    dest.x = 0;
-    dest.y = 0;
-    bool back = true;
-    DriveControl pico_drive(&io);
-
-    int counter = 0;
-
-
-    while(io.ok()) {
-
-        pico_drive.picoTurning(&dest);
-        pico_drive.picoDrive(&dest, back);
-        dest.angle = dest.angle + (M_PI*counter/10);
-        dest.dist = 0.2;
-        counter++;
-        cin.get();
-        if (counter>3){
-            break;
-        }
-
-        std::cout << "-------------------------------------" << std::endl;
-
-        r.sleep();
-    }
-
-
-    return 0;
-}
