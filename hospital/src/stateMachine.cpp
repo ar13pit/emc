@@ -116,6 +116,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
                     // if nested exit detected
                     if (numb_exits > 1) {
                         low_st = GO_TO_NEXT_ROOM;
+                        WorldModel.set_closestRoom();
                         std::cout << "Going to the nested room " << std::endl;
                     }
                     else {
@@ -130,6 +131,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
                 if (current_room.previousRoom == 0) {
                     low_st = GO_TO_NEXT_ROOM;
                     location = IN_CORRIDOR;
+                    WorldModel.set_closestRoom();
                     WorldModel::set_currentLocation(location);
                     std::cout << "Going into the corridor " << std::endl;
                 } else {
@@ -185,6 +187,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
         case PARKING:
             std::cout << "Parked! " << std::endl;
+            WorldModel.set_mostNestedRoom();
             end_of_program = true;
             break;
         }
@@ -209,6 +212,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
             break;
 
         case GO_INSIDE_ROOM:
+            WorldModel.set_nextRoom();
             low_st = GO_TO_NEXT_ROOM;
             std::cout << "Going to next room " << std::endl;
             break;

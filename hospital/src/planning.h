@@ -13,15 +13,8 @@
 #include <vector>
 
 
-// Destination that is passed to the Control block
-typedef struct {
-    double x;
-    double y;
-    double dist;
-    double angle;
-} Destination;
 
-bool state_machine(struct High_state high_st,struct Low_state low_st);
+//bool state_machine(struct High_state high_st,struct Low_state low_st);
 
 class Planning{
 private:
@@ -40,7 +33,6 @@ public:
 //    Destination get_Destination();
 
     Room get_closestRoom();
-    Room getMostNestedRoom();
     Room getNextRoom(Room mostNestedRoom);
     Room getRoom();
 

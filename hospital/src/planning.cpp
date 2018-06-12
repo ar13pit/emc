@@ -1,7 +1,7 @@
 #include "planning.h"
 
 using namespace std;
-using namespace WorldModel;
+//using namespace WorldModel;
 
 
 Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDetected){
@@ -28,21 +28,21 @@ Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDete
                     dest = setpointInCorridor();
                     return dest;
                 case EXIT_TO_PREV_ROOM :
-                    room = getRoom();
+                    room = WorldModel.get_curRoom();
                     navigateTo = getNearbyExitPoint(room);
                     dest = driveToPoint(navigateTo);
                     return dest;
                 case EXPLORE_ROOM :
-                    room = getRoom();
+                    room = WorldModel.get_curRoom();
                     dest = driveInRoom(room);
                     return dest;
                 case GO_TO_NEXT_ROOM :
-                    room = get_closestRoom();
+                    room = WorldModel.get_closestRoom();
                     navigateTo = getNearbyExitPoint(room);
                     dest = driveToPoint(navigateTo);
                     return dest;
                 case GO_INSIDE_ROOM :
-                    room = get_closestRoom();
+                    room = WorldModel.get_closestRoom();
                     navigateTo = getThroughtExitPoint(room);
                     dest = driveToPoint(navigateTo);
                     break;
@@ -50,7 +50,7 @@ Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDete
             case RETURN_TO_INIT :
                 switch(lowSt){
                 case EXIT_TO_PREV_ROOM :
-                    room = getRoom();
+                    room = WorldModel.get_curRoom();
                     navigateTo = getNearbyExitPoint(room);
                     dest = driveToPoint(navigateTo);
                     return dest;
@@ -64,14 +64,13 @@ Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDete
                 }
             case GO_TO_ROOM :
                 switch(lowSt){
-                case GO_TO_NEXT_EXIT :
-                    room = getMostNestedRoom();
-                    room = getNextRoom(room);
+                case GO_TO_NEXT_ROOM :
+                    room = WorldModel.get_nextRoom();
                     navigateTo = getNearbyExitPoint(room);
                     dest = driveToPoint(navigateTo);
                     return dest;
                 case GO_INSIDE_ROOM :
-                    room = get_closestRoom();
+                    room = WorldModel.get_closestRoom();
                     navigateTo = getThroughtExitPoint(room);
                     dest = driveToPoint(navigateTo);
                     break;
@@ -109,38 +108,6 @@ Destination Planning::getAwayFromWall(Low_State lowSt){
         dest.dist = 0;
     }
     return dest;
-}
-
-Room Planning::get_closestRoom(){
-
-    Room closestRoom;
-    vector<Room> allRooms = WorldModel::get_globalRooms();
-    int curRoom = WorldModel::get_CurrentRoom();
-    Point curPos = WorldModel::get_globalPosition();
-    double shortestDist = INFINITY;
-
-    for(int i = 0;i<allRooms.size(); i++){
-//        ///////////////////////////  TODO  ///////////////////////////////
-//        ///    This works, but better to set closestRoom.corners[0].x
-//        ///    to 0 when initialized
-
-        if(allRooms[i].exit_previous.detected && curRoom == allRooms[i].previousRoom &&
-               closestRoom.corners.size()){
-            //Get middle point of the exit
-            cout << '1' << endl;
-            double xMid = 0.5*(allRooms[i].exit_previous.exitPoint1.x + allRooms[i].exit_previous.exitPoint2.x);
-            double yMid = 0.5*(allRooms[i].exit_previous.exitPoint1.y + allRooms[i].exit_previous.exitPoint2.y);
-
-            double distToRoom = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-yMid, 2));
-            if(distToRoom < shortestDist){
-                shortestDist = distToRoom;
-                closestRoom = allRooms[i];
-            }
-            //cout << "Exit Room " << i << " is at (" << xMid << ',' << yMid << ')' << endl;
-        }
-    }
-    //cout << "Closest Exit is at (" << 0.5*(closestRoom.exit_previous.exitPoint1.x + closestRoom.exit_previous.exitPoint2.x) << ',' << 0.5*(closestRoom.exit_previous.exitPoint1.y + closestRoom.exit_previous.exitPoint2.y) << ')' << endl;
-    return closestRoom;
 }
 
 Point Planning::getNearbyExitPoint(Room closestRoom){
@@ -214,21 +181,6 @@ Destination Planning::driveToPoint(Point goToPoint){
     return dest;
 }
 
-Room Planning::getRoom(){
-
-    Room prevRoom;
-    int curRoom = WorldModel::get_globalPosition();
-    vector<Room> allRooms = WorldModel::get_globalRooms();
-
-    //ASSUMPTION: Rooms are stored in order where the currentRoom == (i+1)'th element in AllRooms
-    if(allRooms.size() >= curRoom-1)
-        prevRoom = allRooms[curRoom-1];
-    else
-        cout << "NO VALID ROOM NUMBER!" << endl;
-
-    return prevRoom;
-}
-
 Destination Planning::driveInRoom(Room curRoom){
 
     Point closestPoint = WorldModel::get_closestPointWall();
@@ -252,42 +204,6 @@ Point Planning::getStartPos(){
     startPos.y = 0;
 
     return startPos;
-}
-
-Room Planning::getMostNestedRoom(){
-
-    vector<Room> allRooms = WorldModel::get_globalRooms();
-    Room mostNestedRoom;
-    int highestNesting = 0;
-
-    for(int i=0; i<allRooms.size(); i++){
-        int countNesting = 0;
-        Room lowerRoom = allRooms[i];
-
-        //While previousRoom is not the corridor
-        while(lowerRoom.previousRoom != 0){
-            //ASSUMPTION: Rooms are stored in order where the currentRoom == (i+1)'th element in AllRooms
-            lowerRoom = allRooms[lowerRoom.previousRoom-1];
-            countNesting++;
-        }
-        if(countNesting > highestNesting){
-            mostNestedRoom = allRooms[i];
-        }
-    }
-    cout << "MostNestedRoom = Room nested in Nr " << mostNestedRoom.previousRoom << endl;
-    return mostNestedRoom;
-}
-
-Room Planning::getNextRoom(Room mostNestedRoom){
-
-    int curRoom = WorldModel::get_currentRoom();
-    vector<Room> allRooms = WorldModel::get_globalRooms();
-    Room nextRoom;
-
-    while(nextRoom.previousRoom != curRoom){
-        nextRoom = allRooms[nextRoom.previousRoom-1];
-    }
-    return nextRoom;
 }
 
 Destination Planning::parkPico(){

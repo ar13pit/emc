@@ -27,6 +27,37 @@ struct Room {
 
 typedef struct Room Room;
 
+// Destination that is passed to the Control block
+typedef struct {
+    double x;
+    double y;
+    double angle;
+    double dist;
+} Destination;
+
+// this are the two main stages (exploring the hospital and then finding the object)
+enum High_State {
+    EXPLORE_HOSPITAL,
+    GO_TO_ROOM,
+    RETURN_TO_INIT
+};
+
+// this are the actions in the rooms
+typedef enum {
+    EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
+    EXIT_CORRIDOR,
+    EXIT_TO_PREV_ROOM,  //-- Added-- Go to room/corridor of lower nesting level
+                        //     Instead of EXIT_CORRIDOR & EXIT states
+    GO_TO_START,        // after all rooms are located
+    PARKING,            // park backwards
+
+    EXPLORE_ROOM,
+    GO_TO_NEXT_ROOM,
+    GO_INSIDE_ROOM,      //-- Added-- Moving through the entrance/exit of a room
+
+    STAND_NEXT_TO_OBJECT
+} Low_State;
+
 // Define a structure to contain corridor data
 
 // to know our location
@@ -56,6 +87,11 @@ class WorldModel {
     High_State currentHighState_;
     Low_State currentLowState_;
 
+    Room mostNestedRoom_;
+    Room closestRoom_;
+    Room curRoom_;
+    Room nextRoom_;
+
     json jsonObject_;
 
     // Private Methods
@@ -81,6 +117,11 @@ public:
     int get_nestedExits();
     int get_currentRoom();                          // Renamed from     int getCurrentRoom();
     int get_roomsFound();
+
+    Room get_mostNestedRoom();
+    Room get_closestRoom();
+    Room get_curRoom();
+    Room get_nextRoom();
 
     Location get_currentLocation();
 
@@ -114,7 +155,16 @@ public:
 
     void set_globalRooms(Room newRoomData);
     void set_explorationStack(int newRoomToBeExplored);
+
+    void set_mostNestedRoom();
+    void set_closestRoom();
+    void set_curRoom();
+    void set_nextRoom();
+
     void setAllDetectedExits();
+
+    // Other Methods (sorry)
+    Room findRoomByRoomNumber(int roomNumber);
 
 };
 
