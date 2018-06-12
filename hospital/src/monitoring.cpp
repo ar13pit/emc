@@ -85,6 +85,8 @@ bool search_for_object(WorldModel * worldModel){
 // main function in monitoring
 bool monitoring(WorldModel * worldModel){
 
+    Mapping::update_map();
+
     High_State current_high = worldModel->get_current_high_state();
 
 

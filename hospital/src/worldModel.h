@@ -116,7 +116,7 @@ public:
     int get_enteredRooms();
     int get_nestedExits();
     int get_currentRoom();                          // Renamed from     int getCurrentRoom();
-    int get_roomsFound();
+    int get_roomsFound();               // how many rooms are found
 
     Room get_mostNestedRoom();
     Room get_closestRoom();
@@ -146,7 +146,7 @@ public:
     void set_enteredRooms(bool newRoomEntered);
     void set_nestedExits(bool newNestedExitFound);
     void set_currentRoom(int updatedCurrentRoom);
-    void set_roomsFound(bool newRoomFound);
+    void set_roomsFound(bool newRoomFound);         // add a new room
 
     void set_currentLocation(Location updatedLocation);
 
@@ -166,6 +166,8 @@ public:
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);
 
+    // Check Methods
+    bool check_roomExists(Exit exitDataInGlobalCoordinates);    // Returns false if room with this input exit (in GC) exists
 };
 
 #endif //worldModel_H

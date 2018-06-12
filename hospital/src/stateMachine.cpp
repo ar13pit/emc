@@ -77,6 +77,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
                 if (numb_rooms_in_corridor == 0 || !end_of_corridor){
                     std::cout << "Exploring the corridor " << std::endl;
+
                 } else if (numb_rooms_in_corridor > numb_rooms_explored - numb_nexted_exits) {
                     low_st = GO_TO_NEXT_ROOM;
                     std::cout << "Moving to the next room" << "\n";
