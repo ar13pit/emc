@@ -62,6 +62,7 @@ typedef enum {
 // Define a structure to contain corridor data
 
 // to know our location
+enum Location {IN_CORRIDOR, IN_ROOM};
 
 
 class WorldModel {
