@@ -7,6 +7,7 @@
 #include <emc/odom.h>
 #include "config.h"
 #include "planning.h"
+#include "helper.h"
 
 
 class DriveControl
