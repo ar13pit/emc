@@ -53,9 +53,194 @@ Point Detection::closest_point(){
     shortest.y = -LatestLaserScan[i_closest].x;
 }
 
+
 void Detection::findExitsAndCorners_Final(){
 
-};
+    // AVERAGING TOTAL MAGIC NUMBERS
+    double distance_total_thresh = 0.6;
+
+    // INITILISING FINAL DETECTION POINTS
+    Corner Corners_total[100];
+    Corner Corners_total_final[40];
+    Exit Exits_total[100];
+    Exit Exits_total_final[40];
+
+    for (int i = 0; i < 100; ++i){
+        Corners_total[i].detected = false;
+        Exits_total[i].detected = false;
+    }
+
+    average_CornersAndExits();
+
+    for(int j = 0; j < 20; j = j+1){
+        if(Corners_RL[j].detected){
+            bool neighbour_corner_detected = false;
+            for(int k = 0; k < 20; k = k+1){
+                if(Corners_LR[k].detected){
+                    double distance = sqrt( pow(Corners_LR[k].cornerPoint_LR.x - Corners_RL[j].cornerPoint.x,2) +  pow(Corners_LR[k].cornerPoint_LR.y - Corners_RL[j].cornerPoint.y,2));
+
+                    if(distance < distance_total_thresh){
+                        Corners_total[k].cornerPoint.x = (Corners_RL[j].cornerPoint.x + Corners_LR[k].cornerPoint_LR.x) / 2;
+                        Corners_total[k].cornerPoint.y = (Corners_RL[j].cornerPoint.y + Corners_LR[k].cornerPoint_LR.y) / 2;
+                        Corners_total[k].detected = true;
+                        neighbour_corner_detected = true;
+                        Corners_RL[j].detected=false;
+                        Corners_LR[k].detected=false;
+                        break;
+                    }
+                }
+                //                  else{
+                //                         break;
+                //                      }
+            }
+
+            if(neighbour_corner_detected == false){
+                for(int k = 0; k < 100; k = k+1){
+                    if(Corners_total[k].detected == false){
+                        Corners_total[k].detected = true;
+                        Corners_total[k] = Corners_RL[j];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    for(int j = 0; j < 20; j = j+1){
+        if(Corners_LR[j].detected){
+            bool neighbour_corner_detected = false;
+            for(int k = 0; k < 20; k = k+1){
+                if(Corners_RL[k].detected){
+                    double distance = sqrt( pow(Corners_RL[k].cornerPoint.x - Corners_LR[j].cornerPoint_LR.x,2) +  pow(Corners_RL[k].cornerPoint.y - Corners_LR[j].cornerPoint_LR.y,2));
+
+                    if(distance < distance_total_thresh){
+                        Corners_total[k].cornerPoint.x = (Corners_RL[j].cornerPoint.x + Corners_LR[k].cornerPoint_LR.x) / 2;
+                        Corners_total[k].cornerPoint.y = (Corners_RL[j].cornerPoint.y + Corners_LR[k].cornerPoint_LR.y) / 2;
+                        Corners_total[k].detected = true;
+                        neighbour_corner_detected = true;
+                        Corners_RL[k].detected=false;
+                        Corners_LR[j].detected=false;
+                        break;
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+
+            if(neighbour_corner_detected == false){
+                for(int k = 0; k < 100; k = k+1){
+                    if(Corners_total[k].detected == false){
+                        Corner corner_normal;
+                        corner_normal.cornerPoint = Corners_LR[j].cornerPoint_LR;
+                        corner_normal.detected = Corners_LR[j].detected;
+                        Corners_total[k].detected = true;
+                        Corners_total[k] = corner_normal;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    int j = 0;
+    for(int i = 0; i < 40; ++i){
+        if(Corners_total_final[i].detected == false){
+            Corners_total_final[i].detected = true;
+            Corners_Total[j] = Corners_total[i];
+            Corners_total_final[j] = Corners_Total[i];
+            ++j;
+        }
+    }
+
+
+    for(int j = 0; j < 20; j = j+1){
+        if(Exits_RL[j].detected){
+            bool neighbour_exit_detected = false;
+            for(int k = 0; k < 20; k = k+1){
+                if(Exits_LR[k].detected){
+                    double RL_centerExitx = 0.5 * Exits_RL[j].exitPoint1.x + 0.5 * Exits_RL[j].exitPoint2.x;
+                    double RL_centerExity = 0.5 * Exits_RL[j].exitPoint1.y + 0.5 * Exits_RL[j].exitPoint2.y;
+                    double LR_centerExitx = 0.5 * Exits_LR[j].exitPoint1_LR.x + 0.5 * Exits_LR[j].exitPoint2_LR.x;
+                    double LR_centerExity = 0.5 * Exits_LR[j].exitPoint1_LR.y + 0.5 * Exits_LR[j].exitPoint2_LR.y;
+                    double distance = sqrt( pow(RL_centerExitx - LR_centerExitx,2) +  pow(RL_centerExity - LR_centerExity,2));
+
+                    if(distance < distance_total_thresh){
+                        Exits_total[k].detected = true;
+                        Exits_total[k].exitPoint1.x = (Exits_RL[j].exitPoint1.x + Exits_LR[k].exitPoint1_LR.x) / 2;
+                        Exits_total[k].exitPoint1.y = (Exits_RL[j].exitPoint1.y + Exits_LR[k].exitPoint1_LR.y) / 2;
+                        Exits_total[k].exitPoint2.x = (Exits_RL[j].exitPoint2.x + Exits_LR[k].exitPoint2_LR.x) / 2;
+                        Exits_total[k].exitPoint2.y = (Exits_RL[j].exitPoint2.y + Exits_LR[k].exitPoint2_LR.y) / 2;
+                        neighbour_exit_detected = true;
+                        Exits_RL[j].detected = false;
+                        Exits_LR[k].detected = false;
+                        break;
+                    }
+                }
+
+            }
+            if(neighbour_exit_detected==false){
+                for(int k=0; k < 100; k = k+1){
+                    Exits_total[k].detected = true;
+                    Exits_total[k] = Exits_RL[j];
+                }
+            }
+        }
+    }
+
+    for(int j = 0; j < 20; j = j+1){
+        if(Exits_LR[j].detected){
+            bool neighbour_exit_detected = false;
+            for(int k = 0; k < 20; k = k+1){
+                if(Exits_RL[k].detected){
+                    double RL_centerExitx = 0.5 * Exits_RL[j].exitPoint1.x + 0.5 * Exits_RL[j].exitPoint2.x;
+                    double RL_centerExity = 0.5 * Exits_RL[j].exitPoint1.y + 0.5 * Exits_RL[j].exitPoint2.y;
+                    double LR_centerExitx = 0.5 * Exits_LR[j].exitPoint1_LR.x + 0.5 * Exits_LR[j].exitPoint2_LR.x;
+                    double LR_centerExity = 0.5 * Exits_LR[j].exitPoint1_LR.y + 0.5 * Exits_LR[j].exitPoint2_LR.y;
+                    double distance = sqrt( pow(RL_centerExitx - LR_centerExitx,2) +  pow(RL_centerExity - LR_centerExity,2));
+
+                    if(distance < distance_total_thresh){
+                        Exits_total[k].detected = true;
+                        Exits_total[k].exitPoint1.x = (Exits_RL[j].exitPoint1.x + Exits_LR[k].exitPoint1_LR.x) / 2;
+                        Exits_total[k].exitPoint1.y = (Exits_RL[j].exitPoint1.y + Exits_LR[k].exitPoint1_LR.y) / 2;
+                        Exits_total[k].exitPoint2.x = (Exits_RL[j].exitPoint2.x + Exits_LR[k].exitPoint2_LR.x) / 2;
+                        Exits_total[k].exitPoint2.y = (Exits_RL[j].exitPoint2.y + Exits_LR[k].exitPoint2_LR.y) / 2;
+                        neighbour_exit_detected = true;
+                        Exits_RL[j].detected = false;
+                        Exits_LR[k].detected = false;
+                        break;
+                    }
+                }
+
+            }
+            if(neighbour_exit_detected==false){
+                for(int k=0; k < 100; k = k+1){
+                    Exit exit_normal;
+                    exit_normal.detected = Exits_LR[j].detected;
+                    exit_normal.exitPoint1 = Exits_LR[j].exitPoint1_LR;
+                    exit_normal.exitPoint2 = Exits_LR[j].exitPoint2_LR;
+                    Exits_total[k].detected = true;
+                    Exits_total[k] = exit_normal;
+                    break;
+                }
+            }
+        }
+    }
+
+    j = 0;
+    for(int i = 0; i < 40; ++i){
+        if(Exits_total_final[i].detected == false){
+            Exits_total_final[i].detected = true;
+            Exits_Total[j] = Exits_total[i];
+            Exits_total_final[j] = Exits_Total[i];
+            ++j;
+        }
+    }
+}
+
+
 
 
 void Detection::average_CornersAndExits(){

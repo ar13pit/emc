@@ -37,71 +37,74 @@ int main(int argc, char *argv[])
 
 
 
-//    Visualizer vis; //
-//    vis.init_visualize(); //
+    //    Visualizer vis; //
+    //    vis.init_visualize(); //
 
     bool end_of_program = false;
     std::string talking = "I am parked";
 
     while(io.ok()) {
 
-        // detection(); //
+        detection.detection_execution(); //
 
-//        if(detection.getSensorData()) {
+        //        if(detection.getSensorData()) {
 
-//            detection.saveLRFScan();
-//            int index = 0;
-
-
-//            detection.average_CornersAndExits();
-//            //detection.findExitsAndCorners_LR();
+        //            detection.saveLRFScan();
+        //            int index = 0;
 
 
-//            // UPDATE VISUALIZER
-
-//            vis.init_visualize();
-//            for(unsigned int i = 0; i < 970 ; ++i)
-//            {
-//                double x = detection.LatestLaserScan[i].x;
-//                double y = detection.LatestLaserScan[i].y;
-//                vis.plot_xy_color(x, y,0, 0, 255);
-//            }
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Exits_RL[l].detected){
-//                   std::cout << l;
-//                   vis.plotExit(detection.Exits_RL[l]);
-
-//               }
-//            }
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Corners_RL[l].detected){
-//                   vis.plotCorner(detection.Corners_RL[l]);
-
-//               }
-//            }
-
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Exits_LR[l].detected){
-//                   vis.plotExit_LR(detection.Exits_LR[l]);
-
-//               }
-//            }
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Corners_LR[l].detected){
-//                   vis.plotCorner_LR(detection.Corners_LR[l]);
-
-//               }
-//            }
-
-//            //vis.plotExit(exit);
-//            vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
-//            vis.publish();
+        //            detection.average_CornersAndExits();
+        //            //detection.findExitsAndCorners_LR();
 
 
-//            //END UPDATE VISUALIZER
+        //            // UPDATE VISUALIZER
 
-//        }
+        //            vis.init_visualize();
+        //            for(unsigned int i = 0; i < 970 ; ++i)
+        //            {
+        //                double x = detection.LatestLaserScan[i].x;
+        //                double y = detection.LatestLaserScan[i].y;
+        //                vis.plot_xy_color(x, y,0, 0, 255);
+        //            }
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Exits_RL[l].detected){
+        //                   std::cout << l;
+        //                   vis.plotExit(detection.Exits_RL[l]);
 
+        //               }
+        //            }
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Corners_RL[l].detected){
+        //                   vis.plotCorner(detection.Corners_RL[l]);
+
+        //               }
+        //            }
+
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Exits_LR[l].detected){
+        //                   vis.plotExit_LR(detection.Exits_LR[l]);
+
+        //               }
+        //            }
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Corners_LR[l].detected){
+        //                   vis.plotCorner_LR(detection.Corners_LR[l]);
+
+        //               }
+        //            }
+
+        //            //vis.plotExit(exit);
+        //            vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
+        //            vis.publish();
+
+
+        //            //END UPDATE VISUALIZER
+
+        //        }
+
+        if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
+            wall_detected = true;
+        }
 
         // low level control
         if (wall_detected){
