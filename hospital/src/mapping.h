@@ -38,13 +38,6 @@ typedef struct {
     Point_map point2;
 } Exit_map;
 
-typedef struct {
-    std::vector<Point_map> corners;
-    Exit_map exit;
-    int roomID;
-    int previousRoom; //-1 if corridor
-} Room;
-
 
 class Mapping
 {

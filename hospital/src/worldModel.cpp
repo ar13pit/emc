@@ -1,4 +1,7 @@
 #include "worldModel.h"
+#include "config.h"
+
+#include <vector>
 
 /*
 --------------------------------------------------------------------------------
@@ -15,91 +18,91 @@ WorldModel::WorldModel() : currentLocation_(IN_CORRIDOR) { };
 */
 
 
-void WorldModel::writeJsonFile() {
+//void WorldModel::writeJsonFile() {
 
-    std::ofstream wfHandle(JSON_PATH);
+//    std::ofstream wfHandle(JSON_PATH);
 
-    // Check if file has been opened
-    assert(wfHandle != NULL);
+//    // Check if file has been opened
+//    assert(wfHandle != NULL);
 
-    wfHandle << std::setw(4) << jsonObject_ << std::endl;
-    wfHandle.close();
+//    wfHandle << std::setw(4) << jsonObject_ << std::endl;
+//    wfHandle.close();
 
-    jsonObject_.clear();
+//    jsonObject_.clear();
 
-    std::cout << "Writing data to JSON file" << std::endl;
-}
+//    std::cout << "Writing data to JSON file" << std::endl;
+//}
 
-void WorldModel::readJsonFile() {
+//void WorldModel::readJsonFile() {
 
-    if (!jsonObject_.empty()) {
-        std::cout << "[Read/Write Error]: jsonObject_ not empty. Cannot read before writing." << std::endl;
-        std::cout << "Exiting the program!" << '\n';
-        exit(EXIT_FAILURE);
-    }
+//    if (!jsonObject_.empty()) {
+//        std::cout << "[Read/Write Error]: jsonObject_ not empty. Cannot read before writing." << std::endl;
+//        std::cout << "Exiting the program!" << '\n';
+//        exit(EXIT_FAILURE);
+//    }
 
-    std::ifstream rfHandle(JSON_PATH);
+//    std::ifstream rfHandle(JSON_PATH);
 
-    // Check if file has been opened
-    assert(rfHandle != NULL);
+//    // Check if file has been opened
+//    assert(rfHandle != NULL);
 
-    rfHandle >> jsonObject_;
-    rfHandle.close();
-}
+//    rfHandle >> jsonObject_;
+//    rfHandle.close();
+//}
 
-void WorldModel::createJson() {
+//void WorldModel::createJson() {
 
-    for (auto i : rooms)
-    {
-      json r =  {
-                    {"Room_ID", i.roomID},
-                    {"Corners", {
-                                    {"0",   {
-                                                {"x", i.corners[0].x},
-                                                {"y", i.corners[0].y}
-                                            }
-                                    },
-                                    {"1",   {
-                                                {"x", i.corners[1].x},
-                                                {"y", i.corners[1].y}
-                                            }
-                                    },
-                                    {"2",   {
-                                                {"x", i.corners[2].x},
-                                                {"y", i.corners[2].y}
-                                            }
-                                    },
-                                    {"3",   {
-                                                {"x", i.corners[3].x},
-                                                {"y", i.corners[3].y}
-                                            }
-                                    }
-                                }
-                    },
-                    {"Exit",    {
-                                    {"0",   {
-                                                {"x", i.exit.exitPoint1.x},
-                                                {"y", i.exit.exitPoint1.y}
-                                            }
-                                    },
-                                    {"1",   {
-                                                {"x", i.exit.exitPoint2.x},
-                                                {"y", i.exit.exitPoint2.y}
-                                            }
-                                    }
-                                }
-                    },
-                    {"Previous_Room", i.previousRoom}
-                };
-      jsonObject_.push_back(r);
-    }
+//    for (auto i : rooms)
+//    {
+//      json r =  {
+//                    {"Room_ID", i.roomID},
+//                    {"Corners", {
+//                                    {"0",   {
+//                                                {"x", i.corners[0].x},
+//                                                {"y", i.corners[0].y}
+//                                            }
+//                                    },
+//                                    {"1",   {
+//                                                {"x", i.corners[1].x},
+//                                                {"y", i.corners[1].y}
+//                                            }
+//                                    },
+//                                    {"2",   {
+//                                                {"x", i.corners[2].x},
+//                                                {"y", i.corners[2].y}
+//                                            }
+//                                    },
+//                                    {"3",   {
+//                                                {"x", i.corners[3].x},
+//                                                {"y", i.corners[3].y}
+//                                            }
+//                                    }
+//                                }
+//                    },
+//                    {"Exit",    {
+//                                    {"0",   {
+//                                                {"x", i.exit.exitPoint1.x},
+//                                                {"y", i.exit.exitPoint1.y}
+//                                            }
+//                                    },
+//                                    {"1",   {
+//                                                {"x", i.exit.exitPoint2.x},
+//                                                {"y", i.exit.exitPoint2.y}
+//                                            }
+//                                    }
+//                                }
+//                    },
+//                    {"Previous_Room", i.previousRoom}
+//                };
+//      jsonObject_.push_back(r);
+//    }
 
-};
+//};
 
-void WorldModel::extractJson() {
+//void WorldModel::extractJson() {
 
-    // Come up with some fancy way of extracting information from JSON object
-}
+//    // Come up with some fancy way of extracting information from JSON object
+//}
 /*
 --------------------------------------------------------------------------------
                             Public Methods
@@ -120,31 +123,31 @@ Point WorldModel::get_globalPosition () {
     return globalPosition_;
 };
 
-Point get_pointStraightAhead () {
+Point WorldModel::get_pointStraightAhead() {
     return pointStraightAhead_;
 };
 
-Destination get_destination () {
+Destination WorldModel::get_destination () {
     return destination_;
 };
 
-Detection_data get_localDetection () {
+Detection_data WorldModel::get_localDetection () {
     return localDetection_;
 };
 
-int get_enteredRooms () {
+int WorldModel::get_enteredRooms () {
     return enteredRooms_;
 };
 
-int get_nestedExits () {
+int WorldModel::get_nestedExits () {
     return nestedExits_;
 };
 
-int get_currentRoom () {
+int WorldModel::get_currentRoom () {
     return currentRoom_;
 };
 
-int get_roomsFound () {
+int WorldModel::get_roomsFound () {
     return roomsFound_;
 };
 
@@ -152,19 +155,19 @@ Location WorldModel::get_currentLocation() {
     return currentLocation_;
 };
 
-High_State get_currentHighState() {
+High_State WorldModel::get_currentHighState() {
     return currentHighState_;
 };
 
-Low_State get_currentLowState() {
+Low_State WorldModel::get_currentLowState() {
     return currentLowState_;
 };
 
-std::vector<Room> get_globalRooms() {
+std::vector<Room> WorldModel::get_globalRooms() {
     return globalRooms_;
 };
 
-std::vector<int> get_explorationStack() {
+std::vector<int> WorldModel::get_explorationStack() {
     return explorationStack_;
 };
 
@@ -260,7 +263,7 @@ void WorldModel::set_explorationStack (int newRoomToBeExplored) {
 
 void WorldModel::set_mostNestedRoom(){
 
-    vector<Room> allRooms = get_globalRooms();
+    std::vector<Room> allRooms = get_globalRooms();
     Room mostNestedRoom;
     int highestNesting = 0;
 
@@ -278,26 +281,26 @@ void WorldModel::set_mostNestedRoom(){
             mostNestedRoom = allRooms[i];
         }
     }
-    cout << "MostNestedRoom = Room nested in Nr " << mostNestedRoom.previousRoom << endl;
+    std::cout << "MostNestedRoom = Room nested in Nr " << mostNestedRoom.previousRoom << std::endl;
     mostNestedRoom_ = mostNestedRoom;
 }
 
 void WorldModel::set_closestRoom(){
 
     Room closestRoom;
-    vector<Room> allRooms = get_globalRooms();
-    int curRoom = get_CurrentRoom();
+    std::vector<Room> allRooms = get_globalRooms();
+    int curRoom = get_currentRoom();
     Point curPos = get_globalPosition();
     double shortestDist = INFINITY;
 
     for(int i = 0;i<allRooms.size(); i++){
 
-        if(allRooms[i].exit_previous.detected && curRoom == allRooms[i].previousRoom &&
+        if(allRooms[i].exit.detected && curRoom == allRooms[i].previousRoom &&
                closestRoom.corners.size()){
             //Get middle point of the exit
-            cout << '1' << endl;
-            double xMid = 0.5*(allRooms[i].exit_previous.exitPoint1.x + allRooms[i].exit_previous.exitPoint2.x);
-            double yMid = 0.5*(allRooms[i].exit_previous.exitPoint1.y + allRooms[i].exit_previous.exitPoint2.y);
+
+            double xMid = 0.5*(allRooms[i].exit.exitPoint1.x + allRooms[i].exit.exitPoint2.x);
+            double yMid = 0.5*(allRooms[i].exit.exitPoint1.y + allRooms[i].exit.exitPoint2.y);
 
             double distToRoom = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-yMid, 2));
             if(distToRoom < shortestDist){
@@ -327,7 +330,9 @@ void WorldModel::set_nextRoom(){
 }
 
 
-void WorldModel::setAllDetectedExits();
+void WorldModel::setAllDetectedExits(std::vector<Exit> allDetectedExits){
+    allDetectedExits_ = allDetectedExits;
+}
 
 //////////////////////// EXTRA METHODS ///////////////////////////////////
 Room WorldModel::findRoomByRoomNumber(int roomNumber){

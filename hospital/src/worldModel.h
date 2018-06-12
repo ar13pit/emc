@@ -69,6 +69,8 @@ class WorldModel {
     std::vector<Room> globalRooms_;
     std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
 
+    std::vector<Exit> allDetectedExits_;
+
     Point closestPointWall_;
     Point globalPosition_;
     Point pointStraightAhead_;
@@ -158,10 +160,10 @@ public:
 
     void set_mostNestedRoom();
     void set_closestRoom();
-    void set_curRoom();
+    void set_curRoom(Room room);
     void set_nextRoom();
 
-    void setAllDetectedExits();
+    void setAllDetectedExits(std::vector<Exit> allDetectedExits);
 
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);

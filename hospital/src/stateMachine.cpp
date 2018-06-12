@@ -1,6 +1,7 @@
 #include "stateMachine.h"
+#include "worldModel.h"
 
-bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldModel * worldModel){
+bool state_machine(WorldModel * worldModel){
 
     // World model should be read for:
     // 1) number of rooms detected, number of rooms entered
@@ -12,6 +13,9 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
 
     bool end_of_program=false;
+    High_State high_st = worldModel->get_currentHighState();
+    Low_State low_st = worldModel->get_currentLowState();
+
 
     //---------------------------------------//
     //                                       //
@@ -28,14 +32,14 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
     bool near_object = false;
 
 
-    vector<Room> allRooms = WorldModel::get_globalRooms();
-    int current_room_number = WorldModel::get_currentRoom();
+    std::vector<Room> allRooms = worldModel->get_globalRooms();
+    int current_room_number = worldModel->get_currentRoom();
     Room current_room = allRooms[current_room_number];
 
     int numb_corners_detected = 0;
     int numb_exits = 0;
 
-    vector<int> explorationStack = WorldModel::get_explorationStack();
+    std::vector<int> explorationStack = worldModel->get_explorationStack();
     if (location == IN_ROOM){
         numb_corners_detected = current_room.corners.size();
         numb_exits = explorationStack.size();// assigned from the world model
@@ -49,7 +53,8 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
         if (current_room.corners[1].dist < DIST_SETPOINT || current_room.corners[2].dist <DIST_SETPOINT){
             end_of_corridor = true;
         }
-        if (WorldModel::get_globalPosition() < DIST_SETPOINT) {
+        Point pos = worldModel->get_globalPosition();
+        if (sqrt(pow(pos.x,2)+pow(pos.y,2)) < DIST_SETPOINT) {
             at_start = true;
         }
 
@@ -79,7 +84,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
                     std::cout << "Exploring the corridor " << std::endl;
 
                 } else if (numb_rooms_in_corridor > numb_rooms_explored - numb_nexted_exits) {
-                    low_st = GO_TO_NEXT_ROOM;
+                    worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
                     std::cout << "Moving to the next room" << "\n";
                 }
                 break;
@@ -87,7 +92,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
             case GO_TO_NEXT_ROOM:
 
                 if (worldModel->get_destination() < DIST_SETPOINT){
-                    low_st = GO_INSIDE_ROOM;
+                    worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering a room from corridor" << "\n";
                 } else {
                     std::cout << "Moving to the next room" << "\n";
@@ -95,9 +100,8 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
                 break;
 
             case GO_INSIDE_ROOM:
-                location = IN_ROOM;
-                low_st = EXPLORE_ROOM;
-                WorldModel::set_currentLocation(location);
+                worldModel->set_currentLocation(IN_ROOM);
+                worldModel->set_currentLowState(EXPLORE_ROOM);
                 std::cout << "Exploring the room " << std::endl;
                 break;
             }
@@ -116,8 +120,8 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
                     // if nested exit detected
                     if (numb_exits > 1) {
-                        low_st = GO_TO_NEXT_ROOM;
-                        WorldModel.set_closestRoom();
+                        worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
+                        worldModel->set_closestRoom();
                         std::cout << "Going to the nested room " << std::endl;
                     }
                     else {
@@ -130,20 +134,20 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
             case GO_INSIDE_ROOM:
                 if (current_room.previousRoom == 0) {
-                    low_st = GO_TO_NEXT_ROOM;
-                    location = IN_CORRIDOR;
-                    WorldModel.set_closestRoom();
-                    WorldModel::set_currentLocation(location);
+                    worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
+                    worldModel->set_currentLocation(IN_CORRIDOR);
+                    worldModel->set_closestRoom();
+                    worldModel->set_currentLocation(location);
                     std::cout << "Going into the corridor " << std::endl;
                 } else {
-                    low_st = EXPLORE_ROOM;
+                    worldModel->set_currentLowState(EXPLORE_ROOM);
                 }
                 break;
 
             case GO_TO_NEXT_ROOM:
 
                 if (worldModel->get_destination() < DIST_SETPOINT){
-                    low_st = GO_INSIDE_ROOM;
+                    worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering a nested room" << "\n";
                 } else {
                     std::cout << "Going to nested room " << std::endl;
@@ -152,7 +156,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
             case EXIT_TO_PREV_ROOM:
                 if (worldModel->get_destination() < DIST_SETPOINT){
-                    low_st = GO_INSIDE_ROOM;
+                    worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Exiting to lower order room" << "\n";
                 } else {
                     std::cout << "Leaving the room" << "\n";
@@ -164,8 +168,8 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
         if (numb_rooms_explored == (numb_nexted_exits + numb_rooms_explored)) {
             std::cout << "Moving to starting point " << std::endl;
-            high_st = RETURN_TO_INIT;
-            low_st = GO_TO_START;
+            worldModel->set_currentHighState(RETURN_TO_INIT);
+            worldModel->set_currentLowState(GO_TO_START);
         }
 
         break;
@@ -179,7 +183,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
         case GO_TO_START:
             if (at_start){
-                low_st = PARKING;
+                worldModel->set_currentLowState(PARKING);
                 std::cout << "Parking " << std::endl;
             } else {
                 std::cout << "Moving to starting point " << std::endl;
@@ -188,7 +192,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
 
         case PARKING:
             std::cout << "Parked! " << std::endl;
-            WorldModel.set_mostNestedRoom();
+            worldModel->set_mostNestedRoom();
             end_of_program = true;
             break;
         }
@@ -205,7 +209,7 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
             if (location == IN_CORRIDOR){
                 std::cout << "Exiting corridor " << std::endl;
             } else if (location == IN_ROOM){
-                low_st = GO_INSIDE_ROOM;
+                worldModel->set_currentLowState(GO_INSIDE_ROOM);
                 std::cout << "Entering the room " << std::endl;
             } else{
                 std::cout << "ERROR exiting corridor " << std::endl;
@@ -213,18 +217,18 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
             break;
 
         case GO_INSIDE_ROOM:
-            WorldModel.set_nextRoom();
-            low_st = GO_TO_NEXT_ROOM;
+            worldModel->set_nextRoom();
+            worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
             std::cout << "Going to next room " << std::endl;
             break;
 
         case GO_TO_NEXT_ROOM:
 
             if (object_found){
-                low_st = STAND_NEXT_TO_OBJECT;
+                worldModel->set_currentLowState(STAND_NEXT_TO_OBJECT);
             } else {
                 if (worldModel->get_destination() < DIST_SETPOINT){
-                    low_st = GO_INSIDE_ROOM;
+                    worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering the room " << std::endl;
                 } else {
                     std::cout << "Going to next room " << std::endl;
