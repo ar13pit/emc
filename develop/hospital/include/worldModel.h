@@ -21,10 +21,10 @@ class WorldModel {
     std::vector<Room> globalRooms_;
     std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
 
-    std::vector<Exit> allDetectedExits_;
+    std::vector<Exit_map> allDetectedExits_;
 
     Point closestPointWall_;
-    Point globalPosition_;
+    Point_map globalPosition_;
     Point pointStraightAhead_;
 
     Destination destination_;
@@ -60,7 +60,7 @@ public:
 
     // Get Methods
     Point get_closestPointWall();
-    Point get_globalPosition();                     // Renamed from     Point getCurrentPosition();
+    Point_map get_globalPosition();                     // Renamed from     Point getCurrentPosition();
     Point get_pointStraightAhead();
 
     Destination get_destination();
@@ -85,12 +85,12 @@ public:
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
-    // std::vector<Exit> getAllDetectedExits();
+    std::vector<Exit_map> getAllDetectedExits();
 
 
     // Set Methods
     void set_closestPointWall(Point updatedClosestPointWall);
-    void set_globalPosition(Point updatedGlobalPosition);
+    void set_globalPosition(Point_map updatedGlobalPosition);
     void set_pointStraightAhead(Point updatedPointStraightAhead);
 
     void set_destination(Destination updatedDestination);
@@ -115,7 +115,7 @@ public:
     void set_curRoom(Room room);
     void set_nextRoom();
 
-    void setAllDetectedExits(std::vector<Exit> allDetectedExits);
+    void setAllDetectedExits(std::vector<Exit_map> allDetectedExits);
 
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);

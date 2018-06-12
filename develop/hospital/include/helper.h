@@ -29,6 +29,14 @@ typedef struct {
     Point cornerPoint;
 } Corner;
 
+typedef struct {
+   bool escaped;
+   Point rightWall1;
+   Point rightWall2;
+   Point leftWall1;
+   Point leftWall2;
+} CorridorWalls;
+
 
 // Store exit data: two corners, angles and a flag whether detected
 typedef struct {

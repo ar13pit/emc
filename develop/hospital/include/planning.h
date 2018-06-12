@@ -23,7 +23,7 @@ public:
 
     Destination driveToPoint(Point navigateTo, WorldModel *worldModel);
     Destination setpointInCorridor();               //Navigate Pico through Corridor
-    Destination getAwayFromWall(Low_State lowSt, WorldModel *worldModel);
+    Destination getAwayFromWall(WorldModel *worldModel);
     Destination driveInRoom(WorldModel *worldModel);
     Destination parkPico(WorldModel *worldModel);
 

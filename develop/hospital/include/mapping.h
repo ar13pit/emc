@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "worldModel.h"
 #include "helper.h"
 #include "config.h"
 
@@ -33,8 +34,8 @@ void update_global_pos();
 void update_Odometry();
 void delta_Odometry();
 
-void update_corners();
-void update_rooms();
+void update_corners(WorldModel* worldmodel);
+void update_rooms(WorldModel* worldmodel);
 
 
 // the only function that is called to do all the mapping

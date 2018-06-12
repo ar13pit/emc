@@ -2,6 +2,8 @@
 #include <emc/rate.h>
 #include <cmath>
 #include <iostream>
+
+#include "config.h"
 #include "helper.h"
 
 #ifndef detection_H

@@ -4,6 +4,7 @@
 #include <iostream>
 #include "config.h"
 #include "helper.h"
+#include "worldModel.h"
 
 #ifndef driveControl_H
 #define driveControl_H
@@ -38,7 +39,7 @@ public:
     void picoTurning(Destination * dest); // Method to let pico turn for an angle and then drive backwards
     void picoSideDrive(Destination *dest);
 
-    bool driveDecision(Low_State low_st, WorldModel *dest);
+    bool driveDecision(WorldModel* worldModel);
 };
 
 #endif //driveControl_H

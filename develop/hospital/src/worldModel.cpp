@@ -49,7 +49,7 @@ void WorldModel::readJsonFile() {
 
 void WorldModel::createJson() {
 
-    for (auto i : rooms)
+    for (auto i : globalRooms_)
     {
       json room, corners, exits;
       room.emplace("Room_ID", i.roomID);
@@ -67,8 +67,8 @@ void WorldModel::createJson() {
 
       room.emplace("Corners", corners);
 
-      json ep1 = { { "x", i.exit.exitPoint1.x }, { "y", i.exit.exitPoint1.y } } ;
-      json ep2 = { { "x", i.exit.exitPoint2.x }, { "y", i.exit.exitPoint2.y } } ;
+      json ep1 = { { "x", i.exit.point1.x }, { "y", i.exit.point1.y } } ;
+      json ep2 = { { "x", i.exit.point2.x }, { "y", i.exit.point2.y } } ;
       exits.emplace("0", ep1);
       exits.emplace("1", ep2);
 
@@ -87,9 +87,9 @@ void WorldModel::extractJson() {
     for (const auto& c : jsonObject_)
     {
       Room tempRoom;
-      Exit tempExit;
-      Point tempPoint;
-      std::vector<Point> tempCorners;
+      Exit_map tempExit;
+      Point_map tempPoint;
+      std::vector<Point_map> tempCorners;
 
 
       assert(c.is_object());
@@ -107,7 +107,7 @@ void WorldModel::extractJson() {
       for (json::iterator it = corner.begin(); it != corner.end(); ++it) {
 
         json pt = it.value();         // it.key() returns the key (which is a str object)
-        Point cornerPoint;
+        Point_map cornerPoint;
 
         cornerPoint.x = pt["x"];
         cornerPoint.y = pt["y"];
@@ -118,11 +118,11 @@ void WorldModel::extractJson() {
 
       tempPoint.x = c["Exit"]["0"]["x"];
       tempPoint.y = c["Exit"]["0"]["y"];
-      tempExit.exitPoint1 = tempPoint;
+      tempExit.point1 = tempPoint;
 
       tempPoint.x = c["Exit"]["1"]["x"];
       tempPoint.y = c["Exit"]["1"]["y"];
-      tempExit.exitPoint2 = tempPoint;
+      tempExit.point2 = tempPoint;
 
       tempRoom.exit = tempExit;
 
@@ -135,8 +135,8 @@ void WorldModel::extractJson() {
           cornerID++;
       }
 
-      std::cout << "Exit 1: (" << tempRoom.exit.exitPoint1.x << "," << tempRoom.exit.exitPoint1.y << ")"  << '\n';
-      std::cout << "Exit 2: (" << tempRoom.exit.exitPoint2.x << "," << tempRoom.exit.exitPoint2.y << ")"  << '\n';
+      std::cout << "Exit 1: (" << tempRoom.exit.point1.x << "," << tempRoom.exit.point1.y << ")"  << '\n';
+      std::cout << "Exit 2: (" << tempRoom.exit.point2.x << "," << tempRoom.exit.point2.y << ")"  << '\n';
       std::cout << "----------------------------------------------------------------------------" << '\n';
 
 
@@ -163,7 +163,7 @@ Point WorldModel::get_closestPointWall () {
     return closestPointWall_;
 };
 
-Point WorldModel::get_globalPosition () {
+Point_map WorldModel::get_globalPosition () {
     return globalPosition_;
 };
 
@@ -238,7 +238,9 @@ Room WorldModel::get_nextRoom(){
     return nextRoom_;
 }
 
-std::vector<Exit> getAllDetectedExits();
+std::vector<Exit_map> WorldModel::getAllDetectedExits() {
+    return allDetectedExits_;
+};
 
 /*
                 ------------------------------------
@@ -250,7 +252,7 @@ void WorldModel::set_closestPointWall (Point updatedClosestPointWall) {
     closestPointWall_ = updatedClosestPointWall;
 };
 
-void WorldModel::set_globalPosition (Point updatedGlobalPosition) {
+void WorldModel::set_globalPosition (Point_map updatedGlobalPosition) {
     globalPosition_ = updatedGlobalPosition;
 };
 
@@ -337,17 +339,17 @@ void WorldModel::set_closestRoom(){
     Room closestRoom;
     std::vector<Room> allRooms = get_globalRooms();
     int curRoom = get_currentRoom();
-    Point curPos = get_globalPosition();
+    Point_map curPos = get_globalPosition();
     double shortestDist = INFINITY;
 
     for(int i = 0;i<allRooms.size(); i++){
 
-        if(allRooms[i].exit.detected && curRoom == allRooms[i].previousRoom &&
+        if(curRoom == allRooms[i].previousRoom &&
                closestRoom.corners.size()){
             //Get middle point of the exit
 
-            double xMid = 0.5*(allRooms[i].exit.exitPoint1.x + allRooms[i].exit.exitPoint2.x);
-            double yMid = 0.5*(allRooms[i].exit.exitPoint1.y + allRooms[i].exit.exitPoint2.y);
+            double xMid = 0.5*(allRooms[i].exit.point1.x + allRooms[i].exit.point2.x);
+            double yMid = 0.5*(allRooms[i].exit.point1.y + allRooms[i].exit.point2.y);
 
             double distToRoom = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-yMid, 2));
             if(distToRoom < shortestDist){
@@ -377,7 +379,7 @@ void WorldModel::set_nextRoom(){
 }
 
 
-void WorldModel::setAllDetectedExits(std::vector<Exit> allDetectedExits){
+void WorldModel::setAllDetectedExits(std::vector<Exit_map> allDetectedExits){
     allDetectedExits_ = allDetectedExits;
 }
 

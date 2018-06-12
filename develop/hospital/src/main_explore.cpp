@@ -24,28 +24,28 @@ int main(int argc, char *argv[])
     emc::Rate r(EXECUTION_RATE); //EXECUTION_RATE
     emc::IO io;
     //    emc::OdometryData odom;
-
-    // Transition values
-    WorldModel worldModel;
-    worldModel.set_currentHighState(EXPLORE_HOSPITAL);
-    worldModel.set_currentLowState(EXPLORE_CORRIDOR);
-
-
     // Initialize the Classes
+
+    WorldModel worldModel;
     DriveControl pico_drive(&io);
     Detection detection(&io); //
     Planning planning;
+
+    bool wall_detected;
+    worldModel.set_currentHighState(EXPLORE_HOSPITAL);
+    worldModel.set_currentLowState(EXPLORE_CORRIDOR);
+
 
 
 //    Visualizer vis; //
 //    vis.init_visualize(); //
 
     bool end_of_program = false;
-    string talking = "I am parked";
+    std::string talking = "I am parked";
 
     while(io.ok()) {
 
-        detection(); //
+        // detection(); //
 
 //        if(detection.getSensorData()) {
 
@@ -105,23 +105,23 @@ int main(int argc, char *argv[])
 
         // low level control
         if (wall_detected){
-            worldModel.set_destination(planning->getAwayFromWall(low_st));
-            std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
+            worldModel.set_destination(planning.getAwayFromWall(&worldModel));
+            // std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
         } else {
             monitoring(&worldModel);
         }
 
         end_of_program = state_machine(&worldModel);
 
-        pico_drive.driveDecision(low_st,&worldModel);
+        pico_drive.driveDecision(&worldModel);
 
         if (end_of_program) {
-            io.speak(&talking);
+            io.speak(talking);
             break;
         }
 
         r.sleep();
-        std::cout <<"----------------------------" << endl << endl;
+        std::cout <<"----------------------------" << std::endl << std::endl;
 
         /*std::cout << "Press Enter to continue ..." << '\n';
         cin.get();*/
