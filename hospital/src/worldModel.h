@@ -1,3 +1,6 @@
+#ifndef worldModel_H
+#define worldModel_H
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -7,14 +10,54 @@
 #include "detection.h"
 #include "planning.h"
 #include "stateMachine.h"
-// #include "worldModelDataTypes.h"
+#include "mapping.h"
 #include "json.hpp"
-
-#ifndef worldModel_H
-#define worldModel_H
 
 
 using json = nlohmann::json;
+
+typedef struct  {
+    int roomID;
+    std::vector<Point_map> corners;
+    Exit exit;
+    int previousRoom;   // Corridor is 0
+
+//    Room() {}
+//    Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {}
+}Room;
+
+//typedef struct Room Room;
+
+// Destination that is passed to the Control block
+typedef struct {
+    double x;
+    double y;
+    double angle;
+    double dist;
+} Destination;
+
+// this are the two main stages (exploring the hospital and then finding the object)
+enum High_State {
+    EXPLORE_HOSPITAL,
+    GO_TO_ROOM,
+    RETURN_TO_INIT
+};
+
+// this are the actions in the rooms
+typedef enum {
+    EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
+    EXIT_CORRIDOR,
+    EXIT_TO_PREV_ROOM,  //-- Added-- Go to room/corridor of lower nesting level
+                        //     Instead of EXIT_CORRIDOR & EXIT states
+    GO_TO_START,        // after all rooms are located
+    PARKING,            // park backwards
+
+    EXPLORE_ROOM,
+    GO_TO_NEXT_ROOM,
+    GO_INSIDE_ROOM,      //-- Added-- Moving through the entrance/exit of a room
+
+    STAND_NEXT_TO_OBJECT
+} Low_State;
 
 // Define a structure to contain corridor data
 
@@ -25,6 +68,8 @@ class WorldModel {
 
     std::vector<Room> globalRooms_;
     std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
+
+    std::vector<Exit> allDetectedExits_;
 
     Point closestPointWall_;
     Point globalPosition_;
@@ -43,6 +88,11 @@ class WorldModel {
 
     High_State currentHighState_;
     Low_State currentLowState_;
+
+    Room mostNestedRoom_;
+    Room closestRoom_;
+    Room curRoom_;
+    Room nextRoom_;
 
     json jsonObject_;
 
@@ -68,7 +118,12 @@ public:
     int get_enteredRooms();
     int get_nestedExits();
     int get_currentRoom();                          // Renamed from     int getCurrentRoom();
-    int get_roomsFound();
+    int get_roomsFound();               // how many rooms are found
+
+    Room get_mostNestedRoom();
+    Room get_closestRoom();
+    Room get_curRoom();
+    Room get_nextRoom();
 
     Location get_currentLocation();
 
@@ -93,7 +148,7 @@ public:
     void set_enteredRooms(bool newRoomEntered);
     void set_nestedExits(bool newNestedExitFound);
     void set_currentRoom(int updatedCurrentRoom);
-    void set_roomsFound(bool newRoomFound);
+    void set_roomsFound(bool newRoomFound);         // add a new room
 
     void set_currentLocation(Location updatedLocation);
 
@@ -102,8 +157,19 @@ public:
 
     void set_globalRooms(Room newRoomData);
     void set_explorationStack(int newRoomToBeExplored);
-    // void setAllDetectedExits();
 
+    void set_mostNestedRoom();
+    void set_closestRoom();
+    void set_curRoom(Room room);
+    void set_nextRoom();
+
+    void setAllDetectedExits(std::vector<Exit> allDetectedExits);
+
+    // Other Methods (sorry)
+    Room findRoomByRoomNumber(int roomNumber);
+
+    // Check Methods
+    bool check_roomExists(Exit exitDataInGlobalCoordinates);    // Returns false if room with this input exit (in GC) exists
 };
 
 #endif //worldModel_H

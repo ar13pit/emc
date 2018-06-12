@@ -1,4 +1,7 @@
 #include "worldModel.h"
+#include "config.h"
+
+#include <vector>
 
 /*
 --------------------------------------------------------------------------------
@@ -222,7 +225,23 @@ std::vector<int> WorldModel::get_connectedRooms (int baseRoom) {
     return connectedRooms;
 };
 
-// std::vector<Exit> getAllDetectedExits() {};
+Room WorldModel::get_mostNestedRoom(){
+    return mostNestedRoom_;
+}
+
+Room WorldModel::get_closestRoom(){
+    return closestRoom_;
+}
+
+Room WorldModel::get_curRoom(){
+    return curRoom_;
+}
+
+Room WorldModel::get_nextRoom(){
+    return nextRoom_;
+}
+
+std::vector<Exit> getAllDetectedExits();
 
 /*
                 ------------------------------------
@@ -292,4 +311,86 @@ void WorldModel::set_explorationStack (int newRoomToBeExplored) {
     explorationStack_.push_back(newRoomToBeExplored);
 };
 
-// void WorldModel::setAllDetectedExits();
+void WorldModel::set_mostNestedRoom(){
+
+    std::vector<Room> allRooms = get_globalRooms();
+    Room mostNestedRoom;
+    int highestNesting = 0;
+
+    for(int i=0; i<allRooms.size(); i++){
+        int countNesting = 0;
+        Room lowerRoom = allRooms[i];
+
+        //While previousRoom is not the corridor
+        while(lowerRoom.previousRoom != 0){
+
+            lowerRoom = findRoomByRoomNumber(lowerRoom.previousRoom);
+            countNesting++;
+        }
+        if(countNesting > highestNesting){
+            mostNestedRoom = allRooms[i];
+        }
+    }
+    std::cout << "MostNestedRoom = Room nested in Nr " << mostNestedRoom.previousRoom << std::endl;
+    mostNestedRoom_ = mostNestedRoom;
+}
+
+void WorldModel::set_closestRoom(){
+
+    Room closestRoom;
+    std::vector<Room> allRooms = get_globalRooms();
+    int curRoom = get_currentRoom();
+    Point curPos = get_globalPosition();
+    double shortestDist = INFINITY;
+
+    for(int i = 0;i<allRooms.size(); i++){
+
+        if(allRooms[i].exit.detected && curRoom == allRooms[i].previousRoom &&
+               closestRoom.corners.size()){
+            //Get middle point of the exit
+
+            double xMid = 0.5*(allRooms[i].exit.exitPoint1.x + allRooms[i].exit.exitPoint2.x);
+            double yMid = 0.5*(allRooms[i].exit.exitPoint1.y + allRooms[i].exit.exitPoint2.y);
+
+            double distToRoom = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-yMid, 2));
+            if(distToRoom < shortestDist){
+                shortestDist = distToRoom;
+                closestRoom = allRooms[i];
+            }
+            //cout << "Exit Room " << i << " is at (" << xMid << ',' << yMid << ')' << endl;
+        }
+    }
+    //cout << "Closest Exit is at (" << 0.5*(closestRoom.exit_previous.exitPoint1.x + closestRoom.exit_previous.exitPoint2.x) << ',' << 0.5*(closestRoom.exit_previous.exitPoint1.y + closestRoom.exit_previous.exitPoint2.y) << ')' << endl;
+    closestRoom_ = closestRoom;
+}
+
+void WorldModel::set_curRoom(Room curRoom){
+    curRoom_ = curRoom;
+}
+
+void WorldModel::set_nextRoom(){
+
+    int curRoom = get_currentRoom();
+    Room nextRoom = get_mostNestedRoom();
+
+    while(nextRoom.previousRoom != curRoom){
+        nextRoom = findRoomByRoomNumber(nextRoom.previousRoom);;
+    }
+    nextRoom_ = nextRoom;
+}
+
+
+void WorldModel::setAllDetectedExits(std::vector<Exit> allDetectedExits){
+    allDetectedExits_ = allDetectedExits;
+}
+
+//////////////////////// EXTRA METHODS ///////////////////////////////////
+Room WorldModel::findRoomByRoomNumber(int roomNumber){
+
+    std::vector<Room> allRooms = get_globalRooms();
+
+    for(int i=0; i<allRooms.size(); i++){
+        if(allRooms[i].roomID == roomNumber)
+            return allRooms[i];
+    }
+}

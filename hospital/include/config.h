@@ -24,3 +24,4 @@
 #define DISTANCE_FROM_WALL_IN_ROOM 1            // [m] When a wall is in front of Pico at a certain distance Pico turns around
 #define FRONTWALL_ANGLE 0.2*M_PI               // [rad] A wall is in front of Pico is it is at a certain abs ange
 
+#define JSON_PATH "Rooms.json"            //Json path

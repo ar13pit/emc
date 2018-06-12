@@ -1,26 +1,3 @@
-#include <emc/io.h>
-#include <emc/rate.h>
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/opencv.hpp>
-#include "opencv2/imgproc.hpp"
-
-#include <string>
-#include <sstream>
-#include <iostream>
-
-#include <emc/odom.h>
-#include <cmath>
-#include <cstdlib>
-
-//#include "driveControl.h"
-#include "detection.h"
-//#include "worldModel.h"
-//#include "planning.h"
-#include "config.h"
-#include "visualize.h"
-//#include "main.pp"
 #include "mapping.h"
 
 
@@ -50,27 +27,28 @@ void Mapping::init_map()
     corridorExit.point2 = exitPoint_corr2;
     vector<Point_map> corridorcorners;
     Room corridor;
-    corridor.corners = corridorcorners; // this definition might not work, I expect an error here
+    corridor.corners = corridorcorners;
     corridor.exit = corridorExit;
     corridor.previousRoom  = -1; //DEFINITION: -1 means no room below this room --> Corridor
-    corridor.previousRoom = 0;
+    corridor.roomID = 0;
     map[map.size()] = corridor;
 }
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_corners(int currentRoom){
+void Mapping::update_corners(){
 
-    //better use this
     int currentRoom = WorldModel::get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
     Corner corners_local[40]; // Data from worldmodel (written there by detection)
 
+
     for(int i = 0; i < 20; ++i){ // ROBUSTNESS ISSUES, PAY ATTENTION
          if(corners_local[i].detected){
              Point_map corner_found = local2global(corners_local[i].cornerPoint);
-             bool detected_already;
+             bool detected_already = false; // by default
+
              for(int j = 0; j < totalCorners.size(); ++j){
                  Point_map corner_map = totalCorners[j];
                  //Point_map corner_map = map[currentRoom].corners[j];
@@ -83,20 +61,20 @@ void Mapping::update_corners(int currentRoom){
              if(detected_already == false){
                 map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
                 totalCorners[totalCorners.size()] = corner_found;
+
              }
 
-         } else{
+         }else{
              break;
          }
     }
 }
 
+
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_rooms(int currentRoom){
+void Mapping::update_rooms(){
 
-    // better use this
-//    int currentRoom = WorldModel::get_currentRoom();
-
+    int currentRoom = WorldModel::get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
@@ -114,7 +92,7 @@ void Mapping::update_rooms(int currentRoom){
 
 
 
-             bool detected_already;
+             bool detected_already= false;
              for(int j = 0; j < totalExits.size(); ++j){
                  Exit_map exit_map = totalExits[j];
 
@@ -133,34 +111,36 @@ void Mapping::update_rooms(int currentRoom){
              if(detected_already == false){
                 //map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
                 totalExits[totalExits.size()] = exit_found;
-                map[map.size()+1].exit = exit_found;
+                int nRooms = map.size();
+                map[nRooms].exit = exit_found;
+                map[nRooms].roomID = nRooms + 1;
+                map[nRooms].previousRoom = currentRoom;
+                std::vector<Point_map> corners;
+                map[nRooms].corners = corners;
+
              }
 
-         } else {
+         }else{
              break;
          }
     }
+    WorldModel::set_globalRooms(map[map.size()]);
 }
 
 
-// Convert local into global coordinate
-Point_map Mapping::local2global(Point local){
+Point_map Mapping::local2global(Point local){ //Convert local into global coordinate
     int i  = 0;
 
     Point_map global;
 
     global.x = global_pos.x + local.dist * sin(local.angle + global_pos.angle);
     global.y = global_pos.y + local.dist * cos(local.angle + global_pos.angle);
-
 }
+
 
 void Mapping::update_global_pos(){
 
-    // this is a function that is completely unclear for me
-    // why would you call it again inside?
-    // why would you change the coordinates x to y and vice versa? at least, put an if statement
-
-    update_global_pos();
+    //update_global_pos();
 
     //First thing you check if results are total crap
     global_pos.x = -odom.y;
@@ -187,11 +167,11 @@ void Mapping::delta_Odometry(){
 
 }
 
+//update the map into the world model
+//the only function that is executed, so it has to include all the methods needed
+void Mapping::update_map(){
 
-void Mapping::update_worldModel(){
-    // WorldModel::set_...
 }
-
 
 
 

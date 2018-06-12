@@ -14,7 +14,8 @@
 #include "stateMachine.h"
 #include "monitoring.h"
 #include "config.h"
-#include "visualize.h"
+#include "mapping.h"
+//#include "visualize.h"
 using namespace std;
 
 
@@ -27,18 +28,18 @@ int main(int argc, char *argv[])
 
     // Transition values
     WorldModel worldModel;
-    High_State high_st = EXPLORE_HOSPITAL;
-    Low_State low_st = EXPLORE_CORRIDOR;
+    worldModel.set_currentHighState(EXPLORE_HOSPITAL);
+    worldModel.set_currentLowState(EXPLORE_CORRIDOR);
 
 
     // Initialize the Classes
     DriveControl pico_drive(&io);
-    //Detection detection(&r, &io, &flags); //
     Detection detection(&io); //
-    Exit exit; //
-    Visualizer vis; //
+    Planning planning;
 
-    vis.init_visualize(); //
+
+//    Visualizer vis; //
+//    vis.init_visualize(); //
 
     bool end_of_program = false;
     string talking = "I am parked";
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
 //            }
 //            for(unsigned int l = 0; l < 20; l=l+1){
 //               if(detection.Exits_RL[l].detected){
-////                   std::cout << l;
+//                   std::cout << l;
 //                   vis.plotExit(detection.Exits_RL[l]);
 
 //               }
@@ -102,20 +103,22 @@ int main(int argc, char *argv[])
 
 //        }
 
+
         // low level control
         if (wall_detected){
-            worldModel.set_destination(Planning::getAwayFromWall(low_st));
-            std::cout << "WALL DETECT"<<  dest.angle << std::endl;
+            worldModel.set_destination(planning->getAwayFromWall(low_st));
+            std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
         } else {
             monitoring(&worldModel);
         }
 
-        end_of_program = state_machine(high_st, low_st, &worldModel);
+        end_of_program = state_machine(&worldModel);
 
         pico_drive.driveDecision(low_st,&worldModel);
 
         if (end_of_program) {
             io.speak(&talking);
+            break;
         }
 
         r.sleep();
