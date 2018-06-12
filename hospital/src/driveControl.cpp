@@ -131,7 +131,7 @@ bool DriveControl::driveDecision(Low_State low_st, WorldModel * worldModel){
     Destination dest = worldModel->get_destination();
     if (low_st == PARKING){
         dest.angle = dest.angle + M_PI;
-        dest.dist = ;
+        dest.dist = DIST_BACKWARDS;
         DriveControl::picoTurning(&dest);
         DriveControl::picoDrive(&dest,true);
     } else if (low_st == EXPLORE_CORRIDOR){
