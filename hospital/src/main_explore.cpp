@@ -28,18 +28,18 @@ int main(int argc, char *argv[])
 
     // Transition values
     WorldModel worldModel;
-    High_State high_st = EXPLORE_HOSPITAL;
-    Low_State low_st = EXPLORE_CORRIDOR;
+    worldModel.set_currentHighState(EXPLORE_HOSPITAL);
+    worldModel.set_currentLowState(EXPLORE_CORRIDOR);
 
 
     // Initialize the Classes
     DriveControl pico_drive(&io);
-    //Detection detection(&r, &io, &flags); //
     Detection detection(&io); //
-    Exit exit; //
-    Visualizer vis; //
+    Planning planning;
 
-    vis.init_visualize(); //
+
+//    Visualizer vis; //
+//    vis.init_visualize(); //
 
     bool end_of_program = false;
     string talking = "I am parked";
@@ -103,10 +103,11 @@ int main(int argc, char *argv[])
 
 //        }
 
+
         // low level control
         if (wall_detected){
-            worldModel.set_destination(Planning::getAwayFromWall(low_st));
-            std::cout << "WALL DETECT"<<  dest.angle << std::endl;
+            worldModel.set_destination(planning->getAwayFromWall(low_st));
+            std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
         } else {
             monitoring(&worldModel);
         }
@@ -117,6 +118,7 @@ int main(int argc, char *argv[])
 
         if (end_of_program) {
             io.speak(&talking);
+            break;
         }
 
         r.sleep();

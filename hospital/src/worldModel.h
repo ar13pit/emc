@@ -1,31 +1,32 @@
+#ifndef worldModel_H
+#define worldModel_H
+
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 #include "config.h"
-
 #include "detection.h"
 #include "planning.h"
 #include "stateMachine.h"
+#include "mapping.h"
 #include "json.hpp"
-
-#ifndef worldModel_H
-#define worldModel_H
 
 
 using json = nlohmann::json;
 
-struct Room {
+typedef struct  {
     int roomID;
-    std::vector<Point> corners;
+    std::vector<Point_map> corners;
     Exit exit;
     int previousRoom;   // Corridor is 0
 
-    Room() {};
-    Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {};
-};
+//    Room() {}
+//    Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {}
+}Room;
 
-typedef struct Room Room;
+//typedef struct Room Room;
 
 // Destination that is passed to the Control block
 typedef struct {
@@ -133,7 +134,7 @@ public:
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
-    std::vector<Exit> getAllDetectedExits();
+    // std::vector<Exit> getAllDetectedExits();
 
 
     // Set Methods
