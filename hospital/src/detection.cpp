@@ -1,6 +1,42 @@
 #include "detection.h"
 #include "config.h"
 
+std::vector<Exit_map> Detection::local_Exits(){
+    std::vector<Exit_map> local_exit_list;
+    for(int i = 0; i < 40; ++i){
+        if(Corners_Total[i].detected){
+            Exit_map exit_local;
+            exit_local.point1.x = Exits_Total[i].exitPoint1.y;
+            exit_local.point2.y = -Exits_Total[i].exitPoint1.x;
+
+            exit_local.point2.x = Exits_Total[i].exitPoint2.y;
+            exit_local.point2.y = -Exits_Total[i].exitPoint2.x;
+            local_exit_list.push_back(exit_local);
+        }
+        else{
+            break;
+        }
+    }
+    return local_exit_list;
+}
+
+
+Point Detection::closest_point(){
+    double shortest_dist = 30;
+    int i_closest = -1;
+    for(int i = 0; i < 970; ++i){
+        if(LatestLaserScan[i].dist < shortest_dist){
+            shortest_dist = LatestLaserScan[i].dist;
+            i_closest = i;
+        }
+    }
+    Point shortest;
+    shortest = LatestLaserScan[i_closest];
+    shortest.x = LatestLaserScan[i_closest].y;
+    shortest.y = -LatestLaserScan[i_closest].x;
+}
+
+
 
     void Detection::average_CornersAndExits(){
          emc::Rate rate(EXECUTION_RATE);
