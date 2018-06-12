@@ -1,3 +1,6 @@
+#ifndef worldModel_H
+#define worldModel_H
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -7,25 +10,23 @@
 #include "detection.h"
 #include "planning.h"
 #include "stateMachine.h"
+#include "mapping.h"
 #include "json.hpp"
-
-#ifndef worldModel_H
-#define worldModel_H
 
 
 using json = nlohmann::json;
 
-struct Room {
+typedef struct  {
     int roomID;
-    std::vector<Point> corners;
+    std::vector<Point_map> corners;
     Exit exit;
     int previousRoom;   // Corridor is 0
 
-    Room() {};
-    Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {};
-};
+//    Room() {}
+//    Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {}
+}Room;
 
-typedef struct Room Room;
+//typedef struct Room Room;
 
 // Destination that is passed to the Control block
 typedef struct {

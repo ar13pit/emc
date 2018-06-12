@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
+#include <vector>
 
 #include "detection.h"
 #include "worldModel.h"
@@ -64,7 +65,7 @@ void update_map();
 
 Point_map local2global(Point);
 
-std::vector<Room> map; // Just for Nazar
+std::vector<Room> map;
 std::vector<Point_map> totalCorners;
 std::vector<Exit_map> totalExits;
 
@@ -72,6 +73,7 @@ Position global_pos;
 Position latest_odom;
 Position odom_diff;
 };
+
 #endif // VISUALIZE
 
 
