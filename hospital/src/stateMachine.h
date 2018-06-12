@@ -4,6 +4,7 @@
 #include "worldModel.h"
 #include "config.h"
 #include "detection.h"
+#include <vector>
 
 bool state_machine(WorldModel * worldModel);
 
