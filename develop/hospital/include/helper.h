@@ -51,16 +51,6 @@ typedef struct {
 } Corner_LR;
 
 
-typedef struct {
-    Point exitPoint1;
-    Point exitPoint2;
-    Point exitPoint1_LR;
-    Point exitPoint2_LR;
-    Point cornerPoint;
-    Point cornerPoint_LR;
-} Detection_data;
-
-
 
 /*
 ---------------------------------------
@@ -144,11 +134,19 @@ typedef enum {
 // to know our location
 enum Location {IN_CORRIDOR, IN_ROOM};
 
+
+/*
+----------------------------
+        NEW SHIT!
+----------------------------
+*/
+
 typedef struct {
     Exit Exits_total[40];
     Corner Corners_total[40];
     std::vector<Exit_map> local_exits;
     Point closest_Point;
 } Detection_data;
+
 
 #endif
