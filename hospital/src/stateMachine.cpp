@@ -19,12 +19,14 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
     //                                       //
     //---------------------------------------//
 
-    int numb_rooms_in_corridor = 0;    // total number of rooms detected
+    int numb_rooms_in_corridor = WorldModel::get_connectedRooms(0).size();    // total number of rooms detected
     int numb_rooms_explored = worldModel->get_enteredRooms();
     int numb_nexted_exits = worldModel->get_nestedExits();      // number of total exits in rooms - 1*numb_rooms_explored
 
     Location location = worldModel->get_currentLocation();
-    bool object_found = false;      // second phase
+
+    // second phase
+    bool object_found = false;
     bool near_object = false;
 
 
@@ -35,10 +37,9 @@ bool state_machine(struct High_state  &high_st,struct Low_state  &low_st, WorldM
     int numb_corners_detected = 0;
     int numb_exits = 0;
 
-    vector<int> explorationStack = WorldModel::get_explorationStack();
     if (location == IN_ROOM){
         numb_corners_detected = current_room.corners.size();
-        numb_exits = explorationStack.size();// assigned from the world model
+        numb_exits = WorldModel::get_explorationStack().size();// assigned from the world model
     }
 
 
