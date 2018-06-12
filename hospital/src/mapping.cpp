@@ -1,9 +1,6 @@
 #include "mapping.h"
 
 
-using namespace std;
-
-
 //int show_canvas(emc::LaserData scan)
 void Mapping::init_map()
 {
@@ -25,7 +22,7 @@ void Mapping::init_map()
     Exit_map corridorExit;
     corridorExit.point1 = exitPoint_corr1;
     corridorExit.point2 = exitPoint_corr2;
-    vector<Point_map> corridorcorners;
+    std::vector<Point_map> corridorcorners;
     Room corridor;
     corridor.corners = corridorcorners;
     corridor.exit = corridorExit;
@@ -35,9 +32,9 @@ void Mapping::init_map()
 }
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_corners(){
+void Mapping::update_corners(WorldModel* worldmodel) {
 
-    int currentRoom = WorldModel::get_currentRoom();
+    int currentRoom = worldmodel->get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
@@ -72,9 +69,9 @@ void Mapping::update_corners(){
 
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_rooms(){
+void Mapping::update_rooms(WorldModel* worldmodel){
 
-    int currentRoom = WorldModel::get_currentRoom();
+    int currentRoom = worldmodel->get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
@@ -124,7 +121,7 @@ void Mapping::update_rooms(){
              break;
          }
     }
-    WorldModel::set_globalRooms(map[map.size()]);
+    // WorldModel::set_globalRooms(map[map.size()]);
 }
 
 
@@ -172,10 +169,3 @@ void Mapping::delta_Odometry(){
 void Mapping::update_map(){
 
 }
-
-
-
-
-
-
-

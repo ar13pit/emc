@@ -15,8 +15,7 @@
 #include "monitoring.h"
 #include "config.h"
 #include "mapping.h"
-//#include "visualize.h"
-using namespace std;
+#include "helper.h"
 
 
 int main(int argc, char *argv[])
@@ -25,104 +24,139 @@ int main(int argc, char *argv[])
     emc::Rate r(EXECUTION_RATE); //EXECUTION_RATE
     emc::IO io;
     //    emc::OdometryData odom;
-
-    // Transition values
-    WorldModel worldModel;
-    worldModel.set_currentHighState(EXPLORE_HOSPITAL);
-    worldModel.set_currentLowState(EXPLORE_CORRIDOR);
-
-
     // Initialize the Classes
+
+    WorldModel worldModel;
     DriveControl pico_drive(&io);
     Detection detection(&io); //
     Planning planning;
 
 
-//    Visualizer vis; //
-//    vis.init_visualize(); //
+    Point initial_point;
+    initial_point.angle = 0; initial_point.dist = 0; initial_point.x = 0; initial_point.y = 0;
+
+    Point_map initial_point_map;
+    initial_point_map.x = 0; initial_point_map.y = 0;
+    std::vector<Point_map> initial_point_map_vec;
+
+    Exit_map initial_exit_map;
+    initial_exit_map.point1 = initial_point_map;
+    initial_exit_map.point2 = initial_point_map;
+    std::vector<Exit_map> initial_exit_map_vec;
+
+    Room corridor;
+    //    corridor.corners = initial_point_map_vec;
+    corridor.exit = initial_exit_map;
+    corridor.previousRoom = -1;
+    corridor.roomID = 0;
+
+
+    bool wall_detected;
+
+
+    worldModel.set_currentHighState(EXPLORE_HOSPITAL);
+    worldModel.set_currentLowState(EXPLORE_CORRIDOR);
+    worldModel.setAllDetectedExits(initial_exit_map_vec);
+    //    worldModel.set_closestPointWall(initial_point);
+    worldModel.set_currentLocation(IN_CORRIDOR);
+    worldModel.set_currentRoom(corridor.roomID);
+    worldModel.set_curRoom(corridor);
+    worldModel.set_globalPosition(initial_point_map);
+
+
+
+
+    //    Visualizer vis; //
+    //    vis.init_visualize(); //
 
     bool end_of_program = false;
-    string talking = "I am parked";
+    std::string talking = "I am parked";
 
     while(io.ok()) {
 
-        detection(); //
+        std::cout << "Detectino not covered worlds!"<< std::endl;
 
-//        if(detection.getSensorData()) {
+        detection.detection_execution(&worldModel); //
 
-//            detection.saveLRFScan();
-//            int index = 0;
+        //        if(detection.getSensorData()) {
 
-
-//            detection.average_CornersAndExits();
-//            //detection.findExitsAndCorners_LR();
+        //            detection.saveLRFScan();
+        //            int index = 0;
 
 
-//            // UPDATE VISUALIZER
-
-//            vis.init_visualize();
-//            for(unsigned int i = 0; i < 970 ; ++i)
-//            {
-//                double x = detection.LatestLaserScan[i].x;
-//                double y = detection.LatestLaserScan[i].y;
-//                vis.plot_xy_color(x, y,0, 0, 255);
-//            }
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Exits_RL[l].detected){
-//                   std::cout << l;
-//                   vis.plotExit(detection.Exits_RL[l]);
-
-//               }
-//            }
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Corners_RL[l].detected){
-//                   vis.plotCorner(detection.Corners_RL[l]);
-
-//               }
-//            }
-
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Exits_LR[l].detected){
-//                   vis.plotExit_LR(detection.Exits_LR[l]);
-
-//               }
-//            }
-//            for(unsigned int l = 0; l < 20; l=l+1){
-//               if(detection.Corners_LR[l].detected){
-//                   vis.plotCorner_LR(detection.Corners_LR[l]);
-
-//               }
-//            }
-
-//            //vis.plotExit(exit);
-//            vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
-//            vis.publish();
+        //            detection.average_CornersAndExits();
+        //            //detection.findExitsAndCorners_LR();
 
 
-//            //END UPDATE VISUALIZER
+        //            // UPDATE VISUALIZER
 
-//        }
+        //            vis.init_visualize();
+        //            for(unsigned int i = 0; i < 970 ; ++i)
+        //            {
+        //                double x = detection.LatestLaserScan[i].x;
+        //                double y = detection.LatestLaserScan[i].y;
+        //                vis.plot_xy_color(x, y,0, 0, 255);
+        //            }
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Exits_RL[l].detected){
+        //                   std::cout << l;
+        //                   vis.plotExit(detection.Exits_RL[l]);
 
+        //               }
+        //            }
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Corners_RL[l].detected){
+        //                   vis.plotCorner(detection.Corners_RL[l]);
+
+        //               }
+        //            }
+
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Exits_LR[l].detected){
+        //                   vis.plotExit_LR(detection.Exits_LR[l]);
+
+        //               }
+        //            }
+        //            for(unsigned int l = 0; l < 20; l=l+1){
+        //               if(detection.Corners_LR[l].detected){
+        //                   vis.plotCorner_LR(detection.Corners_LR[l]);
+
+        //               }
+        //            }
+
+        //            //vis.plotExit(exit);
+        //            vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
+        //            vis.publish();
+
+
+        //            //END UPDATE VISUALIZER
+
+        //        }
+        std::cout << "Detectino worlds!"<< std::endl;
+
+        if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
+            wall_detected = true;
+        }
 
         // low level control
         if (wall_detected){
-            worldModel.set_destination(planning->getAwayFromWall(low_st));
-            std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
+            worldModel.set_destination(planning.getAwayFromWall(&worldModel));
+            // std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
         } else {
             monitoring(&worldModel);
         }
 
         end_of_program = state_machine(&worldModel);
 
-        pico_drive.driveDecision(low_st,&worldModel);
+        pico_drive.driveDecision(&worldModel);
 
         if (end_of_program) {
-            io.speak(&talking);
+            io.speak(talking);
             break;
         }
 
         r.sleep();
-        cout <<"----------------------------" << endl << endl;
+        std::cout <<"----------------------------" << std::endl << std::endl;
 
         /*std::cout << "Press Enter to continue ..." << '\n';
         cin.get();*/

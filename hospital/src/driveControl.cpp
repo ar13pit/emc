@@ -1,6 +1,4 @@
 #include "driveControl.h"
-#include <cmath>
-using namespace std;
 
 void DriveControl::picoTurning(Destination *dest){
     emc::OdometryData odomRef;
@@ -127,7 +125,8 @@ void DriveControl::stop() {
 }
 
 
-bool DriveControl::driveDecision(Low_State low_st, WorldModel *worldModel){
+bool DriveControl::driveDecision(WorldModel *worldModel){
+    Low_State low_st = worldModel->get_currentLowState(); 
     Destination dest = worldModel->get_destination();
     if (low_st == PARKING){
         dest.angle = dest.angle + M_PI;
@@ -145,5 +144,3 @@ bool DriveControl::driveDecision(Low_State low_st, WorldModel *worldModel){
         DriveControl::picoDrive(&dest,false);
     }
 }
-
-

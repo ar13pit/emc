@@ -1,19 +1,15 @@
-#ifndef planning_H
-#define planning_H
-
-#include "stateMachine.h"
-#include "detection.h"
 #include "worldModel.h"
 #include "config.h"
-#include "detection.h"
-#include "iostream"
-#include "math.h"
 #include "helper.h"
 
+#include <iostream>
 #include <cmath>
 #include <vector>
 
-    class WorldModel;
+#ifndef planning_H
+#define planning_H
+
+
 
 //bool state_machine(struct High_state high_st,struct Low_state low_st);
 
@@ -27,7 +23,7 @@ public:
 
     Destination driveToPoint(Point navigateTo, WorldModel *worldModel);
     Destination setpointInCorridor();               //Navigate Pico through Corridor
-    Destination getAwayFromWall(Low_State lowSt, WorldModel *worldModel);
+    Destination getAwayFromWall(WorldModel *worldModel);
     Destination driveInRoom(WorldModel *worldModel);
     Destination parkPico(WorldModel *worldModel);
 
@@ -39,7 +35,7 @@ public:
 
 
     Planning(){
-        return;
+        // return;
     }
 
 };

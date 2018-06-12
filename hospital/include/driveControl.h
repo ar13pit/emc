@@ -1,13 +1,13 @@
-#ifndef driveControl_H
-#define driveControl_H
-
 #include <emc/io.h>
 #include <emc/rate.h>
-#include <iostream>
 #include <emc/odom.h>
+#include <iostream>
 #include "config.h"
-#include "planning.h"
 #include "helper.h"
+#include "worldModel.h"
+
+#ifndef driveControl_H
+#define driveControl_H
 
 
 class DriveControl
@@ -39,7 +39,7 @@ public:
     void picoTurning(Destination * dest); // Method to let pico turn for an angle and then drive backwards
     void picoSideDrive(Destination *dest);
 
-    bool driveDecision(Low_State low_st, WorldModel *dest);
+    bool driveDecision(WorldModel* worldModel);
 };
 
 #endif //driveControl_H

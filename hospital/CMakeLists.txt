@@ -8,16 +8,8 @@ add_compile_options(-std=c++11)
 include_directories(include)
 
 # Search for all source files of extension ".cc" and add them to $SOURCES
-set(SOURCES
-src/detection.cpp
-src/driveControl.cpp
-src/monitoring.cpp
-src/worldModel.cpp
-src/planning.cpp
-src/stateMachine.cpp
-#src/visualize.cpp
-src/mapping.cpp
-src/main_explore.cpp)
+file(GLOB SOURCES "src/*.cpp")
+
 # Create executable named "testPlanning"
 add_executable(hospital_room ${SOURCES})
 

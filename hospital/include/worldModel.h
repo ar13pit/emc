@@ -1,69 +1,24 @@
-#ifndef worldModel_H
-#define worldModel_H
-
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
 
 #include "config.h"
-#include "helper.h"
-#include "detection.h"
-#include "planning.h"
-#include "stateMachine.h"
-#include "mapping.h"
 #include "json.hpp"
+#include "helper.h"
 
+#ifndef worldModel_H
+#define worldModel_H
+
+
+/*
+ * initialize int variables
+ * assign the variables from the detection_data to the corresponding variables in the private functions
+ * */
 
 using json = nlohmann::json;
 
-//typedef struct  {
-//    int roomID;
-//    std::vector<Point_map> corners;
-//    Exit exit;
-//    int previousRoom;   // Corridor is 0
 
-//    Room() {}
-//    Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {}
-//}Room;
-
-//typedef struct Room Room;
-
-//// Destination that is passed to the Control block
-//typedef struct {
-//    double x;
-//    double y;
-//    double angle;
-//    double dist;
-//} Destination;
-
-//// this are the two main stages (exploring the hospital and then finding the object)
-//enum High_State {
-//    EXPLORE_HOSPITAL,
-//    GO_TO_ROOM,
-//    RETURN_TO_INIT
-//};
-
-//// this are the actions in the rooms
-//typedef enum {
-//    EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
-//    EXIT_CORRIDOR,
-//    EXIT_TO_PREV_ROOM,  //-- Added-- Go to room/corridor of lower nesting level
-//                        //     Instead of EXIT_CORRIDOR & EXIT states
-//    GO_TO_START,        // after all rooms are located
-//    PARKING,            // park backwards
-
-//    EXPLORE_ROOM,
-//    GO_TO_NEXT_ROOM,
-//    GO_INSIDE_ROOM,      //-- Added-- Moving through the entrance/exit of a room
-
-//    STAND_NEXT_TO_OBJECT
-//} Low_State;
-
-//// Define a structure to contain corridor data
-
-//// to know our location
-//enum Location {IN_CORRIDOR, IN_ROOM};
 
 
 class WorldModel {
@@ -71,10 +26,10 @@ class WorldModel {
     std::vector<Room> globalRooms_;
     std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
 
-    std::vector<Exit> allDetectedExits_;
+    std::vector<Exit_map> allDetectedExits_;
 
     Point closestPointWall_;
-    Point globalPosition_;
+    Point_map globalPosition_;
     Point pointStraightAhead_;
 
     Destination destination_;
@@ -110,7 +65,7 @@ public:
 
     // Get Methods
     Point get_closestPointWall();
-    Point get_globalPosition();                     // Renamed from     Point getCurrentPosition();
+    Point_map get_globalPosition();                     // Renamed from     Point getCurrentPosition();
     Point get_pointStraightAhead();
 
     Destination get_destination();
@@ -135,12 +90,12 @@ public:
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
-    // std::vector<Exit> getAllDetectedExits();
+    std::vector<Exit_map> getAllDetectedExits();
 
 
     // Set Methods
     void set_closestPointWall(Point updatedClosestPointWall);
-    void set_globalPosition(Point updatedGlobalPosition);
+    void set_globalPosition(Point_map updatedGlobalPosition);
     void set_pointStraightAhead(Point updatedPointStraightAhead);
 
     void set_destination(Destination updatedDestination);
@@ -165,7 +120,7 @@ public:
     void set_curRoom(Room room);
     void set_nextRoom();
 
-    void setAllDetectedExits(std::vector<Exit> allDetectedExits);
+    void setAllDetectedExits(std::vector<Exit_map> allDetectedExits);
 
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);

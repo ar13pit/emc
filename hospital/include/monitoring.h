@@ -1,10 +1,9 @@
+// #include "stateMachine.h"
+#include "worldModel.h"
+#include "planning.h"
+
 #ifndef MONITORS_HPP_INCLUDED
 #define MONITORS_HPP_INCLUDED
-
-#include "stateMachine.h"
-#include "worldModel.h"
-#include "mapping.h"
-#include "helper.h"
 
 
 // unite the program execution

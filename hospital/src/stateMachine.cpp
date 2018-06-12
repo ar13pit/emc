@@ -50,10 +50,18 @@ bool state_machine(WorldModel * worldModel){
     bool at_start = false;              // have we returned back to the initial condition yet?
 
     if (location == IN_CORRIDOR){
-        if (current_room.corners[1].dist < DIST_SETPOINT || current_room.corners[2].dist <DIST_SETPOINT){
+        Point_map pos = worldModel->get_globalPosition();
+        Point_map corridorCorner1 = current_room.corners[0], corridorCorner2 = current_room.corners[1];
+
+        double dist1, dist2;
+
+        dist1 = sqrt(pow(corridorCorner1.x - pos.x , 2) + pow(corridorCorner1.y - pos.y , 2));
+        dist2 = sqrt(pow(corridorCorner2.x - pos.x , 2) + pow(corridorCorner2.y - pos.y , 2));
+
+        if (dist1 < DIST_SETPOINT || dist2 <DIST_SETPOINT){
             end_of_corridor = true;
         }
-        Point pos = worldModel->get_globalPosition();
+
         if (sqrt(pow(pos.x,2)+pow(pos.y,2)) < DIST_SETPOINT) {
             at_start = true;
         }
@@ -242,7 +250,6 @@ bool state_machine(WorldModel * worldModel){
                 end_of_program = true;
                 std::cout << "Near the object " << std::endl;
             }
-
             break;
         }
 

@@ -1,11 +1,10 @@
 #include "planning.h"
 
-using namespace std;
 
 
 //Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDetected){
-//    std::cout << "High state =  " << highSt << std::endl;
-//    std::cout << "Low state =  " << highSt << std::endl;
+//    std::std::cout << "High state =  " << highSt << std::endl;
+//    std::std::cout << "Low state =  " << highSt << std::endl;
 
 //    Room room;
 //    Point navigateTo;
@@ -17,7 +16,7 @@ using namespace std;
 
 //    if(wallDetected){
 //        dest = getAwayFromWall(lowSt);
-//        std::cout << "WALL DETECT"<<  dest.angle << std::endl;
+//        std::std::cout << "WALL DETECT"<<  dest.angle << std::endl;
 //    }
 //    else{
 //        switch(highSt){
@@ -91,10 +90,11 @@ Destination Planning::setpointInCorridor(){
     return dest;
 }
 
-Destination Planning::getAwayFromWall(Low_State lowSt, WorldModel *worldModel){
+Destination Planning::getAwayFromWall(WorldModel *worldModel){
 
     Point closestPoint = worldModel->get_closestPointWall();
     Destination dest;
+    Low_State lowSt = worldModel->get_currentLowState();
 
     //Move sideways when PICO is inside the corridor OR
     //When closest point is at the side of PICO
@@ -113,9 +113,9 @@ Destination Planning::getAwayFromWall(Low_State lowSt, WorldModel *worldModel){
 Point Planning::getNearbyExitPoint(Room closestRoom, WorldModel *worldModel){
 
     Point destination;
-    Point extPnt1 = closestRoom.exit.exitPoint1;
-    Point extPnt2 = closestRoom.exit.exitPoint2;
-    Point curPos = worldModel->get_globalPosition();
+    Point_map extPnt1 = closestRoom.exit.point1;
+    Point_map extPnt2 = closestRoom.exit.point2;
+    Point_map curPos = worldModel->get_globalPosition();
 
     double xMid = 0.5*(extPnt1.x + extPnt2.x);
     double yMid = 0.5*(extPnt1.y + extPnt2.y);
@@ -139,7 +139,7 @@ Point Planning::getNearbyExitPoint(Room closestRoom, WorldModel *worldModel){
         destination.x = distExtSide1 < distExtSide2 ? xMid-WAIT_BEFORE_EXIT : xMid+WAIT_BEFORE_EXIT;
     }
 
-    cout << "Destination Point = (" << destination.x << ',' << destination.y << ')' << endl;
+    std::cout << "Destination Point = (" << destination.x << ',' << destination.y << ')' <<std::endl;
     return destination;
 }
 
@@ -149,26 +149,26 @@ Destination Planning::driveToPoint(Point goToPoint, WorldModel *worldModel){
 //    /// Check wheter is works when the relative angle is different
 //    /// Unable to check in simulation without other classes...
 //    ///
-    Point curPos = worldModel->get_globalPosition();
+    Point_map curPos = worldModel->get_globalPosition();
     Destination dest;
 
     double disX = goToPoint.x-curPos.x;
     double disY = goToPoint.y-curPos.y;
 
     if(disX > 0 && disY < 0){
-        cout << "First Quadrant" << endl;
+        std::cout << "First Quadrant" <<std::endl;
         dest.angle = -atan(disY/disX);
     }
     else if(disX < 0 && disY < 0){
-        cout << "Second Quadrant" << endl;
+        std::cout << "Second Quadrant" <<std::endl;
         dest.angle = M_PI-atan(disY/disX);
     }
     else if(disX < 0 && disY > 0){
-        cout << "Third Quadrant" << endl;
+        std::cout << "Third Quadrant" <<std::endl;
         dest.angle = M_PI-atan(disY/disX);
     }
     else if(disX > 0 && disY > 0){
-        cout << "Fourth Quadrant" << endl;
+        std::cout << "Fourth Quadrant" <<std::endl;
         dest.angle = -atan(disY/disX);
     }
     dest.dist = DIST_SETPOINT;
@@ -176,7 +176,7 @@ Destination Planning::driveToPoint(Point goToPoint, WorldModel *worldModel){
 
 //    dest.angle = atan(disY/disX);
 
-    cout << "ANGLE = " << dest.angle << endl;
+    std::cout << "ANGLE = " << dest.angle <<std::endl;
 
     return dest;
 }
@@ -232,10 +232,10 @@ Point Planning::getThroughtExitPoint(Room roomFromMapping, WorldModel *worldMode
     double closestX = INFINITY;
     double closestY = INFINITY;
 
-    vector<Exit> allDetectedExits = worldModel->getAllDetectedExits();
+    std::vector<Exit_map> allDetectedExits = worldModel->getAllDetectedExits();
 
-    Point extPntMap1 = roomFromMapping.exit.exitPoint1;
-    Point extPntMap2 = roomFromMapping.exit.exitPoint2;
+    Point_map extPntMap1 = roomFromMapping.exit.point1;
+    Point_map extPntMap2 = roomFromMapping.exit.point2;
 
     //Get the middle point of the exit from the mapping
     double xMidMap = 0.5*(extPntMap1.x + extPntMap2.x);
@@ -243,8 +243,8 @@ Point Planning::getThroughtExitPoint(Room roomFromMapping, WorldModel *worldMode
 
     //In case multiple exits are found, select the correct one
     for(int i=0;i<allDetectedExits.size();i++){
-        Point extPntDet1 = allDetectedExits[i].exitPoint1;
-        Point extPntDet2 = allDetectedExits[i].exitPoint2;
+        Point_map extPntDet1 = allDetectedExits[i].point1;
+        Point_map extPntDet2 = allDetectedExits[i].point2;
 
         //Get the middle point of the exit from the detection
         double xMidDet = 0.5*(extPntDet1.x + extPntDet2.x);
