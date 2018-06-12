@@ -144,4 +144,11 @@ typedef enum {
 // to know our location
 enum Location {IN_CORRIDOR, IN_ROOM};
 
+typedef struct {
+    Exit Exits_total[40];
+    Corner Corners_total[40];
+    std::vector<Exit_map> local_exits;
+    Point closest_Point;
+} Detection_data;
+
 #endif

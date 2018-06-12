@@ -28,6 +28,9 @@ public:
     Corner Corners_RL[20];
     Exit_LR Exits_LR[20];
     Corner_LR Corners_LR[20];
+    Exit Exits_Total[40];
+    Corner Corners_Total[40];
+
     Detection_data detection_data;
     void average_CornersAndExits();
     double aFitPlot;
@@ -42,6 +45,10 @@ public:
     void findExitsAndCorners_RL();
     void findExitsAndCorners_LR();
     double distance_to_front();
+    std::vector<Exit_map> local_Exits();
+    Point closest_point();
+    Detection_data detection_execution();
+    void findExitsAndCorners_Final();
 
 
 
