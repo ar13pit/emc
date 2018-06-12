@@ -11,6 +11,11 @@
 #define worldModel_H
 
 
+/*
+ * initialize int variables
+ * assign the variables from the detection_data to the corresponding variables in the private functions
+ * */
+
 using json = nlohmann::json;
 
 

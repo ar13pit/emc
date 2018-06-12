@@ -3,7 +3,7 @@
 
 
 
-Detection_data Detection::detection_execution(){
+Detection_data Detection::detection_execution(WorldModel * worldModel){
     findExitsAndCorners_Final();
     Point closestPoint = closest_point();
     std::vector<Exit_map> localExits = local_Exits();
@@ -16,6 +16,8 @@ Detection_data Detection::detection_execution(){
     data.local_exits = localExits;
     data.Exits_total[40] = Exits_Total[40];
     data.Corners_total[40] = Corners_Total[40];
+
+    worldModel->set_localDetection(data);
 }
 
 std::vector<Exit_map> Detection::local_Exits(){

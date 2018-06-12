@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "helper.h"
+#include "worldModel.h"
 
 #ifndef detection_H
 #define detection_H
@@ -47,7 +48,7 @@ public:
     double distance_to_front();
     std::vector<Exit_map> local_Exits();
     Point closest_point();
-    Detection_data detection_execution();
+    Detection_data detection_execution(WorldModel * worldModel);
     void findExitsAndCorners_Final();
 
 

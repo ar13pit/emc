@@ -31,9 +31,38 @@ int main(int argc, char *argv[])
     Detection detection(&io); //
     Planning planning;
 
+
+    Point initial_point;
+    initial_point.angle = 0; initial_point.dist = 0; initial_point.x = 0; initial_point.y = 0;
+
+    Point_map initial_point_map;
+    initial_point_map.x = 0; initial_point_map.y = 0;
+    std::vector<Point_map> initial_point_map_vec;
+
+    Exit_map initial_exit_map;
+    initial_exit_map.point1 = initial_point_map;
+    initial_exit_map.point2 = initial_point_map;
+    std::vector<Exit_map> initial_exit_map_vec;
+
+    Room corridor;
+    //    corridor.corners = initial_point_map_vec;
+    corridor.exit = initial_exit_map;
+    corridor.previousRoom = -1;
+    corridor.roomID = 0;
+
+
     bool wall_detected;
+
+
     worldModel.set_currentHighState(EXPLORE_HOSPITAL);
     worldModel.set_currentLowState(EXPLORE_CORRIDOR);
+    worldModel.setAllDetectedExits(initial_exit_map_vec);
+    //    worldModel.set_closestPointWall(initial_point);
+    worldModel.set_currentLocation(IN_CORRIDOR);
+    worldModel.set_currentRoom(corridor.roomID);
+    worldModel.set_curRoom(corridor);
+    worldModel.set_globalPosition(initial_point_map);
+
 
 
 
@@ -45,7 +74,9 @@ int main(int argc, char *argv[])
 
     while(io.ok()) {
 
-        detection.detection_execution(); //
+        std::cout << "Detectino not covered worlds!"<< std::endl;
+
+        detection.detection_execution(&worldModel); //
 
         //        if(detection.getSensorData()) {
 
@@ -101,6 +132,7 @@ int main(int argc, char *argv[])
         //            //END UPDATE VISUALIZER
 
         //        }
+        std::cout << "Detectino worlds!"<< std::endl;
 
         if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
             wall_detected = true;
