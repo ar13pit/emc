@@ -20,7 +20,7 @@ void WorldModel::writeJsonFile() {
     std::ofstream wfHandle(JSON_PATH);
 
     // Check if file has been opened
-    assert(wfHandle != NULL);
+    // assert(wfHandle != NULL);
 
     wfHandle << std::setw(4) << jsonObject_ << std::endl;
     wfHandle.close();
@@ -41,7 +41,7 @@ void WorldModel::readJsonFile() {
     std::ifstream rfHandle(JSON_PATH);
 
     // Check if file has been opened
-    assert(rfHandle != NULL);
+    // assert(rfHandle != NULL);
 
     rfHandle >> jsonObject_;
     rfHandle.close();
@@ -51,55 +51,102 @@ void WorldModel::createJson() {
 
     for (auto i : rooms)
     {
-      json r =  {
-                    {"Room_ID", i.roomID},
-                    {"Corners", {
-                                    {"0",   {
-                                                {"x", i.corners[0].x},
-                                                {"y", i.corners[0].y}
-                                            }
-                                    },
-                                    {"1",   {
-                                                {"x", i.corners[1].x},
-                                                {"y", i.corners[1].y}
-                                            }
-                                    },
-                                    {"2",   {
-                                                {"x", i.corners[2].x},
-                                                {"y", i.corners[2].y}
-                                            }
-                                    },
-                                    {"3",   {
-                                                {"x", i.corners[3].x},
-                                                {"y", i.corners[3].y}
-                                            }
-                                    }
-                                }
-                    },
-                    {"Exit",    {
-                                    {"0",   {
-                                                {"x", i.exit.exitPoint1.x},
-                                                {"y", i.exit.exitPoint1.y}
-                                            }
-                                    },
-                                    {"1",   {
-                                                {"x", i.exit.exitPoint2.x},
-                                                {"y", i.exit.exitPoint2.y}
-                                            }
-                                    }
-                                }
-                    },
-                    {"Previous_Room", i.previousRoom}
-                };
-      jsonObject_.push_back(r);
+      json room, corners, exits;
+      room.emplace("Room_ID", i.roomID);
+
+      int cornerID = 0;
+
+      for (auto j: i.corners) {
+
+          json c = { { "x", j.x }, { "y", j.y } } ;
+          std::cout << "Room_ID: " << i.roomID << ", Corner_ID: " << cornerID << ", Points: " << c << '\n';
+          corners.emplace(std::to_string(cornerID), c);
+          cornerID++;
+
+      }
+
+      room.emplace("Corners", corners);
+
+      json ep1 = { { "x", i.exit.exitPoint1.x }, { "y", i.exit.exitPoint1.y } } ;
+      json ep2 = { { "x", i.exit.exitPoint2.x }, { "y", i.exit.exitPoint2.y } } ;
+      exits.emplace("0", ep1);
+      exits.emplace("1", ep2);
+
+      room.emplace("Exit", exits);
+
+      room.emplace("Previous_Room", i.previousRoom);
+
+      jsonObject_.push_back(room);
     }
 
 };
 
 void WorldModel::extractJson() {
 
-    // Come up with some fancy way of extracting information from JSON object
+    assert(jsonObject_.is_array());
+    for (const auto& c : jsonObject_)
+    {
+      Room tempRoom;
+      Exit tempExit;
+      Point tempPoint;
+      std::vector<Point> tempCorners;
+
+
+      assert(c.is_object());
+
+      assert(c.find("Room_ID") != c.end());
+      assert(c.find("Previous_Room") != c.end());
+      assert(c.find("Exit") != c.end());
+      assert(c.find("Corners") != c.end());
+
+      tempRoom.roomID = c["Room_ID"];
+      tempRoom.previousRoom = c["Previous_Room"];
+
+      json corner = c["Corners"];
+
+      for (json::iterator it = corner.begin(); it != corner.end(); ++it) {
+
+        json pt = it.value();         // it.key() returns the key (which is a str object)
+        Point cornerPoint;
+
+        cornerPoint.x = pt["x"];
+        cornerPoint.y = pt["y"];
+        tempCorners.push_back(cornerPoint);
+      }
+
+      tempRoom.corners = tempCorners;
+
+      tempPoint.x = c["Exit"]["0"]["x"];
+      tempPoint.y = c["Exit"]["0"]["y"];
+      tempExit.exitPoint1 = tempPoint;
+
+      tempPoint.x = c["Exit"]["1"]["x"];
+      tempPoint.y = c["Exit"]["1"]["y"];
+      tempExit.exitPoint2 = tempPoint;
+
+      tempRoom.exit = tempExit;
+
+      std::cout << "----------------------------------------------------------------------------" << '\n';
+      std::cout << "Room_ID: " << tempRoom.roomID << ", Previous_Room: " << tempRoom.previousRoom << '\n';
+
+      int cornerID = 0;
+      for (auto corner_it : tempRoom.corners) {
+          std::cout << "Corner_ID: " << cornerID << "(" << corner_it.x << "," << corner_it.y << ")" << '\n';
+          cornerID++;
+      }
+
+      std::cout << "Exit 1: (" << tempRoom.exit.exitPoint1.x << "," << tempRoom.exit.exitPoint1.y << ")"  << '\n';
+      std::cout << "Exit 2: (" << tempRoom.exit.exitPoint2.x << "," << tempRoom.exit.exitPoint2.y << ")"  << '\n';
+      std::cout << "----------------------------------------------------------------------------" << '\n';
+
+
+    }
+
+
+    std::cout << "Done!" << std::endl;
+
 }
+
 /*
 --------------------------------------------------------------------------------
                             Public Methods
@@ -120,31 +167,31 @@ Point WorldModel::get_globalPosition () {
     return globalPosition_;
 };
 
-Point get_pointStraightAhead () {
+Point WorldModel::get_pointStraightAhead () {
     return pointStraightAhead_;
 };
 
-Destination get_destination () {
+Destination WorldModel::get_destination () {
     return destination_;
 };
 
-Detection_data get_localDetection () {
+Detection_data WorldModel::get_localDetection () {
     return localDetection_;
 };
 
-int get_enteredRooms () {
+int WorldModel::get_enteredRooms () {
     return enteredRooms_;
 };
 
-int get_nestedExits () {
+int WorldModel::get_nestedExits () {
     return nestedExits_;
 };
 
-int get_currentRoom () {
+int WorldModel::get_currentRoom () {
     return currentRoom_;
 };
 
-int get_roomsFound () {
+int WorldModel::get_roomsFound () {
     return roomsFound_;
 };
 
@@ -152,27 +199,30 @@ Location WorldModel::get_currentLocation() {
     return currentLocation_;
 };
 
-High_State get_currentHighState() {
+High_State WorldModel::get_currentHighState() {
     return currentHighState_;
 };
 
-Low_State get_currentLowState() {
+Low_State WorldModel::get_currentLowState() {
     return currentLowState_;
 };
 
-std::vector<Room> get_globalRooms() {
+std::vector<Room> WorldModel::get_globalRooms() {
     return globalRooms_;
 };
 
-std::vector<int> get_explorationStack() {
+std::vector<int> WorldModel::get_explorationStack() {
     return explorationStack_;
 };
 
-std::vector<int> get_connectedRooms (int baseRoom) {
+std::vector<int> WorldModel::get_connectedRooms (int baseRoom) {
     /* Write this method */
+    std::vector<int> connectedRooms;
+
+    return connectedRooms;
 };
 
-std::vector<Exit> getAllDetectedExits();
+// std::vector<Exit> getAllDetectedExits() {};
 
 /*
                 ------------------------------------
@@ -242,4 +292,4 @@ void WorldModel::set_explorationStack (int newRoomToBeExplored) {
     explorationStack_.push_back(newRoomToBeExplored);
 };
 
-void WorldModel::setAllDetectedExits();
+// void WorldModel::setAllDetectedExits();

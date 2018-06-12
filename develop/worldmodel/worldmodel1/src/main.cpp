@@ -1,5 +1,5 @@
 #include <iostream>
-#include "worldmodel.h"
+#include "worldModel.h"
 
 using namespace std;
 
