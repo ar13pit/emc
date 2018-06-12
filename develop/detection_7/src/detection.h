@@ -14,7 +14,6 @@ typedef struct {
     double dist;
 } Point;
 
-
 // Store exit data: two corners, angles and a flag whether detected
 typedef struct {
     bool detected;
@@ -26,7 +25,6 @@ typedef struct {
     bool detected;
     Point cornerPoint;
 } Corner;
-
 
 // Store exit data: two corners, angles and a flag whether detected
 typedef struct {
@@ -40,7 +38,6 @@ typedef struct {
     Point cornerPoint_LR;
 } Corner_LR;
 
-
 typedef struct {
     bool escaped;
     Point rightWall1;
@@ -48,7 +45,6 @@ typedef struct {
     Point leftWall1;
     Point leftWall2;
 } CorridorWalls;
-
 
 class Detection{
 private:
@@ -61,12 +57,16 @@ public:
 
         return;
     }
+
 public:
     Point LatestLaserScan[970]; //Deleted first and last 15 points
     Exit Exits_RL[20];
     Corner Corners_RL[20];
     Exit_LR Exits_LR[20];
     Corner_LR Corners_LR[20];
+    Exit Exits_Total[40];
+    Corner Corners_Total[40];
+//    Detection_data detection_data;
     void average_CornersAndExits();
     double aFitPlot;
     double bFitPlot;
@@ -79,12 +79,10 @@ public:
     Point findFurthestPoint();
     void findExitsAndCorners_RL();
     void findExitsAndCorners_LR();
+    void findExitsAndCorners_Final();
     double distance_to_front();
 
    // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
-
-
-
 
 };
 

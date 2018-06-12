@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
             int index = 0;
 
 
-            detection.average_CornersAndExits();
+            detection.findExitsAndCorners_Final();
             //detection.findExitsAndCorners_LR();
 
 
@@ -68,24 +68,24 @@ int main(int argc, char *argv[])
                }
             }
             for(unsigned int l = 0; l < 20; l=l+1){
-               if(detection.Corners_RL[l].detected){
-                   vis.plotCorner(detection.Corners_RL[l]);
+               if(detection.Corners_Total[l].detected){
+                   vis.plotCorner(detection.Corners_Total[l]);
 
                }
             }
 
-            for(unsigned int l = 0; l < 20; l=l+1){
-               if(detection.Exits_LR[l].detected){
-                   vis.plotExit_LR(detection.Exits_LR[l]);
+//            for(unsigned int l = 0; l < 20; l=l+1){
+//               if(detection.Exits_LR[l].detected){
+//                   vis.plotExit_LR(detection.Exits_LR[l]);
 
-               }
-            }
-            for(unsigned int l = 0; l < 20; l=l+1){
-               if(detection.Corners_LR[l].detected){
-                   vis.plotCorner_LR(detection.Corners_LR[l]);
+//               }
+//            }
+//            for(unsigned int l = 0; l < 20; l=l+1){
+//               if(detection.Corners_LR[l].detected){
+//                   vis.plotCorner_LR(detection.Corners_LR[l]);
 
-               }
-            }
+//               }
+//            }
 
             //vis.plotExit(exit);
             vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
