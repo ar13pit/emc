@@ -66,11 +66,11 @@ void update_Odometry();
 void delta_Odometry();
 
 void update_corners();
-void update_map(int);
 void update_rooms();
 
-void update_worldModel();
 
+// the only function that is called to do all the mapping
+void update_map();
 
 
 Point_map local2global(Point);

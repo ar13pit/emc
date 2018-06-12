@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 //            }
 //            for(unsigned int l = 0; l < 20; l=l+1){
 //               if(detection.Exits_RL[l].detected){
-////                   std::cout << l;
+//                   std::cout << l;
 //                   vis.plotExit(detection.Exits_RL[l]);
 
 //               }

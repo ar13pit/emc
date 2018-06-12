@@ -127,7 +127,7 @@ void DriveControl::stop() {
 }
 
 
-bool DriveControl::driveDecision(Low_State low_st, WorldModel * worldModel){
+bool DriveControl::driveDecision(Low_State low_st, WorldModel *worldModel){
     Destination dest = worldModel->get_destination();
     if (low_st == PARKING){
         dest.angle = dest.angle + M_PI;

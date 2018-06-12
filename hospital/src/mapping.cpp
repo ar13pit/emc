@@ -167,8 +167,10 @@ void Mapping::delta_Odometry(){
 
 }
 
-void Mapping::update_map(int something){
-    //
+//update the map into the world model
+//the only function that is executed, so it has to include all the methods needed
+void Mapping::update_map(){
+
 }
 
 
