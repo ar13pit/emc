@@ -94,7 +94,8 @@ public:
     double distance_to_front();
     std::vector<Exit_map> local_Exits();
     Point closest_point();
-
+    Detection_data detection_execution();
+    void findExitsAndCorners_Final();
 
 
    // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot

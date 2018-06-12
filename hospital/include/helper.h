@@ -5,7 +5,6 @@
 
 
 
-
 // Destination that is passed to the Control block
 typedef struct {
     double x;
@@ -116,12 +115,10 @@ typedef struct {
 } CorridorWalls;
 
 typedef struct {
-    Point exitPoint1;
-    Point exitPoint2;
-    Point exitPoint1_LR;
-    Point exitPoint2_LR;
-    Point cornerPoint;
-    Point cornerPoint_LR;
+    Exit Exits_total[40];
+    Corner Corners_total[40];
+    std::vector<Exit_map> local_exits;
+    Point closest_Point;
 } Detection_data;
 
 #endif

@@ -1,6 +1,27 @@
 #include "detection.h"
 #include "config.h"
 
+
+
+Detection_data Detection::detection_execution(){
+    findExitsAndCorners_Final();
+    Point closestPoint = closest_point();
+    std::vector<Exit_map> localExits = local_Exits();
+
+    Detection_data data;
+
+
+
+    data.closest_Point = closestPoint;
+    data.local_exits = localExits;
+    data.Exits_total[40] = Exits_Total[40];
+    data.Corners_total[40] = Corners_Total[40];
+}
+
+void Detection::findExitsAndCorners_Final(){
+
+};
+
 std::vector<Exit_map> Detection::local_Exits(){
     std::vector<Exit_map> local_exit_list;
     for(int i = 0; i < 40; ++i){
@@ -727,3 +748,5 @@ Point Detection::closest_point(){
         }
         return LatestLaserScan[imax];
     }
+
+
