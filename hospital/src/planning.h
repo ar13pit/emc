@@ -8,11 +8,12 @@
 #include "detection.h"
 #include "iostream"
 #include "math.h"
+#include "helper.h"
 
 #include <cmath>
 #include <vector>
 
-
+    class WorldModel;
 
 //bool state_machine(struct High_state high_st,struct Low_state low_st);
 

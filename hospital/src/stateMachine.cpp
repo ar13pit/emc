@@ -1,5 +1,4 @@
 #include "stateMachine.h"
-#include "worldModel.h"
 
 bool state_machine(WorldModel * worldModel){
 
@@ -243,6 +242,7 @@ bool state_machine(WorldModel * worldModel){
                 end_of_program = true;
                 std::cout << "Near the object " << std::endl;
             }
+
             break;
         }
 

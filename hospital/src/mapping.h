@@ -15,25 +15,27 @@
 #include "detection.h"
 #include "worldModel.h"
 #include "config.h"
+#include "helper.h"
 //#include "visualize.h"
 //#include "main.pp"
 
 
-typedef struct {
-    double x;
-    double y;
-} Point_map;
 
-typedef struct {
-    double x;
-    double y;
-    double angle;
-} Position;
+//typedef struct {
+//    double x;
+//    double y;
+//} Point_map;
 
-typedef struct {
-    Point_map point1;
-    Point_map point2;
-} Exit_map;
+//typedef struct {
+//    double x;
+//    double y;
+//    double angle;
+//} Position;
+
+//typedef struct {
+//    Point_map point1;
+//    Point_map point2;
+//} Exit_map;
 
 
 class Mapping

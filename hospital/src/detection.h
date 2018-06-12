@@ -5,57 +5,58 @@
 #include <emc/rate.h>
 #include <cmath>
 #include <iostream>
+#include "helper.h"
 
-// Point data
-typedef struct {
-    double x;
-    double y;
-    double angle;
-    double dist;
-} Point;
-
-
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    Point exitPoint1;
-    Point exitPoint2;
-} Exit;
-
-typedef struct {
-    bool detected;
-    Point cornerPoint;
-} Corner;
+//// Point data
+//typedef struct {
+//    double x;
+//    double y;
+//    double angle;
+//    double dist;
+//} Point;
 
 
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    Point exitPoint1_LR;
-    Point exitPoint2_LR;
-} Exit_LR;
+//// Store exit data: two corners, angles and a flag whether detected
+//typedef struct {
+//    bool detected;
+//    Point exitPoint1;
+//    Point exitPoint2;
+//} Exit;
 
-typedef struct {
-    bool detected;
-    Point cornerPoint_LR;
-} Corner_LR;
+//typedef struct {
+//    bool detected;
+//    Point cornerPoint;
+//} Corner;
 
-typedef struct {
-    bool escaped;
-    Point rightWall1;
-    Point rightWall2;
-    Point leftWall1;
-    Point leftWall2;
-} CorridorWalls;
 
-typedef struct {
-    Point exitPoint1;
-    Point exitPoint2;
-    Point exitPoint1_LR;
-    Point exitPoint2_LR;
-    Point cornerPoint;
-    Point cornerPoint_LR;
-} Detection_data;
+//// Store exit data: two corners, angles and a flag whether detected
+//typedef struct {
+//    bool detected;
+//    Point exitPoint1_LR;
+//    Point exitPoint2_LR;
+//} Exit_LR;
+
+//typedef struct {
+//    bool detected;
+//    Point cornerPoint_LR;
+//} Corner_LR;
+
+//typedef struct {
+//    bool escaped;
+//    Point rightWall1;
+//    Point rightWall2;
+//    Point leftWall1;
+//    Point leftWall2;
+//} CorridorWalls;
+
+//typedef struct {
+//    Point exitPoint1;
+//    Point exitPoint2;
+//    Point exitPoint1_LR;
+//    Point exitPoint2_LR;
+//    Point cornerPoint;
+//    Point cornerPoint_LR;
+//} Detection_data;
 
 class Detection{
 private:
