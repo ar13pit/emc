@@ -5,57 +5,58 @@
 #include <emc/rate.h>
 #include <cmath>
 #include <iostream>
+#include "helper.h"
 
-// Point data
-typedef struct {
-    double x;
-    double y;
-    double angle;
-    double dist;
-} Point;
-
-
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    Point exitPoint1;
-    Point exitPoint2;
-} Exit;
-
-typedef struct {
-    bool detected;
-    Point cornerPoint;
-} Corner;
+//// Point data
+//typedef struct {
+//    double x;
+//    double y;
+//    double angle;
+//    double dist;
+//} Point;
 
 
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    Point exitPoint1_LR;
-    Point exitPoint2_LR;
-} Exit_LR;
+//// Store exit data: two corners, angles and a flag whether detected
+//typedef struct {
+//    bool detected;
+//    Point exitPoint1;
+//    Point exitPoint2;
+//} Exit;
 
-typedef struct {
-    bool detected;
-    Point cornerPoint_LR;
-} Corner_LR;
+//typedef struct {
+//    bool detected;
+//    Point cornerPoint;
+//} Corner;
 
-typedef struct {
-    bool escaped;
-    Point rightWall1;
-    Point rightWall2;
-    Point leftWall1;
-    Point leftWall2;
-} CorridorWalls;
 
-typedef struct {
-    Point exitPoint1;
-    Point exitPoint2;
-    Point exitPoint1_LR;
-    Point exitPoint2_LR;
-    Point cornerPoint;
-    Point cornerPoint_LR;
-} Detection_data;
+//// Store exit data: two corners, angles and a flag whether detected
+//typedef struct {
+//    bool detected;
+//    Point exitPoint1_LR;
+//    Point exitPoint2_LR;
+//} Exit_LR;
+
+//typedef struct {
+//    bool detected;
+//    Point cornerPoint_LR;
+//} Corner_LR;
+
+//typedef struct {
+//    bool escaped;
+//    Point rightWall1;
+//    Point rightWall2;
+//    Point leftWall1;
+//    Point leftWall2;
+//} CorridorWalls;
+
+//typedef struct {
+//    Point exitPoint1;
+//    Point exitPoint2;
+//    Point exitPoint1_LR;
+//    Point exitPoint2_LR;
+//    Point cornerPoint;
+//    Point cornerPoint_LR;
+//} Detection_data;
 
 class Detection{
 private:
@@ -72,6 +73,8 @@ public:
 public:
     Point LatestLaserScan[970]; //Deleted first and last 15 points
     Exit Exits_RL[20];
+    Exit Exits_Total[40];
+    Corner Corners_Total[40];
     Corner Corners_RL[20];
     Exit_LR Exits_LR[20];
     Corner_LR Corners_LR[20];
@@ -89,6 +92,10 @@ public:
     void findExitsAndCorners_RL();
     void findExitsAndCorners_LR();
     double distance_to_front();
+    std::vector<Exit_map> local_Exits();
+    Point closest_point();
+
+
 
    // bool wallDetected(double minDistance);// Method to check if any wall is in the neighbourhood of the robot
 

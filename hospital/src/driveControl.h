@@ -7,6 +7,7 @@
 #include <emc/odom.h>
 #include "config.h"
 #include "planning.h"
+#include "helper.h"
 
 
 class DriveControl
@@ -38,7 +39,7 @@ public:
     void picoTurning(Destination * dest); // Method to let pico turn for an angle and then drive backwards
     void picoSideDrive(Destination *dest);
 
-    bool driveDecision(Low_State low_st, Destination *dest);
+    bool driveDecision(Low_State low_st, WorldModel *dest);
 };
 
 #endif //driveControl_H

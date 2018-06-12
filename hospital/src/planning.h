@@ -8,20 +8,14 @@
 #include "detection.h"
 #include "iostream"
 #include "math.h"
+#include "helper.h"
 
 #include <cmath>
 #include <vector>
 
+    class WorldModel;
 
-// Destination that is passed to the Control block
-typedef struct {
-    double x;
-    double y;
-    double dist;
-    double angle;
-} Destination;
-
-bool state_machine(struct High_state high_st,struct Low_state low_st);
+//bool state_machine(struct High_state high_st,struct Low_state low_st);
 
 class Planning{
 private:
@@ -31,21 +25,17 @@ private:
 public:
 
 
-    Destination driveToPoint(Point navigateTo);
+    Destination driveToPoint(Point navigateTo, WorldModel *worldModel);
     Destination setpointInCorridor();               //Navigate Pico through Corridor
-    Destination getAwayFromWall(Low_State lowSt);
-    Destination driveInRoom(Room curRoom);
-    Destination parkPico();
+    Destination getAwayFromWall(Low_State lowSt, WorldModel *worldModel);
+    Destination driveInRoom(WorldModel *worldModel);
+    Destination parkPico(WorldModel *worldModel);
 
-//    Destination get_Destination();
+    Destination get_Destination();
 
-    Room get_closestRoom();
-    Room getMostNestedRoom();
-    Room getNextRoom(Room mostNestedRoom);
-    Room getRoom();
-
-    Point getNearbyExitPoint(Room closestRoom);
+    Point getNearbyExitPoint(Room closestRoom, WorldModel *worldModel);
     Point getStartPos();
+    Point getThroughtExitPoint(Room roomFromMapping, WorldModel *worldModel);
 
 
     Planning(){

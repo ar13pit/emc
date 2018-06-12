@@ -3,6 +3,8 @@
 
 #include "stateMachine.h"
 #include "worldModel.h"
+#include "mapping.h"
+#include "helper.h"
 
 
 // unite the program execution
