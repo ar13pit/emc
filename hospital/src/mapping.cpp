@@ -1,6 +1,6 @@
 #include "mapping.h"
 
-Mapping_data Mapping::execute_mapping(){
+void Mapping::execute_mapping(WorldModel * worldModel){
     Mapping_data mapdata;
     init_map();
     update_global_pos();
@@ -8,6 +8,8 @@ Mapping_data Mapping::execute_mapping(){
     update_corners();
     mapdata.map = map;
     mapdata.pico_position = global_pos;
+
+    worldModel->set_mapping();
 }
 
 
