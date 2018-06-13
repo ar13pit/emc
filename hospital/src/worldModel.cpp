@@ -6,7 +6,8 @@
 --------------------------------------------------------------------------------
 */
 
-WorldModel::WorldModel() : currentLocation_(IN_CORRIDOR) { };
+WorldModel::WorldModel() : currentLocation_(IN_CORRIDOR), enteredRooms_(0), nestedExits_(0), currentRoom_(0), roomsFound_(0);
+ { };
 
 /*
 --------------------------------------------------------------------------------
@@ -402,9 +403,8 @@ void WorldModel::assignValuesFromDetectionData(){
 //    currentRoom_ localDetection_.local_exits;
 }
 
+// Update JSON
 
-
-
-
-
-
+void WorldModel::update_JSON() {
+    
+}

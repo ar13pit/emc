@@ -130,6 +130,9 @@ public:
 
     // Check Methods
     bool check_roomExists(Exit exitDataInGlobalCoordinates);    // Returns false if room with this input exit (in GC) exists
+
+    // IO to JSON
+    void update_JSON();
 };
 
 #endif //worldModel_H
