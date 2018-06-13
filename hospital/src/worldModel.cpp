@@ -148,7 +148,7 @@ void WorldModel::extractJson() {
 
 }
 
-void WorldModel::setAllDetectedExits(std::vector<Exit_map> allDetectedExits){
+void WorldModel::set_allDetectedExits(std::vector<Exit_map> allDetectedExits){
     allDetectedExits_ = allDetectedExits;
 }
 
@@ -157,6 +157,15 @@ void WorldModel::set_variablesRelatedToDetectionData(){
     closestPointWall_ = localDetection_.closest_Point;
     set_allDetectedExits(localDetection_.local_exits);
 //    currentRoom_ localDetection_.local_exits;
+}
+
+void WorldModel::set_updateMappingVariables () {
+    Point_map temp;
+    temp.x = currentMappingData_.pico_position.x;
+    temp.y = currentMappingData_.pico_position.y;
+
+    globalPosition_ = temp;
+    globalRooms_ = currentMappingData_.map;
 }
 
 /*
@@ -252,6 +261,10 @@ Room WorldModel::get_nextRoom(){
 
 std::vector<Exit_map> WorldModel::getAllDetectedExits() {
     return allDetectedExits_;
+}
+
+Mapping_data WorldModel::get_mapping() {
+    return currentMappingData_;
 }
 
 /*
@@ -390,6 +403,11 @@ void WorldModel::set_nextRoom(){
         nextRoom = findRoomByRoomNumber(nextRoom.previousRoom);;
     }
     nextRoom_ = nextRoom;
+}
+
+void WorldModel::set_mapping(Mapping_data updateMappingData) {
+    currentMappingData_ = updateMappingData;
+    set_updateMappingVariables();
 }
 
 
