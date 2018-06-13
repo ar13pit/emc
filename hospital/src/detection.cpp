@@ -14,8 +14,10 @@ Detection_data Detection::detection_execution(WorldModel * worldModel){
 
     data.closest_Point = closestPoint;
     data.local_exits = localExits;
-    data.Exits_total[40] = Exits_Total[40];
-//    data.Corners_total[40] = Corners_Total[40];
+    for(int i = 0; i < 40; ++i){
+        data.Exits_total[i] = Exits_Total[i];
+        data.Corners_total[i] = Corners_Total[i];
+    }
 
 std::cout << "Detection execution"  <<"\n";
     worldModel->set_localDetection(data);
@@ -68,6 +70,11 @@ void Detection::findExitsAndCorners_Final(){
     Corner Corners_total_final[40];
     Exit Exits_total[100];
     Exit Exits_total_final[40];
+
+    for(int i = 0; i < 40; ++i){
+        Corners_Total[i].detected = false;
+        Exits_Total[i].detected = false;
+    }
 
     for (int i = 0; i < 100; ++i){
         Corners_total[i].detected = false;
