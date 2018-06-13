@@ -51,7 +51,12 @@ int main(int argc, char *argv[])
     corridor.roomID = 0;
 
 
-    bool wall_detected;
+    Detection_data initial_detection_data;
+    initial_detection_data.closest_Point = initial_point;
+    initial_detection_data.Corners_total[40] = {};
+    initial_detection_data.Exits_total[40] = {};
+    initial_detection_data.local_exits = initial_exit_map_vec;
+    worldModel.set_localDetection(initial_detection_data);
 
 
     worldModel.set_currentHighState(EXPLORE_HOSPITAL);
@@ -68,7 +73,7 @@ int main(int argc, char *argv[])
 
     //    Visualizer vis; //
     //    vis.init_visualize(); //
-
+    bool wall_detected = false;
     bool end_of_program = false;
     std::string talking = "I am parked";
 
@@ -132,7 +137,7 @@ int main(int argc, char *argv[])
         //            //END UPDATE VISUALIZER
 
         //        }
-        std::cout << "Detectino worlds!"<< std::endl;
+        std::cout << "Detection works!"<< std::endl;
 
         if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
             wall_detected = true;
