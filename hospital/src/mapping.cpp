@@ -9,7 +9,7 @@ void Mapping::execute_mapping(WorldModel * worldModel){
     mapdata.map = map;
     mapdata.pico_position = global_pos;
 
-    worldModel->set_mapping();
+    worldModel->set_mapping(mapdata);
 }
 
 

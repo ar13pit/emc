@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     DriveControl pico_drive(&io);
     Detection detection(&io); //
     Planning planning;
-    Mapping mapping;
+    Mapping mapping(&io);
 
 
     Point initial_point;
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     worldModel.set_currentHighState(EXPLORE_HOSPITAL);
     worldModel.set_currentLowState(EXPLORE_CORRIDOR);
-    worldModel.setAllDetectedExits(initial_exit_map_vec);
+    // worldModel.setAllDetectedExits(initial_exit_map_vec);
     //    worldModel.set_closestPointWall(initial_point);
     worldModel.set_currentLocation(IN_CORRIDOR);
     worldModel.set_currentRoom(corridor.roomID);
