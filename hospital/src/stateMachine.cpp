@@ -10,12 +10,13 @@ bool state_machine(WorldModel * worldModel){
     // 4) knowledge about the exit that we have entered from
     // 5) nearest distance to the wall
 
+    std::cout << "works till here" << "\n";
 
     bool end_of_program=false;
     High_State high_st = worldModel->get_currentHighState();
     Low_State low_st = worldModel->get_currentLowState();
 
-    std::cout << "works till here" << "\n";
+
     //---------------------------------------//
     //                                       //
     //     to be assigned from world model   //

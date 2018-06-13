@@ -242,7 +242,7 @@ Room WorldModel::get_nextRoom(){
 std::vector<Exit_map> WorldModel::getAllDetectedExits() {
     allDetectedExits_.clear();
     for (auto r: globalRooms_) {
-        allDetectedExits.push_back(r.exit);
+        allDetectedExits_.push_back(r.exit);
     }
     return allDetectedExits_;
 };
