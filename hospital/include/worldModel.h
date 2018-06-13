@@ -35,6 +35,7 @@ class WorldModel {
     Destination destination_;
 
     Detection_data localDetection_;
+    Mapping_data currentMappingData_;
 
     int enteredRooms_;
     int nestedExits_;
@@ -95,6 +96,7 @@ public:
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
     std::vector<Exit_map> getAllDetectedExits();
+    Mapping_data get_currentMappingData();
 
 
     // Set Methods
@@ -123,7 +125,7 @@ public:
     void set_closestRoom();
     void set_curRoom(Room room);
     void set_nextRoom();
-
+    void set_currentMappingData(Mapping_data updateMappingData);
 
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);
