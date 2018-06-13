@@ -148,6 +148,17 @@ void WorldModel::extractJson() {
 
 }
 
+void WorldModel::setAllDetectedExits(std::vector<Exit_map> allDetectedExits){
+    allDetectedExits_ = allDetectedExits;
+}
+
+//////////////////////By Nazar///////////////////////////////////////
+void WorldModel::set_variablesRelatedToDetectionData(){
+    closestPointWall_ = localDetection_.closest_Point;
+    set_allDetectedExits(localDetection_.local_exits);
+//    currentRoom_ localDetection_.local_exits;
+}
+
 /*
 --------------------------------------------------------------------------------
                             Public Methods
@@ -240,12 +251,8 @@ Room WorldModel::get_nextRoom(){
 }
 
 std::vector<Exit_map> WorldModel::getAllDetectedExits() {
-    allDetectedExits_.clear();
-    for (auto r: globalRooms_) {
-        allDetectedExits_.push_back(r.exit);
-    }
     return allDetectedExits_;
-};
+}
 
 /*
                 ------------------------------------
@@ -271,7 +278,7 @@ void WorldModel::set_destination (Destination updatedDestination) {
 
 void WorldModel::set_localDetection (Detection_data updatedLocalDetection) {
     localDetection_ = updatedLocalDetection;
-    assignValuesFromDetectionData();
+    set_variablesRelatedToDetectionData();
     std::cout << "Updated local detection" << "\n";
 };
 
@@ -386,9 +393,6 @@ void WorldModel::set_nextRoom(){
 }
 
 
-void WorldModel::setAllDetectedExits(std::vector<Exit_map> allDetectedExits){
-    allDetectedExits_ = allDetectedExits;
-}
 
 //////////////////////// EXTRA METHODS ///////////////////////////////////
 Room WorldModel::findRoomByRoomNumber(int roomNumber){
@@ -401,12 +405,6 @@ Room WorldModel::findRoomByRoomNumber(int roomNumber){
     }
 }
 
-
-//////////////////////By Nazar///////////////////////////////////////
-void WorldModel::assignValuesFromDetectionData(){
-    closestPointWall_ = localDetection_.closest_Point;
-//    currentRoom_ localDetection_.local_exits;
-}
 
 /*
 ----------------------------------
