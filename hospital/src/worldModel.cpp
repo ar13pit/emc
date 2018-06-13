@@ -240,6 +240,10 @@ Room WorldModel::get_nextRoom(){
 }
 
 std::vector<Exit_map> WorldModel::getAllDetectedExits() {
+    allDetectedExits_.clear();
+    for (auto r: globalRooms_) {
+        allDetectedExits.push_back(r.exit);
+    }
     return allDetectedExits_;
 };
 
@@ -406,5 +410,6 @@ void WorldModel::assignValuesFromDetectionData(){
 // Update JSON
 
 void WorldModel::update_JSON() {
-
+    createJson();
+    writeJsonFile();
 }
