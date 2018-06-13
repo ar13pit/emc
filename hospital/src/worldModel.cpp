@@ -408,9 +408,26 @@ void WorldModel::assignValuesFromDetectionData(){
 //    currentRoom_ localDetection_.local_exits;
 }
 
-// Update JSON
+/*
+----------------------------------
+        Update Methods
+----------------------------------
+*/
 
 void WorldModel::update_JSON() {
     createJson();
     writeJsonFile();
+}
+
+void WorldModel::update_roomInGlobalRooms(Room updatedRoomData) {
+    int index = 0;
+    for (auto r: globalRooms_) {
+        if (r.roomID == updatedRoomData.roomID) {
+            break;
+        }
+
+        index++;
+    }
+
+    globalRooms_[index] = updatedRoomData;
 }

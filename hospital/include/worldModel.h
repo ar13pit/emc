@@ -133,6 +133,7 @@ public:
 
     // IO to JSON
     void update_JSON();
+    void update_roomInGlobalRooms(Room updatedRoomData);
 };
 
 #endif //worldModel_H
