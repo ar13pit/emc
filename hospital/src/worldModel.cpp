@@ -266,6 +266,7 @@ void WorldModel::set_destination (Destination updatedDestination) {
 
 void WorldModel::set_localDetection (Detection_data updatedLocalDetection) {
     localDetection_ = updatedLocalDetection;
+    std::cout << "Updated local detection" << "\n";
 };
 
 void WorldModel::set_enteredRooms (bool newRoomEntered) {
@@ -393,3 +394,17 @@ Room WorldModel::findRoomByRoomNumber(int roomNumber){
             return allRooms[i];
     }
 }
+
+
+//////////////////////By Nazar///////////////////////////////////////
+void WorldModel::assignValuesFromDetectionData(){
+    closestPointWall_ = localDetection_.closest_Point;
+//    currentRoom_ localDetection_.local_exits;
+}
+
+
+
+
+
+
+

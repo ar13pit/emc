@@ -17,6 +17,8 @@ Detection_data Detection::detection_execution(WorldModel * worldModel){
     data.Exits_total[40] = Exits_Total[40];
     data.Corners_total[40] = Corners_Total[40];
 
+    std::cout << "Check values of Exit" << data.Exits_total[10].exitPoint1.x <<"\n";
+
     worldModel->set_localDetection(data);
 }
 

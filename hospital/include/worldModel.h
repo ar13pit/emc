@@ -122,6 +122,9 @@ public:
 
     void setAllDetectedExits(std::vector<Exit_map> allDetectedExits);
 
+
+    void assignValuesFromDetectionData();
+
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);
 
