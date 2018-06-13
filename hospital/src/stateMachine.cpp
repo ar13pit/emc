@@ -15,7 +15,7 @@ bool state_machine(WorldModel * worldModel){
     High_State high_st = worldModel->get_currentHighState();
     Low_State low_st = worldModel->get_currentLowState();
 
-
+    std::cout << "works till here" << "\n";
     //---------------------------------------//
     //                                       //
     //     to be assigned from world model   //
@@ -32,7 +32,7 @@ bool state_machine(WorldModel * worldModel){
     bool object_found = false;
     bool near_object = false;
 
-    std::cout << "works till here" << "\n";
+
 
     Room current_room = worldModel->get_curRoom();
     int current_room_number = current_room.roomID;
