@@ -32,10 +32,13 @@ bool state_machine(WorldModel * worldModel){
     bool object_found = false;
     bool near_object = false;
 
+    std::cout << "works till here" << "\n";
 
-    std::vector<Room> allRooms = worldModel->get_globalRooms();
-    int current_room_number = worldModel->get_currentRoom();
-    Room current_room = allRooms[current_room_number];
+    Room current_room = worldModel->get_curRoom();
+    int current_room_number = current_room.roomID;
+
+
+    std::cout << "works till here" << "\n";
 
     int numb_corners_detected = 0;
     int numb_exits = 0;
@@ -147,6 +150,7 @@ bool state_machine(WorldModel * worldModel){
                     worldModel->set_closestRoom();
                     worldModel->set_currentLocation(location);
                     std::cout << "Going into the corridor " << std::endl;
+                    worldModel->update_JSON();
                 } else {
                     worldModel->set_currentLowState(EXPLORE_ROOM);
                 }

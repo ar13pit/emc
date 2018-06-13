@@ -79,7 +79,6 @@ int main(int argc, char *argv[])
 
     while(io.ok()) {
 
-//        std::cout << "Detectino not covered worlds!"<< std::endl;
 
         detection.detection_execution(&worldModel); //
 
@@ -137,7 +136,6 @@ int main(int argc, char *argv[])
         //            //END UPDATE VISUALIZER
 
         //        }
-        std::cout << "Detection works!"<< std::endl;
 
         if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
             wall_detected = true;
@@ -150,6 +148,8 @@ int main(int argc, char *argv[])
         } else {
             monitoring(&worldModel);
         }
+        std::cout << "Before state machine"<< std::endl;
+
 
         end_of_program = state_machine(&worldModel);
 

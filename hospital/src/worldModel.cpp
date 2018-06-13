@@ -267,6 +267,7 @@ void WorldModel::set_destination (Destination updatedDestination) {
 
 void WorldModel::set_localDetection (Detection_data updatedLocalDetection) {
     localDetection_ = updatedLocalDetection;
+    assignValuesFromDetectionData();
     std::cout << "Updated local detection" << "\n";
 };
 

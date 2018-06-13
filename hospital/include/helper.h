@@ -1,6 +1,10 @@
 #ifndef helper_H
 #define helper_H
 
+#include <iostream>
+#include <vector>
+
+
 /*
 ---------------------------------------
         Detection
