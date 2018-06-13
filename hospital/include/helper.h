@@ -107,6 +107,18 @@ typedef struct {
 
 
 /*
+------------------------------------
+        Mapping
+------------------------------------
+*/
+
+typedef struct {
+    Position pico_position;
+    std::vector<Room> map;
+} Mapping_data;
+
+
+/*
 --------------------------------------
             State Machine
 --------------------------------------

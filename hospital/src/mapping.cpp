@@ -1,5 +1,15 @@
 #include "mapping.h"
 
+Mapping_data Mapping::execute_mapping(){
+    Mapping_data mapdata;
+    init_map();
+    update_global_pos();
+    update_rooms();
+    update_corners();
+    mapdata.map = map;
+    mapdata.pico_position = global_pos;
+}
+
 
 //int show_canvas(emc::LaserData scan)
 void Mapping::init_map()
@@ -32,9 +42,9 @@ void Mapping::init_map()
 }
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_corners(WorldModel* worldmodel) {
+void Mapping::update_corners() {
 
-    int currentRoom = worldmodel->get_currentRoom();
+    int currentRoom = 0;//worldmodel->get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
@@ -69,9 +79,9 @@ void Mapping::update_corners(WorldModel* worldmodel) {
 
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_rooms(WorldModel* worldmodel){
+void Mapping::update_rooms(){//WorldModel* worldmodel){
 
-    int currentRoom = worldmodel->get_currentRoom();
+    int currentRoom = 0;//worldmodel->get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
