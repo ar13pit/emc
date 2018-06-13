@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     DriveControl pico_drive(&io);
     Detection detection(&io); //
     Planning planning;
+    Mapping mapping;
 
 
     Point initial_point;
@@ -151,6 +152,7 @@ int main(int argc, char *argv[])
         std::cout << "Before state machine"<< std::endl;
 
 
+        mapping.execute_mapping(&worldModel);
         end_of_program = state_machine(&worldModel);
 
         pico_drive.driveDecision(&worldModel);

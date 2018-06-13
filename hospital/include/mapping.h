@@ -36,7 +36,7 @@ void delta_Odometry();
 
 void update_corners();
 void update_rooms();
-Mapping_data execute_mapping();
+void execute_mapping(WorldModel * worldModel);
 
 
 
