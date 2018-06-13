@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
     while(io.ok()) {
 
-        std::cout << "Detectino not covered worlds!"<< std::endl;
+//        std::cout << "Detectino not covered worlds!"<< std::endl;
 
         detection.detection_execution(&worldModel); //
 
