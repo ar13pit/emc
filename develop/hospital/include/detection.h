@@ -27,8 +27,8 @@ public:
     Point LatestLaserScan[970]; //Deleted first and last 15 points
     Exit Exits_RL[20];
     Corner Corners_RL[20];
-    Exit_LR Exits_LR[20];
-    Corner_LR Corners_LR[20];
+    Exit Exits_LR[20];
+    Corner Corners_LR[20];
     Exit Exits_Total[40];
     Corner Corners_Total[40];
 

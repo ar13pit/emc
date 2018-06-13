@@ -42,19 +42,6 @@ typedef struct {
 } CorridorWalls;
 
 
-// Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
-    Point exitPoint1_LR;
-    Point exitPoint2_LR;
-} Exit_LR;
-
-typedef struct {
-    bool detected;
-    Point cornerPoint_LR;
-} Corner_LR;
-
-
 
 /*
 ---------------------------------------

@@ -279,10 +279,10 @@ void Detection::average_CornersAndExits(){
     }
 
     // LEFT-RIGHT AVERAGING INITILISING
-    Corner_LR AverageCornerPoint_LR[100];
-    Corner_LR AverageCornerPoint_LR_final[20];
-    Exit_LR AverageExit_LR[100];
-    Exit_LR AverageExit_LR_final[20];
+    Corner AverageCornerPoint_LR[100];
+    Corner AverageCornerPoint_LR_final[20];
+    Exit AverageExit_LR[100];
+    Exit AverageExit_LR_final[20];
     int nAverageCornerPoint_LR[100];
     int nAverageExit_LR[100];
 
@@ -799,7 +799,7 @@ void Detection::findExitsAndCorners_LR(){ // LR SCAN
                         j = 0;
                     }
                     else{
-                        Corner_LR corner;
+                        Corner corner;
                         corner.cornerPoint_LR = LatestLaserScan[j+nPointsThresh + 1];
                         corner.detected = true;
 
@@ -848,7 +848,7 @@ void Detection::findExitsAndCorners_LR(){ // LR SCAN
                             i = iExit2_LR;
                             k = 0;
                             j = 0;
-                            Exit_LR exit;
+                            Exit exit;
                             exit.exitPoint1_LR = LatestLaserScan[iExit1_LR];
                             exit.exitPoint2_LR = LatestLaserScan[iExit2_LR];
                             exit.detected = true;
