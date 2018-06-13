@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     DriveControl pico_drive(&io);
     Detection detection(&io); //
     Planning planning;
+    Mapping mapping(&io);
 
 
     Point initial_point;
@@ -51,12 +52,17 @@ int main(int argc, char *argv[])
     corridor.roomID = 0;
 
 
-    bool wall_detected;
+    Detection_data initial_detection_data;
+    initial_detection_data.closest_Point = initial_point;
+    initial_detection_data.Corners_total[40] = {};
+    initial_detection_data.Exits_total[40] = {};
+    initial_detection_data.local_exits = initial_exit_map_vec;
+    worldModel.set_localDetection(initial_detection_data);
 
 
     worldModel.set_currentHighState(EXPLORE_HOSPITAL);
     worldModel.set_currentLowState(EXPLORE_CORRIDOR);
-    worldModel.setAllDetectedExits(initial_exit_map_vec);
+    // worldModel.setAllDetectedExits(initial_exit_map_vec);
     //    worldModel.set_closestPointWall(initial_point);
     worldModel.set_currentLocation(IN_CORRIDOR);
     worldModel.set_currentRoom(corridor.roomID);
@@ -68,13 +74,12 @@ int main(int argc, char *argv[])
 
     //    Visualizer vis; //
     //    vis.init_visualize(); //
-
+    bool wall_detected = false;
     bool end_of_program = false;
     std::string talking = "I am parked";
 
     while(io.ok()) {
 
-        std::cout << "Detectino not covered worlds!"<< std::endl;
 
         detection.detection_execution(&worldModel); //
 
@@ -132,7 +137,6 @@ int main(int argc, char *argv[])
         //            //END UPDATE VISUALIZER
 
         //        }
-        std::cout << "Detectino worlds!"<< std::endl;
 
         if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
             wall_detected = true;
@@ -145,7 +149,10 @@ int main(int argc, char *argv[])
         } else {
             monitoring(&worldModel);
         }
+        std::cout << "Before state machine"<< std::endl;
 
+
+        mapping.execute_mapping(&worldModel);
         end_of_program = state_machine(&worldModel);
 
         pico_drive.driveDecision(&worldModel);

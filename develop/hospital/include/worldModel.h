@@ -35,6 +35,7 @@ class WorldModel {
     Destination destination_;
 
     Detection_data localDetection_;
+    Mapping_data currentMappingData_;
 
     int enteredRooms_;
     int nestedExits_;
@@ -58,6 +59,11 @@ class WorldModel {
     void readJsonFile();
     void createJson();
     void extractJson();
+
+    void set_allDetectedExits(std::vector<Exit_map> allDetectedExits);
+    void set_variablesRelatedToDetectionData();
+    void set_updateMappingVariables();
+
 
 public:
     // Class Constructor
@@ -91,6 +97,7 @@ public:
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
     std::vector<Exit_map> getAllDetectedExits();
+    Mapping_data get_mapping();
 
 
     // Set Methods
@@ -119,14 +126,17 @@ public:
     void set_closestRoom();
     void set_curRoom(Room room);
     void set_nextRoom();
-
-    void setAllDetectedExits(std::vector<Exit_map> allDetectedExits);
+    void set_mapping(Mapping_data updateMappingData);
 
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);
 
     // Check Methods
     bool check_roomExists(Exit exitDataInGlobalCoordinates);    // Returns false if room with this input exit (in GC) exists
+
+    // IO to JSON
+    void update_JSON();
+    void update_roomInGlobalRooms(Room updatedRoomData);
 };
 
 #endif //worldModel_H

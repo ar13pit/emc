@@ -1,6 +1,10 @@
 #ifndef helper_H
 #define helper_H
 
+#include <iostream>
+#include <vector>
+
+
 /*
 ---------------------------------------
         Detection
@@ -100,6 +104,18 @@ typedef struct {
     double angle;
     double dist;
 } Destination;
+
+
+/*
+------------------------------------
+        Mapping
+------------------------------------
+*/
+
+typedef struct {
+    Position pico_position;
+    std::vector<Room> map;
+} Mapping_data;
 
 
 /*
