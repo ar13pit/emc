@@ -59,6 +59,10 @@ class WorldModel {
     void createJson();
     void extractJson();
 
+    void set_allDetectedExits(std::vector<Exit_map> allDetectedExits);
+    void set_variablesRelatedToDetectionData();
+
+
 public:
     // Class Constructor
     WorldModel();
@@ -120,10 +124,6 @@ public:
     void set_curRoom(Room room);
     void set_nextRoom();
 
-    void setAllDetectedExits(std::vector<Exit_map> allDetectedExits);
-
-
-    void assignValuesFromDetectionData();
 
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);
