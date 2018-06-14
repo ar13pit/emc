@@ -2,7 +2,7 @@
 
 // explore the rooms in the hospital
 bool explore_hospital(WorldModel * worldModel){
-
+std::cout << "Explore" << std::endl;
     Room room;
     Destination dest;
     Point navigateTo;

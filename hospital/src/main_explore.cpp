@@ -138,22 +138,29 @@ int main(int argc, char *argv[])
 
         //        }
 
-        if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
+        if (worldModel.get_closestPointWall().dist < MIN_DIST_TO_WALL) {
             wall_detected = true;
         }
+        else
+            wall_detected = false;
 
         // low level control
         if (wall_detected){
             worldModel.set_destination(planning.getAwayFromWall(&worldModel));
-            // std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
+            std::cout << "WALL DETECTED" << std::endl;
         } else {
             monitoring(&worldModel);
         }
-        std::cout << "Before state machine"<< std::endl;
+        std::cout << "Before State machine"<< std::endl;
 
 
-        mapping.execute_mapping(&worldModel);
+//        mapping.execute_mapping(&worldModel);
         end_of_program = state_machine(&worldModel);
+//        switch(worldModel.get_currentHighState()){
+//            case: EXPLORE_HOSPITAL
+
+//        }
+
 
         pico_drive.driveDecision(&worldModel);
 

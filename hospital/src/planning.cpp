@@ -1,87 +1,5 @@
 #include "planning.h"
 
-
-
-//Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDetected){
-//    std::std::cout << "High state =  " << highSt << std::endl;
-//    std::std::cout << "Low state =  " << highSt << std::endl;
-
-//    Room room;
-//    Point navigateTo;
-//    Destination dest;
-//    dest.angle = 0;
-//    dest.dist = 0;
-//    dest.x = 0;
-//    dest.y = 0;
-
-//    if(wallDetected){
-//        dest = getAwayFromWall(lowSt);
-//        std::std::cout << "WALL DETECT"<<  dest.angle << std::endl;
-//    }
-//    else{
-//        switch(highSt){
-//            case EXPLORE_HOSPITAL :                //Exlore_Hospital
-//                switch(lowSt){
-//                case EXPLORE_CORRIDOR :            //Explore_corridor
-//                    dest = setpointInCorridor();
-//                    return dest;
-//                case EXIT_TO_PREV_ROOM :
-//                    room = WorldModel.get_curRoom();
-//                    navigateTo = getNearbyExitPoint(room);
-//                    dest = driveToPoint(navigateTo);
-//                    return dest;
-//                case EXPLORE_ROOM :
-//                    room = WorldModel.get_curRoom();
-//                    dest = driveInRoom(room);
-//                    return dest;
-//                case GO_TO_NEXT_ROOM :
-//                    room = WorldModel.get_closestRoom();
-//                    navigateTo = getNearbyExitPoint(room);
-//                    dest = driveToPoint(navigateTo);
-//                    return dest;
-//                case GO_INSIDE_ROOM :
-//                    room = WorldModel.get_closestRoom();
-//                    navigateTo = getThroughtExitPoint(room);
-//                    dest = driveToPoint(navigateTo);
-//                    break;
-//                }
-//            case RETURN_TO_INIT :
-//                switch(lowSt){
-//                case EXIT_TO_PREV_ROOM :
-//                    room = WorldModel.get_curRoom();
-//                    navigateTo = getNearbyExitPoint(room);
-//                    dest = driveToPoint(navigateTo);
-//                    return dest;
-//                case GO_TO_START :
-//                    navigateTo = getStartPos();
-//                    dest = driveToPoint(navigateTo);
-//                    return dest;
-//                case PARKING :
-//                    dest = parkPico();
-//                    return dest;
-//                }
-//            case GO_TO_ROOM :
-//                switch(lowSt){
-//                case GO_TO_NEXT_ROOM :
-//                    room = WorldModel.get_nextRoom();
-//                    navigateTo = getNearbyExitPoint(room);
-//                    dest = driveToPoint(navigateTo);
-//                    return dest;
-//                case GO_INSIDE_ROOM :
-//                    room = WorldModel.get_closestRoom();
-//                    navigateTo = getThroughtExitPoint(room);
-//                    dest = driveToPoint(navigateTo);
-//                    break;
-//                case STAND_NEXT_TO_OBJECT :
-//                    // Drive to the object...
-//                    break;
-//                }
-//        }
-//    }
-
-//    return dest;
-//}
-
 Destination Planning::setpointInCorridor(){
 
     //Move straight ahead, getAwayFromWall prevents from crashing into walls
@@ -266,3 +184,85 @@ Point Planning::getThroughtExitPoint(Room roomFromMapping, WorldModel *worldMode
 Destination Planning::get_Destination(){
     return dest;
 }
+
+
+
+//Destination Planning::picoPlan(High_State highSt, Low_State lowSt, bool wallDetected){
+//    std::std::cout << "High state =  " << highSt << std::endl;
+//    std::std::cout << "Low state =  " << highSt << std::endl;
+
+//    Room room;
+//    Point navigateTo;
+//    Destination dest;
+//    dest.angle = 0;
+//    dest.dist = 0;
+//    dest.x = 0;
+//    dest.y = 0;
+
+//    if(wallDetected){
+//        dest = getAwayFromWall(lowSt);
+//        std::std::cout << "WALL DETECT"<<  dest.angle << std::endl;
+//    }
+//    else{
+//        switch(highSt){
+//            case EXPLORE_HOSPITAL :                //Exlore_Hospital
+//                switch(lowSt){
+//                case EXPLORE_CORRIDOR :            //Explore_corridor
+//                    dest = setpointInCorridor();
+//                    return dest;
+//                case EXIT_TO_PREV_ROOM :
+//                    room = WorldModel.get_curRoom();
+//                    navigateTo = getNearbyExitPoint(room);
+//                    dest = driveToPoint(navigateTo);
+//                    return dest;
+//                case EXPLORE_ROOM :
+//                    room = WorldModel.get_curRoom();
+//                    dest = driveInRoom(room);
+//                    return dest;
+//                case GO_TO_NEXT_ROOM :
+//                    room = WorldModel.get_closestRoom();
+//                    navigateTo = getNearbyExitPoint(room);
+//                    dest = driveToPoint(navigateTo);
+//                    return dest;
+//                case GO_INSIDE_ROOM :
+//                    room = WorldModel.get_closestRoom();
+//                    navigateTo = getThroughtExitPoint(room);
+//                    dest = driveToPoint(navigateTo);
+//                    break;
+//                }
+//            case RETURN_TO_INIT :
+//                switch(lowSt){
+//                case EXIT_TO_PREV_ROOM :
+//                    room = WorldModel.get_curRoom();
+//                    navigateTo = getNearbyExitPoint(room);
+//                    dest = driveToPoint(navigateTo);
+//                    return dest;
+//                case GO_TO_START :
+//                    navigateTo = getStartPos();
+//                    dest = driveToPoint(navigateTo);
+//                    return dest;
+//                case PARKING :
+//                    dest = parkPico();
+//                    return dest;
+//                }
+//            case GO_TO_ROOM :
+//                switch(lowSt){
+//                case GO_TO_NEXT_ROOM :
+//                    room = WorldModel.get_nextRoom();
+//                    navigateTo = getNearbyExitPoint(room);
+//                    dest = driveToPoint(navigateTo);
+//                    return dest;
+//                case GO_INSIDE_ROOM :
+//                    room = WorldModel.get_closestRoom();
+//                    navigateTo = getThroughtExitPoint(room);
+//                    dest = driveToPoint(navigateTo);
+//                    break;
+//                case STAND_NEXT_TO_OBJECT :
+//                    // Drive to the object...
+//                    break;
+//                }
+//        }
+//    }
+
+//    return dest;
+//}

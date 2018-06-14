@@ -10,8 +10,6 @@ bool state_machine(WorldModel * worldModel){
     // 4) knowledge about the exit that we have entered from
     // 5) nearest distance to the wall
 
-    std::cout << "works till here" << "\n";
-
     bool end_of_program=false;
     High_State high_st = worldModel->get_currentHighState();
     Low_State low_st = worldModel->get_currentLowState();
@@ -38,9 +36,6 @@ bool state_machine(WorldModel * worldModel){
     Room current_room = worldModel->get_curRoom();
     int current_room_number = current_room.roomID;
 
-
-    std::cout << "works till here" << "\n";
-
     int numb_corners_detected = 0;
     int numb_exits = 0;
 
@@ -48,17 +43,17 @@ bool state_machine(WorldModel * worldModel){
         numb_corners_detected = current_room.corners.size();
         numb_exits = worldModel->get_explorationStack().size();// assigned from the world model
     }
-
+std::cout << "1" << std::endl;
 
     bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
     bool at_start = false;              // have we returned back to the initial condition yet?
 
-    if (location == IN_CORRIDOR){
+    if (location == IN_CORRIDOR && current_room.corners.size() > 1){
+        std::cout << "Corners of Corricor detected!" << std::endl;
         Point_map pos = worldModel->get_globalPosition();
         Point_map corridorCorner1 = current_room.corners[0], corridorCorner2 = current_room.corners[1];
 
         double dist1, dist2;
-
         dist1 = sqrt(pow(corridorCorner1.x - pos.x , 2) + pow(corridorCorner1.y - pos.y , 2));
         dist2 = sqrt(pow(corridorCorner2.x - pos.x , 2) + pow(corridorCorner2.y - pos.y , 2));
 
@@ -72,11 +67,7 @@ bool state_machine(WorldModel * worldModel){
 
     }
 
-
     //------------end of assigning variables-------------//
-
-
-
 
     switch(high_st) {
     case EXPLORE_HOSPITAL:
@@ -86,14 +77,14 @@ bool state_machine(WorldModel * worldModel){
 
         if (location == IN_CORRIDOR) {
 
-//            std::cout << "In corridor" << "\n";
+            std::cout << "In corridor" << "\n";
 
             switch(low_st){
 
             case EXPLORE_CORRIDOR:
 
                 if (numb_rooms_in_corridor == 0 || !end_of_corridor){
-//                    std::cout << "Exploring the corridor " << std::endl;
+                    std::cout << "Exploring the corridor " << std::endl;
 
                 } else if (numb_rooms_in_corridor > numb_rooms_explored - numb_nexted_exits) {
                     worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
@@ -107,7 +98,7 @@ bool state_machine(WorldModel * worldModel){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering a room from corridor" << "\n";
                 } else {
-//                    std::cout << "Moving to the next room" << "\n";
+                    std::cout << "Moving to the next room" << "\n";
                 }
                 break;
 
