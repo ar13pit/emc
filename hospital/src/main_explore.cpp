@@ -149,13 +149,14 @@ int main(int argc, char *argv[])
             worldModel.set_destination(planning.getAwayFromWall(&worldModel));
             std::cout << "WALL DETECTED" << std::endl;
         } else {
+            end_of_program = state_machine(&worldModel);
             monitoring(&worldModel);
         }
         std::cout << "Before State machine"<< std::endl;
 
 
 //        mapping.execute_mapping(&worldModel);
-        end_of_program = state_machine(&worldModel);
+
 //        switch(worldModel.get_currentHighState()){
 //            case: EXPLORE_HOSPITAL
 

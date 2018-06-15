@@ -86,14 +86,7 @@ bool search_for_object(WorldModel * worldModel){
 // main function in monitoring
 bool monitoring(WorldModel * worldModel){
 
-    //////////////////////////////  TODO  ///////////////////////////////////////
-    /// Fix the mapping part
-//    Mapping mapping;
-
-//    mapping.update_map();
-
     High_State current_high = worldModel->get_currentHighState();
-
 
 
     if (current_high == EXPLORE_HOSPITAL){
