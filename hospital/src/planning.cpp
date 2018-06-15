@@ -126,10 +126,6 @@ Point Planning::getStartPos(){
 
 Destination Planning::parkPico(WorldModel *worldModel){
 
-//    ////////////////// TODO  /////////////////////////////////////////
-//    ///         Needs to be tested
-//   ///     What should the distance be? Drive backwards?
-
 
     Point corr_end = worldModel->get_pointStraightAhead();
     Destination dest;
