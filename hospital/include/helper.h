@@ -134,16 +134,17 @@ enum High_State {
 // this are the actions in the rooms
 typedef enum {
     EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
-    EXIT_CORRIDOR,
-    EXIT_TO_PREV_ROOM,  //-- Added-- Go to room/corridor of lower nesting level
-                        //     Instead of EXIT_CORRIDOR & EXIT states
-    GO_TO_START,        // after all rooms are located
-    PARKING,            // park backwards
+    EXIT_CORRIDOR,      // for the second part of the challenge as initial state
+
+    EXIT_TO_PREV_ROOM,  // Go to room/corridor of lower nesting level
+
 
     EXPLORE_ROOM,
-    GO_TO_NEXT_ROOM,
-    GO_INSIDE_ROOM,      //-- Added-- Moving through the entrance/exit of a room
+    GO_TO_NEXT_ROOM,     // Go to a room from the corridor or another room
+    GO_INSIDE_ROOM,      // Moving through the entrance/exit of a room
 
+    GO_TO_START,        // after all rooms are located
+    PARKING,            // park backwards
     STAND_NEXT_TO_OBJECT
 } Low_State;
 

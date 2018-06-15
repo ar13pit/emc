@@ -211,16 +211,25 @@ std::cout << "1" << std::endl;
 
         case EXIT_CORRIDOR:
             if (location == IN_CORRIDOR){
-//                std::cout << "Exiting corridor " << std::endl;
+                std::cout << "Exiting corridor " << std::endl;
+                // if (distance to exit < DIST_SETPOINT){
+                // worldModel->set_location(IN_ROOM);
+                // worldModel->set_currentLowState(GO_Inside room)
+
             } else if (location == IN_ROOM){
                 worldModel->set_currentLowState(GO_INSIDE_ROOM);
                 std::cout << "Entering the room " << std::endl;
+
             } else{
+
                 std::cout << "ERROR exiting corridor " << std::endl;
             }
+
             break;
 
+
         case GO_INSIDE_ROOM:
+
             worldModel->set_nextRoom();
             worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
             std::cout << "Going to next room " << std::endl;
@@ -229,7 +238,9 @@ std::cout << "1" << std::endl;
         case GO_TO_NEXT_ROOM:
 
             if (object_found){
+
                 worldModel->set_currentLowState(STAND_NEXT_TO_OBJECT);
+
             } else {
                 if (worldModel->get_destination().dist < DIST_SETPOINT){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
