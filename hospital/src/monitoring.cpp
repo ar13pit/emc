@@ -72,9 +72,9 @@ bool search_for_object(WorldModel * worldModel){
     Point navigateTo;
     Low_State current_low = worldModel->get_currentLowState();
 
-    if (current_low == EXIT_CORRIDOR){
+//    if (current_low == EXIT_CORRIDOR){
         // to be filled in
-    } else if(current_low == GO_TO_NEXT_ROOM){
+    if(current_low == GO_TO_NEXT_ROOM){
         // to be filled in
     } else if(current_low == GO_INSIDE_ROOM){
         // to be filled in

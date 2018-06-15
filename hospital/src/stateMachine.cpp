@@ -204,28 +204,28 @@ std::cout << "1" << std::endl;
         break;
 
 
-        //not executed currently
+
     case GO_TO_ROOM:
         std::cout << "FINDING OBJECT PHASE " << std::endl;
         switch(low_st) {
 
-        case EXIT_CORRIDOR:
-            if (location == IN_CORRIDOR){
-                std::cout << "Exiting corridor " << std::endl;
-                // if (distance to exit < DIST_SETPOINT){
-                // worldModel->set_location(IN_ROOM);
-                // worldModel->set_currentLowState(GO_Inside room)
+//        case EXIT_CORRIDOR:
+//            if (location == IN_CORRIDOR){
+//                std::cout << "Exiting corridor " << std::endl;
+//                // if (distance to exit < DIST_SETPOINT){
+//                // worldModel->set_location(IN_ROOM);
+//                // worldModel->set_currentLowState(GO_Inside room)
 
-            } else if (location == IN_ROOM){
-                worldModel->set_currentLowState(GO_INSIDE_ROOM);
-                std::cout << "Entering the room " << std::endl;
+//            } else if (location == IN_ROOM){
+//                worldModel->set_currentLowState(GO_INSIDE_ROOM);
+//                std::cout << "Entering the room " << std::endl;
 
-            } else{
+//            } else{
 
-                std::cout << "ERROR exiting corridor " << std::endl;
-            }
+//                std::cout << "ERROR exiting corridor " << std::endl;
+//            }
 
-            break;
+//            break;
 
 
         case GO_INSIDE_ROOM:
