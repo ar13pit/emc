@@ -2,10 +2,15 @@
 
 void Mapping::execute_mapping(WorldModel * worldModel){
     Mapping_data mapdata;
+    std::cout<<"1"<<std::endl;
     init_map();
+    std::cout<<"2"<<std::endl;
     update_global_pos();
+    std::cout<<"3"<<std::endl;
     update_rooms();
+    std::cout<<"4"<<std::endl;
     update_corners();
+    std::cout<<"5"<<std::endl;
     mapdata.map = map;
     mapdata.pico_position = global_pos;
 
@@ -23,7 +28,6 @@ void Mapping::init_map()
     odom_diff.x = 0;
     odom_diff.y = 0;
     odom_diff.angle = 0;
-
     map.clear();
     Point_map exitPoint_corr1;
     Point_map exitPoint_corr2;
@@ -40,7 +44,7 @@ void Mapping::init_map()
     corridor.exit = corridorExit;
     corridor.previousRoom  = -1; //DEFINITION: -1 means no room below this room --> Corridor
     corridor.roomID = 0;
-    map[map.size()] = corridor;
+    map.push_back(corridor);
 }
 
 //Update corners in the total corner vector and the current room vector based on current room
