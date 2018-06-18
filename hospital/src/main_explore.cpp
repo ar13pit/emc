@@ -144,6 +144,9 @@ int main(int argc, char *argv[])
         else
             wall_detected = false;
 
+        std::cout << "Closest Point dist = " << worldModel.get_closestPointWall().dist << std::endl;
+        std::cout << "Closest Point angle = " << worldModel.get_closestPointWall().angle << std::endl;
+
         // low level control
         if (wall_detected){
             worldModel.set_destination(planning.getAwayFromWall(&worldModel));
@@ -152,7 +155,6 @@ int main(int argc, char *argv[])
             end_of_program = state_machine(&worldModel);
             monitoring(&worldModel);
         }
-        std::cout << "Before State machine"<< std::endl;
 
 
 //        mapping.execute_mapping(&worldModel);

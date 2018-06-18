@@ -43,7 +43,6 @@ bool state_machine(WorldModel * worldModel){
         numb_corners_detected = current_room.corners.size();
         numb_exits = worldModel->get_explorationStack().size();// assigned from the world model
     }
-std::cout << "1" << std::endl;
 
     bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
     bool at_start = false;              // have we returned back to the initial condition yet?
@@ -68,6 +67,9 @@ std::cout << "1" << std::endl;
     }
 
     //------------end of assigning variables-------------//
+std::cout << "HighState = " << high_st << std::endl;
+std::cout << "LowState = " << low_st << std::endl;
+
 
     switch(high_st) {
     case EXPLORE_HOSPITAL:
@@ -82,23 +84,23 @@ std::cout << "1" << std::endl;
             switch(low_st){
 
             case EXPLORE_CORRIDOR:
-
-                if (numb_rooms_in_corridor == 0 || !end_of_corridor){
+                std::cout << "CLOSEST Angle = " << abs(worldModel->get_closestPointWall().angle) << std::endl;
+                if (abs(worldModel->get_closestPointWall().angle) > FRONTWALL_ANGLE){
                     std::cout << "Exploring the corridor " << std::endl;
 
-                } else if (numb_rooms_in_corridor > numb_rooms_explored - numb_nexted_exits) {
+                } else{     //PICO is at the end of the corridor --> Wall at the front
                     worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
-                    std::cout << "Moving to the next room" << "\n";
+                    std::cout << "Moving to the next room" << std::endl;
                 }
-                break;
+                return end_of_program;
 
             case GO_TO_NEXT_ROOM:
 
                 if (worldModel->get_destination().dist < DIST_SETPOINT){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
-                    std::cout << "Entering a room from corridor" << "\n";
+                    std::cout << "Entering a room from corridor" << std::endl;
                 } else {
-                    std::cout << "Moving to the next room" << "\n";
+                    std::cout << "Moving to the next room" << std::endl;
                 }
                 break;
 

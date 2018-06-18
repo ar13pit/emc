@@ -50,8 +50,9 @@ Point Detection::closest_point(){
 
     for(int i = 0; i < 970; ++i){
         if(LatestLaserScan[i].dist < shortest.dist){
-            std::cout << "Closer dist = " << LatestLaserScan[i].dist << std::endl;
+//            std::cout << "Closer dist = " << LatestLaserScan[i].dist << std::endl;
             shortest.dist = LatestLaserScan[i].dist;
+            shortest.angle = LatestLaserScan[i].angle;
         }
     }
 

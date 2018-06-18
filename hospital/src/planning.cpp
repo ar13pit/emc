@@ -4,6 +4,7 @@ Destination Planning::setpointInCorridor(){
 
     //Move straight ahead, getAwayFromWall prevents from crashing into walls
     dest.dist = DIST_SETPOINT;
+    dest.angle = 0;
 
     return dest;
 }

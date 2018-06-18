@@ -128,6 +128,7 @@ void DriveControl::stop() {
 bool DriveControl::driveDecision(WorldModel *worldModel){
     Low_State low_st = worldModel->get_currentLowState(); 
     Destination dest = worldModel->get_destination();
+
     if (low_st == PARKING){
         dest.angle = dest.angle + M_PI;
         dest.dist = DIST_BACKWARDS;
@@ -137,6 +138,7 @@ bool DriveControl::driveDecision(WorldModel *worldModel){
         if (dest.angle != 0){
             DriveControl::picoSideDrive(&dest);
         } else {
+
             DriveControl::picoDrive(&dest,false);
         }
     } else {

@@ -39,6 +39,7 @@ std::cout << "Explore" << std::endl;
     }
 
     worldModel->set_destination(dest);
+
     return true;
 }
 
@@ -90,15 +91,12 @@ bool monitoring(WorldModel * worldModel){
 
 
     if (current_high == EXPLORE_HOSPITAL){
-
         explore_hospital(worldModel);
 
     } else if (current_high == RETURN_TO_INIT) {
-
         return_to_init(worldModel);
 
     } else if (current_high == GO_TO_ROOM){
-
         search_for_object(worldModel);
 
     } else {
