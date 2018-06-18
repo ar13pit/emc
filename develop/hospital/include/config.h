@@ -1,3 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #define EXECUTION_RATE 10 // [Hz]
 #define DRIVE_RATE 40 // [Hz]
 #define FORWARD_SPEED  0.5 // [m/s]
@@ -25,3 +28,7 @@
 #define FRONTWALL_ANGLE 0.2*M_PI               // [rad] A wall is in front of Pico is it is at a certain abs ange
 
 #define JSON_PATH "Rooms.json"            //Json path
+
+
+
+#endif
