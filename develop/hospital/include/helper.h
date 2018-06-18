@@ -33,11 +33,22 @@ public:
 
 
 // Store exit data: two corners, angles and a flag whether detected
-typedef struct {
-    bool detected;
+class Exit {
+    bool detected_;
+
+public:
     Point exitPoint1;
     Point exitPoint2;
-} Exit;
+
+    Exit ();
+
+    // GET METHODS
+    bool detected();
+
+    // SET METHODS
+    void detected(bool exitDetectedFlag);
+
+};
 
 typedef struct {
     bool detected;
@@ -53,7 +64,6 @@ typedef struct {
 } CorridorWalls;
 
 
-
 /*
 ---------------------------------------
         Mapping
@@ -61,26 +71,10 @@ typedef struct {
 */
 
 
-typedef struct {
-    double x;
-    double y;
-} Point_map;
-
-typedef struct {
-    double x;
-    double y;
-    double angle;
-} Position;
-
-typedef struct {
-    Point_map point1;
-    Point_map point2;
-} Exit_map;
-
 typedef struct  {
     int roomID;
-    std::vector<Point_map> corners;
-    Exit_map exit;
+    std::vector<Point> corners;
+    Exit exit;
     int previousRoom;   // Corridor is 0
 
 //    Room() {}
@@ -94,16 +88,6 @@ typedef struct  {
 */
 
 
-
-// Destination that is passed to the Control block
-typedef struct {
-    double x;
-    double y;
-    double angle;
-    double dist;
-} Destination;
-
-
 /*
 ------------------------------------
         Mapping
@@ -111,7 +95,7 @@ typedef struct {
 */
 
 typedef struct {
-    Position pico_position;
+    Point pico_position;
     std::vector<Room> map;
 } Mapping_data;
 
@@ -158,7 +142,7 @@ enum Location {IN_CORRIDOR, IN_ROOM};
 typedef struct {
     Exit Exits_total[40];
     Corner Corners_total[40];
-    std::vector<Exit_map> local_exits;
+    std::vector<Exit> local_exits;
     Point closest_Point;
 } Detection_data;
 
