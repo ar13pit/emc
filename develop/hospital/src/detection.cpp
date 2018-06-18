@@ -1,9 +1,12 @@
 #include "detection.h"
 
+Detection::Detection (emc::IO* io, WorldModel* worldmodel) : inOut(io), WM(worldmodel) {
+    laser = emc::LaserData();
+}
 
 
 
-Detection_data Detection::detection_execution(WorldModel * worldModel){
+Detection_data Detection::detection_execution () {
     findExitsAndCorners_Final();
     Point closestPoint = closest_point();
     std::vector<Exit_map> localExits = local_Exits();
@@ -20,7 +23,7 @@ Detection_data Detection::detection_execution(WorldModel * worldModel){
     }
 
 std::cout << "Detection execution"  <<"\n";
-    worldModel->set_localDetection(data);
+    WM->set_localDetection(data);
 
 }
 

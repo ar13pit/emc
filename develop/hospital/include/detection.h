@@ -13,30 +13,30 @@
 
 class Detection{
 private:
-    emc::IO *inOut;
+    emc::IO* inOut;
+    WorldModel* WM;
 
 public:
- Detection(emc::IO *io){
-        inOut = io;
-        laser = emc::LaserData();
+    emc::LaserData laser;
 
-        return;
-    }
-
-public:
     Point LatestLaserScan[970]; //Deleted first and last 15 points
+
     Exit Exits_RL[20];
-    Corner Corners_RL[20];
     Exit Exits_LR[20];
-    Corner Corners_LR[20];
     Exit Exits_Total[40];
+
+    Corner Corners_RL[20];
+    Corner Corners_LR[20];
     Corner Corners_Total[40];
 
     Detection_data detection_data;
-    void average_CornersAndExits();
+
     double aFitPlot;
     double bFitPlot;
-    emc::LaserData laser;
+
+    Detection(emc::IO* io, WorldModel* worldmodel);
+
+    void average_CornersAndExits();
     CorridorWalls findCorridorWalls();
     bool getSensorData(); // Method to obtain the sensordata
     void filterLRFData(int nFilterPoints); // Filter data by sensor measurement
@@ -46,10 +46,11 @@ public:
     void findExitsAndCorners_RL();
     void findExitsAndCorners_LR();
     double distance_to_front();
-    std::vector<Exit_map> local_Exits();
+    std::vector<Exit> local_Exits();
     Point closest_point();
-    Detection_data detection_execution(WorldModel * worldModel);
     void findExitsAndCorners_Final();
+
+    Detection_data detection_execution(WorldModel * worldModel);
 
 
 
