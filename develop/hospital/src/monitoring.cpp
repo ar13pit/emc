@@ -4,11 +4,11 @@
 bool explore_hospital(WorldModel * worldModel){
 
     Room room;
-    Destination dest;
+    Point dest;
     Point navigateTo;
     Low_State current_low = worldModel->get_currentLowState();
 
-    Planning planning;
+    Planning planning(worldModel);
 
     if (current_low == GO_INSIDE_ROOM) {
 
@@ -19,13 +19,13 @@ bool explore_hospital(WorldModel * worldModel){
     } else if (current_low == EXPLORE_ROOM){
 
         room = worldModel->get_curRoom();
-        dest = planning.driveInRoom(worldModel);
+        dest = planning.driveInRoom();
 
     } else if (current_low == GO_TO_NEXT_ROOM){
 
         room = worldModel->get_closestRoom();
-        navigateTo = planning.getNearbyExitPoint(room, worldModel);
-        dest = planning.driveToPoint(navigateTo, worldModel);
+        navigateTo = planning.getNearbyExitPoint(room);
+        dest = planning.driveToPoint(navigateTo);
 
     } else if (current_low == EXPLORE_CORRIDOR){
 
@@ -34,8 +34,8 @@ bool explore_hospital(WorldModel * worldModel){
     } else if (current_low == EXIT_TO_PREV_ROOM){
 
         room = worldModel->get_curRoom();
-        navigateTo = planning.getNearbyExitPoint(room, worldModel);
-        dest = planning.driveToPoint(navigateTo, worldModel);
+        navigateTo = planning.getNearbyExitPoint(room);
+        dest = planning.driveToPoint(navigateTo);
     }
 
     worldModel->set_destination(dest);
@@ -46,20 +46,20 @@ bool explore_hospital(WorldModel * worldModel){
 // return to initial point
 bool return_to_init(WorldModel * worldModel){
 
-    Destination dest;
+    Point dest;
     Point navigateTo;
     Low_State current_low = worldModel->get_currentLowState();
 
-    Planning planning;
+    Planning planning(worldModel);
 
     if (current_low == GO_TO_START){
 
         navigateTo = planning.getStartPos();
-        dest = planning.driveToPoint(navigateTo, worldModel);
+        dest = planning.driveToPoint(navigateTo);
 
     } else if (current_low == PARKING) {
 
-        dest = planning.parkPico(worldModel);
+        dest = planning.parkPico();
 
     }
 
@@ -68,7 +68,7 @@ bool return_to_init(WorldModel * worldModel){
 }
 
 bool search_for_object(WorldModel * worldModel){
-    Destination dest;
+    Point dest;
     Point navigateTo;
     Low_State current_low = worldModel->get_currentLowState();
 
