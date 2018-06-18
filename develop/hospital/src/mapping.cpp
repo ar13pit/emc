@@ -1,38 +1,53 @@
 #include "mapping.h"
 
-Mapping::Mapping (emc::IO* io) : inOut(io) {
+Mapping::Mapping (emc::IO* io, WorldModel* worldModel) : inOut(io), WM(worldModel) {
         odom = emc::OdometryData();
 }
 
 
-void Mapping::execute_mapping(WorldModel * worldmodel){
+void Mapping::execute_mapping () {
     Mapping_data mapdata;
+
     std::cout<<"1"<<std::endl;
-    map = worldmodel->get_mapping().map;
-    totalCorners = worldmodel->get_allDetectedCorners();
-    totalExits = worldmodel->getAllDetectedExits();
+    map = WM->get_mapping().map;
+    totalCorners = WM->get_allDetectedCorners();
+    totalExits = WM->get_allDetectedExits();
+
     std::cout<<"2"<<std::endl;
-    update_global_pos(worldmodel);
+    update_global_pos();
+
     std::cout<<"3"<<std::endl;
-    update_rooms(worldmodel);
+    update_rooms();
+
     std::cout<<"4"<<std::endl;
-    update_corners(worldmodel);
+    update_corners();
+
     std::cout<<"5"<<std::endl;
     mapdata.map = map;
     mapdata.pico_position = global_pos;
 
-    worldmodel->set_mapping(mapdata);
+    WM->set_mapping(mapdata);
 }
 
 
 //int show_canvas(emc::LaserData scan)
-void Mapping::init_map(WorldModel* worldmodel)
+void Mapping::init_map ()
 {
-    Position globalpos;
-    globalpos.x = 0;
-    globalpos.y = 0;
-    globalpos.angle = 0;
-    worldmodel->set_globalPosition(globalpos);
+    Point globalpos;
+    Point exitPoint_corr1;
+    Point exitPoint_corr2;
+
+    Exit corridorExit;
+
+    std::vector<Point> corridorcorners;
+
+    Room corridor;
+    Mapping_data mapdata;
+
+    // globalpos.x = 0;
+    // globalpos.y = 0;
+    // globalpos.angle = 0;
+    WM->set_globalPosition(globalpos);        // Is this RIGHT??? Shouldn't it be more like get_globalPosition as WorldModel initializes to (0, 0)?
 
     //odom_diff.x = 0;
     //odom_diff.y = 0;
@@ -40,37 +55,36 @@ void Mapping::init_map(WorldModel* worldmodel)
     //std::vector<Room> map;
     //worldmodel->
     map.clear();
-    Point_map exitPoint_corr1;
-    Point_map exitPoint_corr2;
-    exitPoint_corr1.x = 0;
-    exitPoint_corr1.y = 0;
-    exitPoint_corr2.x = 0;
-    exitPoint_corr2.y = 0;
-    Exit_map corridorExit;
-    corridorExit.point1 = exitPoint_corr1;
-    corridorExit.point2 = exitPoint_corr2;
-    std::vector<Point_map> corridorcorners;
-    Room corridor;
-    corridor.corners = corridorcorners;
-    corridor.exit = corridorExit;
+
+    // exitPoint_corr1.x = 0;
+    // exitPoint_corr1.y = 0;
+    // exitPoint_corr2.x = 0;
+    // exitPoint_corr2.y = 0;
+
+
+    // corridorExit.exitPoint1 = exitPoint_corr1;
+    // corridorExit.exitPoint2 = exitPoint_corr2;
+
+    // corridor.corners = corridorcorners;
+    // corridor.exit = corridorExit;
     corridor.previousRoom  = -1; //DEFINITION: -1 means no room below this room --> Corridor
     corridor.roomID = 0;
+
     map.push_back(corridor);
 
-    Mapping_data mapdata;
     mapdata.map = map;
     mapdata.pico_position = globalpos;
 
     std::vector<Exit_map> exits;
     std::vector<Point_map> corners;
-    worldmodel->set_allDetectedExits(exits);
-    worldmodel->set_allDetectedCorners(corners);
+    WM->set_allDetectedExits(exits);
+    WM->set_allDetectedCorners(corners);
 
 
 }
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_corners(WorldModel* worldmodel) {
+void Mapping::update_corners () {
 
     int currentRoom = 0;//worldmodel->get_currentRoom();
     double distance_thresh = 0.3;
@@ -80,12 +94,12 @@ void Mapping::update_corners(WorldModel* worldmodel) {
     Corner corners_local[40]; // Data from worldmodel (written there by detection)
 
     for(int i = 0; i < 40; ++i){
-        exits_local[i] = worldmodel->get_localDetection().Exits_total[i];
-        corners_local[i] = worldmodel->get_localDetection().Corners_total[i];
+        exits_local[i] = WM->get_localDetection().Exits_total[i];
+        corners_local[i] = WM->get_localDetection().Corners_total[i];
     }
 
 
-    for(int i = 0; i < 40; ++i){ // ROBUSTNESS ISSUES, PAY ATTENTION
+    for(int i = 0; i < 40; ++i) { // ROBUSTNESS ISSUES, PAY ATTENTION
          if(corners_local[i].detected){
              Point_map corner_found = local2global(corners_local[i].cornerPoint);
              bool detected_already = false; // by default
@@ -105,7 +119,7 @@ void Mapping::update_corners(WorldModel* worldmodel) {
 
              }
 
-         }else{
+         } else{
              break;
          }
     }
@@ -113,9 +127,9 @@ void Mapping::update_corners(WorldModel* worldmodel) {
 
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_rooms(WorldModel* worldmodel){
+void Mapping::update_rooms () {
 
-    int currentRoom = worldmodel->get_currentRoom();
+    int currentRoom = WM->get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
@@ -123,7 +137,7 @@ void Mapping::update_rooms(WorldModel* worldmodel){
 
 
     for(int i = 0; i < 40; ++i){
-        exits_local[i] = worldmodel->get_localDetection().Exits_total[i];
+        exits_local[i] = WM->get_localDetection().Exits_total[i];
     }
 
 
@@ -177,7 +191,7 @@ void Mapping::update_rooms(WorldModel* worldmodel){
 }
 
 
-Point_map Mapping::local2global(Point local){ //Convert local into global coordinate
+Point_map Mapping::local2global (Point local) { //Convert local into global coordinate
     int i  = 0;
 
     Point_map global;
@@ -187,16 +201,16 @@ Point_map Mapping::local2global(Point local){ //Convert local into global coordi
 }
 
 
-void Mapping::update_global_pos(WorldModel* worldmodel){
+void Mapping::update_global_pos () {
 
     //update_global_pos();
 
     //First thing you check if results are total crap
-    Position global_pos;
+    Point global_pos;
     global_pos.x = -odom.y;
     global_pos.y = odom.x;
-    global_pos.angle = -odom.a;
-    worldmodel->set_globalPosition(global_pos);
+    global_pos.angle(-odom.a);
+    WM->set_globalPosition(global_pos);
 
     //STUFF WILL BE ADDED HERE TO ENSURE UPDATES OF THE LRF DATA
 

@@ -47,4 +47,4 @@ public:
 
 };
 
-#endif // VISUALIZE
+#endif // MAPPING_H
