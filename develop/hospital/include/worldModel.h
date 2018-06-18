@@ -27,6 +27,7 @@ class WorldModel {
     std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
 
     std::vector<Exit_map> allDetectedExits_;
+    std::vector<Point_map> allDetectedCorners_;
 
     Point closestPointWall_;
     Point_map globalPosition_;
@@ -97,6 +98,8 @@ public:
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
     std::vector<Exit_map> getAllDetectedExits();
+    std::vector<Point_map> get_allDetectedCorners();
+
     Mapping_data get_mapping();
 
 
@@ -127,6 +130,9 @@ public:
     void set_curRoom(Room room);
     void set_nextRoom();
     void set_mapping(Mapping_data updateMappingData);
+
+    void set_allDetectedCorners(std::vector<Point_map> allDetectedCorners_);
+
 
     // Other Methods (sorry)
     Room findRoomByRoomNumber(int roomNumber);

@@ -410,6 +410,10 @@ void WorldModel::set_mapping(Mapping_data updateMappingData) {
     set_updateMappingVariables();
 }
 
+void WorldModel::set_allDetectedCorners(std::vector<Point_map> allDetectedCorners){
+    allDetectedCorners_ = allDetectedCorners;
+}
+
 
 
 //////////////////////// EXTRA METHODS ///////////////////////////////////

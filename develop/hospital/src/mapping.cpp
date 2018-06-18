@@ -1,29 +1,44 @@
 #include "mapping.h"
 
-void Mapping::execute_mapping(WorldModel * worldModel){
+Mapping::Mapping (emc::IO* io) : inOut(io) {
+        odom = emc::OdometryData();
+}
+
+
+void Mapping::execute_mapping(WorldModel * worldmodel){
     Mapping_data mapdata;
-    init_map();
-    update_global_pos();
-    update_rooms();
-    update_corners();
+    std::cout<<"1"<<std::endl;
+    map = worldmodel->get_mapping().map;
+    totalCorners = worldmodel->get_allDetectedCorners();
+    totalExits = worldmodel->getAllDetectedExits();
+    std::cout<<"2"<<std::endl;
+    update_global_pos(worldmodel);
+    std::cout<<"3"<<std::endl;
+    update_rooms(worldmodel);
+    std::cout<<"4"<<std::endl;
+    update_corners(worldmodel);
+    std::cout<<"5"<<std::endl;
     mapdata.map = map;
     mapdata.pico_position = global_pos;
 
-    worldModel->set_mapping(mapdata);
+    worldmodel->set_mapping(mapdata);
 }
 
 
 //int show_canvas(emc::LaserData scan)
-void Mapping::init_map()
+void Mapping::init_map(WorldModel* worldmodel)
 {
-    global_pos.x = 0;
-    global_pos.y = 0;
-    global_pos.angle = 0;
+    Position globalpos;
+    globalpos.x = 0;
+    globalpos.y = 0;
+    globalpos.angle = 0;
+    worldmodel->set_globalPosition(globalpos);
 
-    odom_diff.x = 0;
-    odom_diff.y = 0;
-    odom_diff.angle = 0;
-
+    //odom_diff.x = 0;
+    //odom_diff.y = 0;
+    //odom_diff.angle = 0;
+    //std::vector<Room> map;
+    //worldmodel->
     map.clear();
     Point_map exitPoint_corr1;
     Point_map exitPoint_corr2;
@@ -40,20 +55,37 @@ void Mapping::init_map()
     corridor.exit = corridorExit;
     corridor.previousRoom  = -1; //DEFINITION: -1 means no room below this room --> Corridor
     corridor.roomID = 0;
-    map[map.size()] = corridor;
+    map.push_back(corridor);
+
+    Mapping_data mapdata;
+    mapdata.map = map;
+    mapdata.pico_position = globalpos;
+
+    std::vector<Exit_map> exits;
+    std::vector<Point_map> corners;
+    worldmodel->set_allDetectedExits(exits);
+    worldmodel->set_allDetectedCorners(corners);
+
+
 }
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_corners() {
+void Mapping::update_corners(WorldModel* worldmodel) {
 
     int currentRoom = 0;//worldmodel->get_currentRoom();
     double distance_thresh = 0.3;
 
-    //Exit exits_local[40]; // Data from worldmodel (written there by detection)
+
+    Exit exits_local[40]; // Data from worldmodel (written there by detection)
     Corner corners_local[40]; // Data from worldmodel (written there by detection)
 
+    for(int i = 0; i < 40; ++i){
+        exits_local[i] = worldmodel->get_localDetection().Exits_total[i];
+        corners_local[i] = worldmodel->get_localDetection().Corners_total[i];
+    }
 
-    for(int i = 0; i < 20; ++i){ // ROBUSTNESS ISSUES, PAY ATTENTION
+
+    for(int i = 0; i < 40; ++i){ // ROBUSTNESS ISSUES, PAY ATTENTION
          if(corners_local[i].detected){
              Point_map corner_found = local2global(corners_local[i].cornerPoint);
              bool detected_already = false; // by default
@@ -68,8 +100,8 @@ void Mapping::update_corners() {
              }
 
              if(detected_already == false){
-                map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
-                totalCorners[totalCorners.size()] = corner_found;
+                map[currentRoom].corners.push_back(corner_found);
+                totalCorners.push_back(corner_found);
 
              }
 
@@ -81,15 +113,21 @@ void Mapping::update_corners() {
 
 
 //Update corners in the total corner vector and the current room vector based on current room
-void Mapping::update_rooms(){//WorldModel* worldmodel){
+void Mapping::update_rooms(WorldModel* worldmodel){
 
-    int currentRoom = 0;//worldmodel->get_currentRoom();
+    int currentRoom = worldmodel->get_currentRoom();
     double distance_thresh = 0.3;
 
     //Exit exits_local[40]; // Data from worldmodel (written there by detection)
     Exit exits_local[40]; // Data from worldmodel (written there by detection)
 
-    for(int i = 0; i < 20; ++i){ // ROBUSTNESS ISSUES, PAY ATTENTION
+
+    for(int i = 0; i < 40; ++i){
+        exits_local[i] = worldmodel->get_localDetection().Exits_total[i];
+    }
+
+
+    for(int i = 0; i < 40; ++i){ // ROBUSTNESS ISSUES, PAY ATTENTION
          if(exits_local[i].detected){
              Exit_map exit_found;
              exit_found.point1 = local2global(exits_local[i].exitPoint1);
@@ -119,13 +157,15 @@ void Mapping::update_rooms(){//WorldModel* worldmodel){
 
              if(detected_already == false){
                 //map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
-                totalExits[totalExits.size()] = exit_found;
+                totalExits.push_back(exit_found);
                 int nRooms = map.size();
-                map[nRooms].exit = exit_found;
-                map[nRooms].roomID = nRooms + 1;
-                map[nRooms].previousRoom = currentRoom;
+                Room room;
+                room.exit = exit_found;
+                room.roomID = nRooms + 1;
+                room.previousRoom = currentRoom;
                 std::vector<Point_map> corners;
-                map[nRooms].corners = corners;
+                room.corners = corners;
+                map.push_back(room);
 
              }
 
@@ -147,14 +187,16 @@ Point_map Mapping::local2global(Point local){ //Convert local into global coordi
 }
 
 
-void Mapping::update_global_pos(){
+void Mapping::update_global_pos(WorldModel* worldmodel){
 
     //update_global_pos();
 
     //First thing you check if results are total crap
+    Position global_pos;
     global_pos.x = -odom.y;
     global_pos.y = odom.x;
     global_pos.angle = -odom.a;
+    worldmodel->set_globalPosition(global_pos);
 
     //STUFF WILL BE ADDED HERE TO ENSURE UPDATES OF THE LRF DATA
 
@@ -164,20 +206,22 @@ void Mapping::update_global_pos(){
 
 }
 
-void Mapping::update_Odometry(){
-    while(!inOut->readOdometryData(odom));
-}
+// METHODS BELOW ARE IMPORTANT IF UPDATES GLOBAL POSITION BASED ON LRF ARE IMPLEMENTED, COMMENTED FOR NOW
 
-void Mapping::delta_Odometry(){
+//void Mapping::update_Odometry(){
+//    while(!inOut->readOdometryData(odom));
+//}
+
+//void Mapping::delta_Odometry(){
 
     //odom_diff.x = global_pos.x - latest_odom.x;
     //odom_diff.y = global_pos.y - latest_odom.y;
     //odom_diff.angle = global_pos.angle - latest_odom.angle;
 
-}
+//}
 
 //update the map into the world model
 //the only function that is executed, so it has to include all the methods needed
-void Mapping::update_map(){
+//void Mapping::update_map(){
 
-}
+//}

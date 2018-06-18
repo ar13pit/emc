@@ -21,21 +21,15 @@ private:
     emc::IO *inOut;
     emc::OdometryData odom;
 public:
-    Mapping(emc::IO *io){
+    Mapping(emc::IO *io);
 
-        inOut = io;
-        odom = emc::OdometryData();
+void init_map(WorldModel*);
+void update_global_pos(WorldModel*);
+//void update_Odometry(WorldModel*);
+//void delta_Odometry(WorldModel*);
 
-        return;
-    }
-
-void init_map();
-void update_global_pos();
-void update_Odometry();
-void delta_Odometry();
-
-void update_corners();
-void update_rooms();
+void update_corners(WorldModel*);
+void update_rooms(WorldModel*);
 void execute_mapping(WorldModel * worldModel);
 
 

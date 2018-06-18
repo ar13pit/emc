@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     worldModel.set_currentLocation(IN_CORRIDOR);
     worldModel.set_currentRoom(corridor.roomID);
     worldModel.set_curRoom(corridor);
-    worldModel.set_globalPosition(initial_point_map);
+    mapping.init_map(&worldModel);
 
 
 
@@ -82,6 +82,8 @@ int main(int argc, char *argv[])
 
 
         detection.detection_execution(&worldModel); //
+        mapping.execute_mapping(&worldModel);
+
 
         //        if(detection.getSensorData()) {
 
@@ -138,22 +140,30 @@ int main(int argc, char *argv[])
 
         //        }
 
-        if (worldModel.get_closestPointWall().dist < DIST_SETPOINT) {
+        if (worldModel.get_closestPointWall().dist < MIN_DIST_TO_WALL) {
             wall_detected = true;
         }
+        else
+            wall_detected = false;
 
         // low level control
         if (wall_detected){
             worldModel.set_destination(planning.getAwayFromWall(&worldModel));
-            // std::cout << "WALL DETECTED"<<  dest.angle << std::endl;
+            std::cout << "WALL DETECTED" << std::endl;
         } else {
+            end_of_program = state_machine(&worldModel);
             monitoring(&worldModel);
         }
-        std::cout << "Before state machine"<< std::endl;
+        std::cout << "Before State machine"<< std::endl;
 
 
-        mapping.execute_mapping(&worldModel);
-        end_of_program = state_machine(&worldModel);
+//        mapping.execute_mapping(&worldModel);
+
+//        switch(worldModel.get_currentHighState()){
+//            case: EXPLORE_HOSPITAL
+
+//        }
+
 
         pico_drive.driveDecision(&worldModel);
 
