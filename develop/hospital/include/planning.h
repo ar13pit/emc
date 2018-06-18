@@ -13,30 +13,29 @@
 
 //bool state_machine(struct High_state high_st,struct Low_state low_st);
 
-class Planning{
-private:
+class Planning {
 
-    Destination dest;
+    Point dest;
+    WorldModel* WM;
 
 public:
 
+    Planning (WorldModel* worldmodel);
 
-    Destination driveToPoint(Point navigateTo, WorldModel *worldModel);
-    Destination setpointInCorridor();               //Navigate Pico through Corridor
-    Destination getAwayFromWall(WorldModel *worldModel);
-    Destination driveInRoom(WorldModel *worldModel);
-    Destination parkPico(WorldModel *worldModel);
+    Point driveToPoint (Point navigateTo);
+    Point setpointInCorridor ();               //Navigate Pico through Corridor
+    Point getAwayFromWall ();
+    Point driveInRoom ();
+    Point parkPico ();
 
-    Destination get_Destination();
+    Point get_Destination ();
 
-    Point getNearbyExitPoint(Room closestRoom, WorldModel *worldModel);
-    Point getStartPos();
-    Point getThroughtExitPoint(Room roomFromMapping, WorldModel *worldModel);
+    Point getNearbyExitPoint (Room closestRoom);
+    Point getStartPos ();
+    Point getThroughtExitPoint (Room roomFromMapping);
 
 
-    Planning(){
-        // return;
-    }
 
 };
+
 #endif //planning_H
