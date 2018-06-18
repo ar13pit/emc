@@ -11,7 +11,9 @@ include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
 
 # Create executable named "testPlanning"
-add_executable(hospital_room ${SOURCES})
+add_executable(hospital_explore ${SOURCES} main/explore.cpp)
+#add_executable(hospital_search ${SOURCES} main/search.cpp)
+
 
 find_package(OpenCV REQUIRED)
 
