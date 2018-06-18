@@ -18,34 +18,33 @@ class Mapping {
 
     emc::IO *inOut;
     emc::OdometryData odom;
+    WorldModel* WM;
 
 public:
-    Mapping(emc::IO *io);
-
-    void init_map(WorldModel*);
-    void update_global_pos(WorldModel*);
-//void update_Odometry(WorldModel*);
-//void delta_Odometry(WorldModel*);
-
-    void update_corners(WorldModel*);
-    void update_rooms(WorldModel*);
-    void execute_mapping(WorldModel * worldModel);
-
-
-
-// the only function that is called to do all the mapping
-    void update_map();
-
-
-    Point_map local2global(Point);
-
     std::vector<Room> map;
     std::vector<Exit_map> totalExits;
     std::vector<Point_map> totalCorners;
 
-    Position global_pos;
-    Position latest_odom;
-    Position odom_diff;
+    Point global_pos;
+    Point latest_odom;
+    Point odom_diff;
+
+    Mapping(emc::IO *io, WorldModel* worldModel);
+
+    void init_map ();
+    void update_global_pos ();
+//void update_Odometry(WorldModel*);
+//void delta_Odometry(WorldModel*);
+
+    void update_corners ();
+    void update_rooms ();
+    void execute_mapping ();
+
+// the only function that is called to do all the mapping
+    void update_map();
+
+    Point local2global(Point);
+
 };
 
 #endif // VISUALIZE
