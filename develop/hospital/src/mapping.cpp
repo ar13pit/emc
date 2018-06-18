@@ -5,31 +5,6 @@ Mapping::Mapping (emc::IO* io, WorldModel* worldModel) : inOut(io), WM(worldMode
 }
 
 
-void Mapping::execute_mapping () {
-    Mapping_data mapdata;
-
-    std::cout<<"1"<<std::endl;
-    map = WM->get_mapping().map;
-    totalCorners = WM->get_allDetectedCorners();
-    totalExits = WM->get_allDetectedExits();
-
-    std::cout<<"2"<<std::endl;
-    update_global_pos();
-
-    std::cout<<"3"<<std::endl;
-    update_rooms();
-
-    std::cout<<"4"<<std::endl;
-    update_corners();
-
-    std::cout<<"5"<<std::endl;
-    mapdata.map = map;
-    mapdata.pico_position = global_pos;
-
-    WM->set_mapping(mapdata);
-}
-
-
 //int show_canvas(emc::LaserData scan)
 void Mapping::init_map ()
 {
@@ -83,6 +58,31 @@ void Mapping::init_map ()
 
 }
 
+void Mapping::execute_mapping () {
+    Mapping_data mapdata;
+
+    std::cout<<"1"<<std::endl;
+    map = WM->get_mapping().map;
+    totalCorners = WM->get_allDetectedCorners();
+    totalExits = WM->get_allDetectedExits();
+
+    std::cout<<"2"<<std::endl;
+    update_global_pos();
+
+    std::cout<<"3"<<std::endl;
+    update_rooms();
+
+    std::cout<<"4"<<std::endl;
+    update_corners();
+
+    std::cout<<"5"<<std::endl;
+    mapdata.map = map;
+    mapdata.pico_position = global_pos;
+
+    WM->set_mapping(mapdata);
+}
+
+
 //Update corners in the total corner vector and the current room vector based on current room
 void Mapping::update_corners () {
 
@@ -119,7 +119,7 @@ void Mapping::update_corners () {
 
              }
 
-         } else{
+         } else {
              break;
          }
     }
@@ -141,35 +141,36 @@ void Mapping::update_rooms () {
     }
 
 
-    for(int i = 0; i < 40; ++i){ // ROBUSTNESS ISSUES, PAY ATTENTION
-         if(exits_local[i].detected){
-             Exit_map exit_found;
-             exit_found.point1 = local2global(exits_local[i].exitPoint1);
-             exit_found.point2 = local2global(exits_local[i].exitPoint2);
+    for (int i = 0; i < 40; ++i) { // ROBUSTNESS ISSUES, PAY ATTENTION
+        if (exits_local[i].detected()) {
+            Exit exit_found;
+            Point center_exit_found;
 
-             Point_map center_exit_found;
-             center_exit_found.x = (exit_found.point1.x + exit_found.point2.x) * 0.5;
-             center_exit_found.y = (exit_found.point1.y + exit_found.point2.y) * 0.5;
+            exit_found.exitPoint1 = local2global(exits_local[i].exitPoint1);
+            exit_found.exitPoint2 = local2global(exits_local[i].exitPoint2);
 
-
-
-             bool detected_already= false;
-             for(int j = 0; j < totalExits.size(); ++j){
-                 Exit_map exit_map = totalExits[j];
-
-                 Point_map center_exit_map;
-                 center_exit_map.x = (exit_map.point1.x + exit_map.point2.x) * 0.5;
-                 center_exit_map.y = (exit_map.point1.y + exit_map.point2.y) * 0.5;
+            center_exit_found.x = (exit_found.exitPoint1.x + exit_found.exitPoint2.x) * 0.5;
+            center_exit_found.y = (exit_found.exitPoint1.y + exit_found.exitPoint2.y) * 0.5;
 
 
-                 //Point_map corner_map = map[currentRoom].corners[j];
-                 double distance = sqrt(pow(center_exit_map.x - center_exit_found.x, 2) + pow(center_exit_map.y - center_exit_found.y, 2));
-                 if(distance < distance_thresh){
+
+            bool detected_already = false;
+            for (int j = 0; j < totalExits.size(); ++j) {
+                Exit exit_map = totalExits[j];
+
+                Point center_exit_map;
+                center_exit_map.x = (exit_map.point1.x + exit_map.point2.x) * 0.5;
+                center_exit_map.y = (exit_map.point1.y + exit_map.point2.y) * 0.5;
+
+
+                //Point_map corner_map = map[currentRoom].corners[j];
+                double distance = sqrt(pow(center_exit_map.x - center_exit_found.x, 2) + pow(center_exit_map.y - center_exit_found.y, 2));
+                if(distance < distance_thresh){
                     detected_already = true;
-                 }
-             }
+                }
+            }
 
-             if(detected_already == false){
+            if (detected_already == false) {
                 //map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
                 totalExits.push_back(exit_found);
                 int nRooms = map.size();
@@ -177,27 +178,29 @@ void Mapping::update_rooms () {
                 room.exit = exit_found;
                 room.roomID = nRooms + 1;
                 room.previousRoom = currentRoom;
-                std::vector<Point_map> corners;
+                std::vector<Point> corners;
                 room.corners = corners;
                 map.push_back(room);
 
-             }
+            }
 
-         }else{
-             break;
-         }
+        }
+        else {
+            break;
+        }
     }
     // WorldModel::set_globalRooms(map[map.size()]);
 }
 
+// Return what????
+Point Mapping::local2global (Point local) { //Convert local into global coordinate
 
-Point_map Mapping::local2global (Point local) { //Convert local into global coordinate
-    int i  = 0;
+    Point global;
 
-    Point_map global;
+    global.x = global_pos.x + local.dist() * sin(local.angle() + global_pos.angle());
+    global.y = global_pos.y + local.dist() * cos(local.angle() + global_pos.angle());
 
-    global.x = global_pos.x + local.dist * sin(local.angle + global_pos.angle);
-    global.y = global_pos.y + local.dist * cos(local.angle + global_pos.angle);
+    return global;
 }
 
 
