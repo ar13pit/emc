@@ -54,8 +54,8 @@ bool state_machine(WorldModel * worldModel){
     bool at_start = false;              // have we returned back to the initial condition yet?
 
     if (location == IN_CORRIDOR){
-        Point_map pos = worldModel->get_globalPosition();
-        Point_map corridorCorner1 = current_room.corners[0], corridorCorner2 = current_room.corners[1];
+        Point pos = worldModel->get_globalPosition();
+        Point corridorCorner1 = current_room.corners[0], corridorCorner2 = current_room.corners[1];
 
         double dist1, dist2;
 
@@ -66,7 +66,7 @@ bool state_machine(WorldModel * worldModel){
             end_of_corridor = true;
         }
 
-        if (sqrt(pow(pos.x,2)+pow(pos.y,2)) < DIST_SETPOINT) {
+        if (sqrt(pow(pos.x, 2) + pow(pos.y, 2)) < DIST_SETPOINT) {
             at_start = true;
         }
 
@@ -103,7 +103,7 @@ bool state_machine(WorldModel * worldModel){
 
             case GO_TO_NEXT_ROOM:
 
-                if (worldModel->get_destination().dist < DIST_SETPOINT){
+                if (worldModel->get_destination().dist() < DIST_SETPOINT){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering a room from corridor" << "\n";
                 } else {
@@ -159,7 +159,7 @@ bool state_machine(WorldModel * worldModel){
 
             case GO_TO_NEXT_ROOM:
 
-                if (worldModel->get_destination().dist < DIST_SETPOINT){
+                if (worldModel->get_destination().dist() < DIST_SETPOINT){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering a nested room" << "\n";
                 } else {
@@ -168,7 +168,7 @@ bool state_machine(WorldModel * worldModel){
                 break;
 
             case EXIT_TO_PREV_ROOM:
-                if (worldModel->get_destination().dist < DIST_SETPOINT){
+                if (worldModel->get_destination().dist() < DIST_SETPOINT){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Exiting to lower order room" << "\n";
                 } else {
@@ -240,7 +240,7 @@ bool state_machine(WorldModel * worldModel){
             if (object_found){
                 worldModel->set_currentLowState(STAND_NEXT_TO_OBJECT);
             } else {
-                if (worldModel->get_destination().dist < DIST_SETPOINT){
+                if (worldModel->get_destination().dist() < DIST_SETPOINT){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering the room " << std::endl;
                 } else {
