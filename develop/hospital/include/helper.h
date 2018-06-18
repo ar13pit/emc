@@ -63,6 +63,12 @@ typedef struct {
    Point leftWall2;
 } CorridorWalls;
 
+typedef struct {
+    Exit Exits_total[40];
+    Corner Corners_total[40];
+    std::vector<Exit> local_exits;
+    Point closest_Point;
+} Detection_data;
 
 /*
 ---------------------------------------
@@ -80,12 +86,6 @@ typedef struct  {
 //    Room() {}
 //    Room(Exit roomEntrance, int roomToEnterFrom) : exit(roomEntrance), previousRoom(roomToEnterFrom) {}
 } Room;
-
-/*
-------------------------------------
-        Planning
-------------------------------------
-*/
 
 
 /*
@@ -114,7 +114,7 @@ enum High_State {
 };
 
 // this are the actions in the rooms
-typedef enum {
+enum Low_State {
     EXPLORE_CORRIDOR,   // for initial phase to count exits in the corridor
     EXIT_CORRIDOR,
     EXIT_TO_PREV_ROOM,  //-- Added-- Go to room/corridor of lower nesting level
@@ -127,24 +127,11 @@ typedef enum {
     GO_INSIDE_ROOM,      //-- Added-- Moving through the entrance/exit of a room
 
     STAND_NEXT_TO_OBJECT
-} Low_State;
+};
 
 // to know our location
 enum Location {IN_CORRIDOR, IN_ROOM};
 
-
-/*
-----------------------------
-        NEW SHIT!
-----------------------------
-*/
-
-typedef struct {
-    Exit Exits_total[40];
-    Corner Corners_total[40];
-    std::vector<Exit> local_exits;
-    Point closest_Point;
-} Detection_data;
 
 
 #endif
