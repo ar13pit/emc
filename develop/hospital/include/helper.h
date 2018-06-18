@@ -11,14 +11,25 @@
 ---------------------------------------
 */
 
-
 // Point data
-typedef struct {
+class Point {
+    double angle_;
+    double dist_;
+
+public:
     double x;
     double y;
-    double angle;
-    double dist;
-} Point;
+
+    Point ();
+
+    // GET METHODS
+    double angle();
+    double dist();
+
+    // SET METHODS
+    void angle(double newAngle);
+    void dist(double newDistance);
+};
 
 
 // Store exit data: two corners, angles and a flag whether detected
