@@ -41,13 +41,13 @@ int main ()
     std::vector<Point> initial_point_map_vec;
 
     Exit initial_exit_map;
-    initial_exit_map.exitPoint1 = initial_point_map;
-    initial_exit_map.exitPoint2 = initial_point_map;
+    // initial_exit_map.exitPoint1 = initial_point_map;
+    // initial_exit_map.exitPoint2 = initial_point_map;
     std::vector<Exit> initial_exit_map_vec;
 
     Room corridor;
     //    corridor.corners = initial_point_map_vec;
-    corridor.exit = initial_exit_map;
+    // corridor.exit = initial_exit_map;
     corridor.previousRoom = -1;
     corridor.roomID = 0;
 
