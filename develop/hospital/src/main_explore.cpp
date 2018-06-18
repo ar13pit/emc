@@ -18,7 +18,7 @@
 #include "helper.h"
 
 
-int main(int argc, char *argv[])
+int main ()
 {
     // Initialization of Robot
     emc::Rate r(EXECUTION_RATE); //EXECUTION_RATE
@@ -30,15 +30,15 @@ int main(int argc, char *argv[])
     DriveControl pico_drive(&io);
     Detection detection(&io); //
     Planning planning;
-    Mapping mapping(&io);
+    Mapping mapping(&io, &worldModel);
 
 
     Point initial_point;
-    initial_point.angle = 0; initial_point.dist = 0; initial_point.x = 0; initial_point.y = 0;
+    // initial_point.angle = 0; initial_point.dist = 0; initial_point.x = 0; initial_point.y = 0;
 
-    Point_map initial_point_map;
-    initial_point_map.x = 0; initial_point_map.y = 0;
-    std::vector<Point_map> initial_point_map_vec;
+    Point initial_point_map;
+    // initial_point_map.x = 0; initial_point_map.y = 0;
+    std::vector<Point> initial_point_map_vec;
 
     Exit_map initial_exit_map;
     initial_exit_map.point1 = initial_point_map;
