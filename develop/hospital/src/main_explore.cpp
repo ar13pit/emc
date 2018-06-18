@@ -27,9 +27,9 @@ int main ()
     // Initialize the Classes
 
     WorldModel worldModel;
-    DriveControl pico_drive(&io);
+    DriveControl pico_drive(&io, &worldModel);
     Detection detection(&io); //
-    Planning planning;
+    Planning planning(&worldModel);
     Mapping mapping(&io, &worldModel);
 
 
@@ -40,10 +40,10 @@ int main ()
     // initial_point_map.x = 0; initial_point_map.y = 0;
     std::vector<Point> initial_point_map_vec;
 
-    Exit_map initial_exit_map;
-    initial_exit_map.point1 = initial_point_map;
-    initial_exit_map.point2 = initial_point_map;
-    std::vector<Exit_map> initial_exit_map_vec;
+    Exit initial_exit_map;
+    initial_exit_map.exitPoint1 = initial_point_map;
+    initial_exit_map.exitPoint2 = initial_point_map;
+    std::vector<Exit> initial_exit_map_vec;
 
     Room corridor;
     //    corridor.corners = initial_point_map_vec;
@@ -67,6 +67,7 @@ int main ()
     worldModel.set_currentLocation(IN_CORRIDOR);
     worldModel.set_currentRoom(corridor.roomID);
     worldModel.set_curRoom(corridor);
+
     mapping.init_map(&worldModel);
 
 
@@ -165,7 +166,7 @@ int main ()
 //        }
 
 
-        pico_drive.driveDecision(&worldModel);
+        pico_drive.driveDecision();
 
         if (end_of_program) {
             io.speak(talking);
