@@ -9,7 +9,7 @@ Detection::Detection (emc::IO* io, WorldModel* worldmodel) : inOut(io), WM(world
 Detection_data Detection::detection_execution () {
     findExitsAndCorners_Final();
     Point closestPoint = closest_point();
-    std::vector<Exit_map> localExits = local_Exits();
+    std::vector<Exit> localExits = local_Exits();
 
     Detection_data data;
 
@@ -27,16 +27,16 @@ std::cout << "Detection execution"  <<"\n";
 
 }
 
-std::vector<Exit_map> Detection::local_Exits(){
-    std::vector<Exit_map> local_exit_list;
+std::vector<Exit> Detection::local_Exits(){
+    std::vector<Exit> local_exit_list;
     for(int i = 0; i < 40; ++i){
         if(Corners_Total[i].detected){
-            Exit_map exit_local;
-            exit_local.point1.x = Exits_Total[i].exitPoint1.y;
-            exit_local.point2.y = -Exits_Total[i].exitPoint1.x;
+            Exit exit_local;
+            exit_local.exitPoint1.x = Exits_Total[i].exitPoint1.y;
+            exit_local.exitPoint2.y = -Exits_Total[i].exitPoint1.x;
 
-            exit_local.point2.x = Exits_Total[i].exitPoint2.y;
-            exit_local.point2.y = -Exits_Total[i].exitPoint2.x;
+            exit_local.exitPoint2.x = Exits_Total[i].exitPoint2.y;
+            exit_local.exitPoint2.y = -Exits_Total[i].exitPoint2.x;
             local_exit_list.push_back(exit_local);
         }
         else{

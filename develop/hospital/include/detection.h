@@ -50,7 +50,7 @@ public:
     Point closest_point();
     void findExitsAndCorners_Final();
 
-    Detection_data detection_execution(WorldModel * worldModel);
+    Detection_data detection_execution();
 
 
 

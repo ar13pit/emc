@@ -170,7 +170,7 @@ void WorldModel::set_updateMappingVariables () {
 };
 
 void WorldModel::set_currentRoomID () {
-    currentRoomID_ = currentRoom.roomID;
+    currentRoomID_ = currentRoom_.roomID;
 };
 
 /*
@@ -264,7 +264,7 @@ Room WorldModel::get_nextRoom(){
     return nextRoom_;
 };
 
-std::vector<Exit> WorldModel::getAllDetectedExits() {
+std::vector<Exit> WorldModel::get_allDetectedExits() {
     return allDetectedExits_;
 };
 

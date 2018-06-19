@@ -97,7 +97,7 @@ public:
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
-    std::vector<Exit> getAllDetectedExits();
+    std::vector<Exit> get_allDetectedExits();
     std::vector<Point> get_allDetectedCorners();
 
     Mapping_data get_mapping();
