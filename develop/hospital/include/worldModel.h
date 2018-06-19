@@ -39,7 +39,7 @@ class WorldModel {
 
     int enteredRooms_;
     int nestedExits_;
-    int currentRoom_;
+    int currentRoomID_;
     int roomsFound_;
 
     Location currentLocation_;
@@ -49,20 +49,21 @@ class WorldModel {
 
     Room mostNestedRoom_;
     Room closestRoom_;
-    Room curRoom_;
+    Room currentRoom_;
     Room nextRoom_;
 
     json jsonObject_;
 
     // Private Methods
-    void writeJsonFile();
-    void readJsonFile();
-    void createJson();
-    void extractJson();
+    void writeJsonFile ();
+    void readJsonFile ();
+    void createJson ();
+    void extractJson ();
 
-    void set_allDetectedExits(std::vector<Exit> allDetectedExits);
-    void set_variablesRelatedToDetectionData();
-    void set_updateMappingVariables();
+    void set_allDetectedExits (std::vector<Exit> allDetectedExits);
+    void set_variablesRelatedToDetectionData ();
+    void set_updateMappingVariables ();
+    void set_currentRoomID ();
 
 
 public:
@@ -80,12 +81,12 @@ public:
 
     int get_enteredRooms();
     int get_nestedExits();
-    int get_currentRoom();                          // Renamed from     int getCurrentRoom();
+    int get_currentRoomID();                          // Renamed from     int getCurrentRoom();
     int get_roomsFound();               // how many rooms are found
 
     Room get_mostNestedRoom();
     Room get_closestRoom();
-    Room get_curRoom();
+    Room get_currentRoom();
     Room get_nextRoom();
 
     Location get_currentLocation();
@@ -113,7 +114,6 @@ public:
 
     void set_enteredRooms(bool newRoomEntered);
     void set_nestedExits(bool newNestedExitFound);
-    void set_currentRoom(int updatedCurrentRoom);
     void set_roomsFound(bool newRoomFound);         // add a new room
 
     void set_currentLocation(Location updatedLocation);
@@ -126,7 +126,7 @@ public:
 
     void set_mostNestedRoom();
     void set_closestRoom();
-    void set_curRoom(Room room);
+    void set_currentRoom(Room room);
     void set_nextRoom();
     void set_mapping(Mapping_data updateMappingData);
 

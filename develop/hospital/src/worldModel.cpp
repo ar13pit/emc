@@ -7,7 +7,7 @@
 */
 
 WorldModel::WorldModel() : currentHighState_(EXPLORE_HOSPITAL), currentLowState_(EXPLORE_CORRIDOR), currentLocation_(IN_CORRIDOR),
-    enteredRooms_(0), nestedExits_(0), currentRoom_(0), roomsFound_(0)
+    enteredRooms_(0), nestedExits_(0), currentRoomID_(0), roomsFound_(0)
  { };
 
 /*
@@ -151,14 +151,14 @@ void WorldModel::extractJson() {
 
 void WorldModel::set_allDetectedExits(std::vector<Exit> allDetectedExits){
     allDetectedExits_ = allDetectedExits;
-}
+};
 
 //////////////////////By Nazar///////////////////////////////////////
 void WorldModel::set_variablesRelatedToDetectionData(){
     closestPointWall_ = localDetection_.closest_Point;
     set_allDetectedExits(localDetection_.local_exits);
 //    currentRoom_ localDetection_.local_exits;
-}
+};
 
 void WorldModel::set_updateMappingVariables () {
     Point temp;
@@ -167,7 +167,11 @@ void WorldModel::set_updateMappingVariables () {
 
     globalPosition_ = temp;
     globalRooms_ = currentMappingData_.map;
-}
+};
+
+void WorldModel::set_currentRoomID () {
+    currentRoomID_ = currentRoom.roomID;
+};
 
 /*
 --------------------------------------------------------------------------------
@@ -209,8 +213,8 @@ int WorldModel::get_nestedExits () {
     return nestedExits_;
 };
 
-int WorldModel::get_currentRoom () {
-    return currentRoom_;
+int WorldModel::get_currentRoomID () {
+    return currentRoomID_;
 };
 
 int WorldModel::get_roomsFound () {
@@ -252,8 +256,8 @@ Room WorldModel::get_closestRoom(){
     return closestRoom_;
 };
 
-Room WorldModel::get_curRoom(){
-    return curRoom_;
+Room WorldModel::get_currentRoom(){
+    return currentRoom_;
 };
 
 Room WorldModel::get_nextRoom(){
@@ -306,10 +310,6 @@ void WorldModel::set_nestedExits (bool newNestedExitFound) {
     if (newNestedExitFound) {
         nestedExits_++;
     };
-};
-
-void WorldModel::set_currentRoom (int updatedCurrentRoom) {
-    currentRoom_ = updatedCurrentRoom;
 };
 
 void WorldModel::set_roomsFound (bool newRoomFound) {
@@ -366,14 +366,14 @@ void WorldModel::set_closestRoom(){
 
     Room closestRoom;
     std::vector<Room> allRooms = get_globalRooms();
-    int curRoom = get_currentRoom();
+    int curRoom = get_currentRoomID();
     Point curPos = get_globalPosition();
     double shortestDist = INFINITY;
 
-    for(int i = 0;i<allRooms.size(); i++){
+    for (int i = 0; i<allRooms.size(); ++i) {
 
-        if(curRoom == allRooms[i].previousRoom &&
-               closestRoom.corners.size()){
+        if (curRoom == allRooms[i].previousRoom &&
+               closestRoom.corners.size()) {
             //Get middle point of the exit
 
             double xMid = 0.5*(allRooms[i].exit.exitPoint1.x + allRooms[i].exit.exitPoint2.x);
@@ -391,13 +391,14 @@ void WorldModel::set_closestRoom(){
     closestRoom_ = closestRoom;
 }
 
-void WorldModel::set_curRoom(Room curRoom){
-    curRoom_ = curRoom;
+void WorldModel::set_currentRoom(Room curRoom){
+    currentRoom_ = curRoom;
+    set_currentRoomID();
 }
 
 void WorldModel::set_nextRoom(){
 
-    int curRoom = get_currentRoom();
+    int curRoom = get_currentRoomID();
     Room nextRoom = get_mostNestedRoom();
 
     while(nextRoom.previousRoom != curRoom){
