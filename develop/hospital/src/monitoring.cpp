@@ -19,7 +19,7 @@ bool explore_hospital(WorldModel * worldModel){
 
     } else if (current_low == EXPLORE_ROOM){
 
-        room = worldModel->get_curRoom();
+        room = worldModel->get_currentRoom();
         dest = planning.driveInRoom();
 
     } else if (current_low == GO_TO_NEXT_ROOM){
@@ -34,7 +34,7 @@ bool explore_hospital(WorldModel * worldModel){
 
     } else if (current_low == EXIT_TO_PREV_ROOM){
 
-        room = worldModel->get_curRoom();
+        room = worldModel->get_currentRoom();
         navigateTo = planning.getNearbyExitPoint(room);
         dest = planning.driveToPoint(navigateTo);
     }
