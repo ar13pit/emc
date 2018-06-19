@@ -1,5 +1,11 @@
 #include "helper.h"
 
+/*
+-----------------------------------------
+                Point
+-----------------------------------------
+*/
+
 Point::Point () : x(0), y(0), angle_(0), dist_(0) {};
 
 void Point::angle (double newAngle) {
@@ -18,6 +24,12 @@ void Point::dist (double newDistance) {
     dist_ = newDistance;
 };
 
+/*
+-----------------------------------------
+                Exit
+-----------------------------------------
+*/
+
 
 Exit::Exit () {};
 
@@ -26,5 +38,21 @@ void Exit::detected (bool exitDetectedFlag) {
 };
 
 bool Exit::detected () {
+    return detected_;
+};
+
+/*
+-----------------------------------------
+                Corner
+-----------------------------------------
+*/
+
+Corner::Corner () {};
+
+void Corner::detected (bool cornerDetectedFlag) {
+    detected_ = cornerDetectedFlag;
+};
+
+bool Corner::detected () {
     return detected_;
 };

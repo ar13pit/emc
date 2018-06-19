@@ -50,10 +50,21 @@ public:
 
 };
 
-typedef struct {
-    bool detected;
+class Corner {
+    bool detected_;
+
+public:
     Point cornerPoint;
-} Corner;
+
+    Corner();
+
+    // GET METHODS
+    bool detected();
+
+    // SET METHODS
+    void detected(bool exitDetectedFlag);
+
+};
 
 typedef struct {
    bool escaped;
