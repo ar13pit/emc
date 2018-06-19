@@ -28,22 +28,22 @@ int main ()
 
     WorldModel worldModel;
     DriveControl pico_drive(&io, &worldModel);
-    Detection detection(&io); //
+    Detection detection(&io, &worldModel); //
     Planning planning(&worldModel);
     Mapping mapping(&io, &worldModel);
 
 
-    Point initial_point;
+    // Point initial_point;
     // initial_point.angle = 0; initial_point.dist = 0; initial_point.x = 0; initial_point.y = 0;
 
-    Point initial_point_map;
+    // Point initial_point_map;
     // initial_point_map.x = 0; initial_point_map.y = 0;
-    std::vector<Point> initial_point_map_vec;
+    // std::vector<Point> initial_point_map_vec;
 
-    Exit initial_exit_map;
+    // Exit initial_exit_map;
     // initial_exit_map.exitPoint1 = initial_point_map;
     // initial_exit_map.exitPoint2 = initial_point_map;
-    std::vector<Exit> initial_exit_map_vec;
+    // std::vector<Exit> initial_exit_map_vec;
 
     Room corridor;
     //    corridor.corners = initial_point_map_vec;
@@ -52,13 +52,13 @@ int main ()
     corridor.roomID = 0;
 
 
-    Detection_data initial_detection_data;
-    initial_detection_data.closest_Point = initial_point;
-    initial_detection_data.Corners_total[40] = {};
-    initial_detection_data.Exits_total[40] = {};
-    initial_detection_data.local_exits = initial_exit_map_vec;
+    // Detection_data initial_detection_data;
+    // initial_detection_data.closest_Point = initial_point;
+    // initial_detection_data.Corners_total[40] = {};
+    // initial_detection_data.Exits_total[40] = {};
+    // initial_detection_data.local_exits = initial_exit_map_vec;
 
-    worldModel.set_localDetection(initial_detection_data);
+    // worldModel.set_localDetection(initial_detection_data);
 
 
     // worldModel.set_currentHighState(EXPLORE_HOSPITAL);
@@ -66,10 +66,10 @@ int main ()
     // worldModel.setAllDetectedExits(initial_exit_map_vec);
     //    worldModel.set_closestPointWall(initial_point);
     // worldModel.set_currentLocation(IN_CORRIDOR);
-    worldModel.set_currentRoom(corridor.roomID);
-    worldModel.set_curRoom(corridor);
+    // worldModel.set_currentRoom(corridor.roomID);
+    worldModel.set_currentRoom(corridor);
 
-    mapping.init_map(&worldModel);
+    // mapping.init_map(&worldModel);
 
 
 
@@ -78,6 +78,7 @@ int main ()
     //    vis.init_visualize(); //
     bool wall_detected = false;
     bool end_of_program = false;
+
     std::string talking = "I am parked";
 
     while(io.ok()) {
@@ -145,8 +146,9 @@ int main ()
         if (worldModel.get_closestPointWall().dist() < MIN_DIST_TO_WALL) {
             wall_detected = true;
         }
-        else
+        else {
             wall_detected = false;
+        }
 
         std::cout << "Closest Point dist = " << worldModel.get_closestPointWall().dist() << std::endl;
         std::cout << "Closest Point angle = " << worldModel.get_closestPointWall().angle() << std::endl;
