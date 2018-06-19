@@ -24,55 +24,19 @@ int main ()
     emc::Rate r(EXECUTION_RATE); //EXECUTION_RATE
     emc::IO io;
     //    emc::OdometryData odom;
-    // Initialize the Classes
 
+    // Initialize the Classes
     WorldModel worldModel;
     DriveControl pico_drive(&io, &worldModel);
     Detection detection(&io, &worldModel); //
     Planning planning(&worldModel);
     Mapping mapping(&io, &worldModel);
 
-
-    // Point initial_point;
-    // initial_point.angle = 0; initial_point.dist = 0; initial_point.x = 0; initial_point.y = 0;
-
-    // Point initial_point_map;
-    // initial_point_map.x = 0; initial_point_map.y = 0;
-    // std::vector<Point> initial_point_map_vec;
-
-    // Exit initial_exit_map;
-    // initial_exit_map.exitPoint1 = initial_point_map;
-    // initial_exit_map.exitPoint2 = initial_point_map;
-    // std::vector<Exit> initial_exit_map_vec;
-
     Room corridor;
-    //    corridor.corners = initial_point_map_vec;
-    // corridor.exit = initial_exit_map;
+
     corridor.previousRoom = -1;
     corridor.roomID = 0;
-
-
-    // Detection_data initial_detection_data;
-    // initial_detection_data.closest_Point = initial_point;
-    // initial_detection_data.Corners_total[40] = {};
-    // initial_detection_data.Exits_total[40] = {};
-    // initial_detection_data.local_exits = initial_exit_map_vec;
-
-    // worldModel.set_localDetection(initial_detection_data);
-
-
-    // worldModel.set_currentHighState(EXPLORE_HOSPITAL);
-    // worldModel.set_currentLowState(EXPLORE_CORRIDOR);
-    // worldModel.setAllDetectedExits(initial_exit_map_vec);
-    //    worldModel.set_closestPointWall(initial_point);
-    // worldModel.set_currentLocation(IN_CORRIDOR);
-    // worldModel.set_currentRoom(corridor.roomID);
     worldModel.set_currentRoom(corridor);
-
-    // mapping.init_map(&worldModel);
-
-
-
 
     //    Visualizer vis; //
     //    vis.init_visualize(); //
@@ -84,8 +48,8 @@ int main ()
     while(io.ok()) {
 
 
-        detection.detection_execution(&worldModel); //
-        mapping.execute_mapping(&worldModel);
+        detection.detection_execution(); //
+        mapping.execute_mapping();
 
 
         //        if(detection.getSensorData()) {
@@ -154,13 +118,15 @@ int main ()
         std::cout << "Closest Point angle = " << worldModel.get_closestPointWall().angle() << std::endl;
 
         // low level control
-        if (wall_detected){
+        if (wall_detected) {
             worldModel.set_destination(planning.getAwayFromWall(&worldModel));
             std::cout << "WALL DETECTED" << std::endl;
-        } else {
+        }
+        else {
             end_of_program = state_machine(&worldModel);
             monitoring(&worldModel);
         }
+
         std::cout << "Before State machine"<< std::endl;
 
 
