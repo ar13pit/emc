@@ -156,7 +156,7 @@ void Mapping::update_corners () {
     for(int i = 0; i < 40; ++i) { // ROBUSTNESS ISSUES, PAY ATTENTION
 
         // WHY USE THIS IF CONDITION? Shouldn't exit_local only have exits with detected flag? Makes no sense!
-        if (corners_local[i].detected) {
+        if (corners_local[i].detected()) {
 
             corner_found = local2global(corners_local[i].cornerPoint);
 
