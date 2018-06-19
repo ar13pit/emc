@@ -18,9 +18,8 @@ add_executable(hospital_explore ${SOURCES} main/explore.cpp)
 find_package(OpenCV REQUIRED)
 
 # Link libraries
-target_link_libraries(hospital_room emc-framework)
-target_link_libraries(hospital_room ${OpenCV_LIBS})
+target_link_libraries(hospital_explore emc-framework)
+target_link_libraries(hospital_explore ${OpenCV_LIBS})
 
 # Create the executable in directory "/bin"
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-
