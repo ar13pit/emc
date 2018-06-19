@@ -75,7 +75,7 @@ public:
     Point get_globalPosition();                     // Renamed from     Point getCurrentPosition();
     Point get_pointStraightAhead();
 
-    Destination get_destination();
+    Point get_destination();
 
     Detection_data get_localDetection();
 
