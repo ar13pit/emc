@@ -344,7 +344,7 @@ void WorldModel::set_mostNestedRoom(){
     Room mostNestedRoom;
     int highestNesting = 0;
 
-    for(int i=0; i<allRooms.size(); i++){
+    for(int i=0; i<allRooms.size(); ++i){
         int countNesting = 0;
         Room lowerRoom = allRooms[i];
 
