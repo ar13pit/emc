@@ -53,7 +53,9 @@ bool state_machine(WorldModel * worldModel){
     bool end_of_corridor = false;       // have PICO reached the end of the corridor once?
     bool at_start = false;              // have we returned back to the initial condition yet?
 
-    if (location == IN_CORRIDOR){
+    if (location == IN_CORRIDOR && current_room.corners.size() > 1){
+        std::cout << "Corners of Corricor detected!" << std::endl;
+
         Point pos = worldModel->get_globalPosition();
         Point corridorCorner1 = current_room.corners[0], corridorCorner2 = current_room.corners[1];
 
@@ -74,40 +76,32 @@ bool state_machine(WorldModel * worldModel){
 
 
     //------------end of assigning variables-------------//
-
-
+    std::cout << "HighState = " << high_st << std::endl;
+    std::cout << "LowState = " << low_st << std::endl;
 
 
     switch(high_st) {
     case EXPLORE_HOSPITAL:
-
-        std::cout << "EXPLORING THE HOSPITAL " << std::endl;
-
-
-        if (location == IN_CORRIDOR) {
-
-//            std::cout << "In corridor" << "\n";
-
             switch(low_st){
 
             case EXPLORE_CORRIDOR:
+                std::cout << "CLOSEST Angle = " << abs(worldModel->get_closestPointWall().angle()) << std::endl;
+                if (abs(worldModel->get_closestPointWall().angle()) > FRONTWALL_ANGLE){
+                    std::cout << "Exploring the corridor " << std::endl;
 
-                if (numb_rooms_in_corridor == 0 || !end_of_corridor){
-//                    std::cout << "Exploring the corridor " << std::endl;
-
-                } else if (numb_rooms_in_corridor > numb_rooms_explored - numb_nexted_exits) {
+                } else{     //PICO is at the end of the corridor --> Wall at the front
                     worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
-                    std::cout << "Moving to the next room" << "\n";
+                    std::cout << "Moving to the next room" << std::endl;
                 }
-                break;
+                return end_of_program;
 
             case GO_TO_NEXT_ROOM:
 
                 if (worldModel->get_destination().dist() < DIST_SETPOINT){
                     worldModel->set_currentLowState(GO_INSIDE_ROOM);
-                    std::cout << "Entering a room from corridor" << "\n";
+                    std::cout << "Entering a room from corridor" << std::endl;
                 } else {
-//                    std::cout << "Moving to the next room" << "\n";
+                    std::cout << "Moving to the next room" << std::endl;
                 }
                 break;
 
@@ -213,21 +207,28 @@ bool state_machine(WorldModel * worldModel){
         break;
 
 
-        //not executed currently
     case GO_TO_ROOM:
         std::cout << "FINDING OBJECT PHASE " << std::endl;
         switch(low_st) {
 
-        case EXIT_CORRIDOR:
-            if (location == IN_CORRIDOR){
-//                std::cout << "Exiting corridor " << std::endl;
-            } else if (location == IN_ROOM){
-                worldModel->set_currentLowState(GO_INSIDE_ROOM);
-                std::cout << "Entering the room " << std::endl;
-            } else{
-                std::cout << "ERROR exiting corridor " << std::endl;
-            }
-            break;
+    //        case EXIT_CORRIDOR:
+    //            if (location == IN_CORRIDOR){
+    //                std::cout << "Exiting corridor " << std::endl;
+    //                // if (distance to exit < DIST_SETPOINT){
+    //                // worldModel->set_location(IN_ROOM);
+    //                // worldModel->set_currentLowState(GO_Inside room)
+
+    //            } else if (location == IN_ROOM){
+    //                worldModel->set_currentLowState(GO_INSIDE_ROOM);
+    //                std::cout << "Entering the room " << std::endl;
+
+    //            } else{
+
+    //                std::cout << "ERROR exiting corridor " << std::endl;
+    //            }
+
+    //            break;
+
 
         case GO_INSIDE_ROOM:
             worldModel->set_nextRoom();

@@ -147,6 +147,9 @@ int main ()
         else
             wall_detected = false;
 
+        std::cout << "Closest Point dist = " << worldModel.get_closestPointWall().dist << std::endl;
+        std::cout << "Closest Point angle = " << worldModel.get_closestPointWall().angle << std::endl;
+
         // low level control
         if (wall_detected){
             worldModel.set_destination(planning.getAwayFromWall(&worldModel));

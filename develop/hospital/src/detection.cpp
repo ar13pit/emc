@@ -47,19 +47,19 @@ std::vector<Exit_map> Detection::local_Exits(){
 }
 
 
-Point Detection::closest_point(){
-    double shortest_dist = 30;
-    int i_closest = -1;
+Point Detection::closest_point () {
+    Point shortest;
+    shortest.dist(INFINITY);
+
     for(int i = 0; i < 970; ++i){
-        if(LatestLaserScan[i].dist < shortest_dist){
-            shortest_dist = LatestLaserScan[i].dist;
-            i_closest = i;
+        if(LatestLaserScan[i].dist() < shortest.dist()){
+            // std::cout << "Closer dist = " << LatestLaserScan[i].dist() << std::endl;
+            shortest.dist(LatestLaserScan[i].dist());
+            shortest.angle(LatestLaserScan[i].angle());
         }
     }
-    Point shortest;
-    shortest = LatestLaserScan[i_closest];
-    shortest.x = LatestLaserScan[i_closest].y;
-    shortest.y = -LatestLaserScan[i_closest].x;
+
+    return shortest;
 }
 
 
