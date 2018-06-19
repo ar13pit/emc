@@ -5,9 +5,9 @@
 #include <iostream>
 #include <vector>
 
-#include "worldModel.h"
-#include "helper.h"
-#include "config.h"
+#include "worldModel.hpp"
+#include "helper.hpp"
+#include "config.hpp"
 
 #ifndef MAPPING_H
 #define MAPPING_H

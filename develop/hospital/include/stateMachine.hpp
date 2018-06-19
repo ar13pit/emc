@@ -1,7 +1,8 @@
-#include "worldModel.h"
-#include "config.h"
-#include "helper.h"
 #include <vector>
+
+#include "worldModel.hpp"
+#include "config.hpp"
+#include "helper.hpp"
 
 #ifndef SM_HPP_INCLUDED
 #define SM_HPP_INCLUDED

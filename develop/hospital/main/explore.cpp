@@ -7,15 +7,16 @@
 #include <string>
 
 
-#include "driveControl.h"
-#include "detection.h"
-#include "worldModel.h"
-#include "planning.h"
-#include "stateMachine.h"
-#include "monitoring.h"
-#include "config.h"
-#include "mapping.h"
-#include "helper.h"
+#include "driveControl.hpp"
+#include "detection.hpp"
+#include "worldModel.hpp"
+#include "planning.hpp"
+#include "stateMachine.hpp"
+#include "monitoring.hpp"
+#include "config.hpp"
+#include "mapping.hpp"
+#include "helper.hpp"
+#include "visualize.hpp"
 
 
 int main ()

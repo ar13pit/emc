@@ -1,4 +1,4 @@
-#include "planning.h"
+#include "planning.hpp"
 
 Planning::Planning (WorldModel* worldmodel) : WM(worldmodel) {};
 

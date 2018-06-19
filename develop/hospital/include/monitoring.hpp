@@ -1,6 +1,6 @@
 // #include "stateMachine.h"
-#include "worldModel.h"
-#include "planning.h"
+#include "worldModel.hpp"
+#include "planning.hpp"
 
 #ifndef MONITORS_HPP_INCLUDED
 #define MONITORS_HPP_INCLUDED

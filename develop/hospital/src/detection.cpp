@@ -1,4 +1,4 @@
-#include "detection.h"
+#include "detection.hpp"
 
 Detection::Detection (emc::IO* io, WorldModel* worldmodel) : inOut(io), WM(worldmodel) {
     laser = emc::LaserData();

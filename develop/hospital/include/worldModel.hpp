@@ -3,13 +3,14 @@
 #include <vector>
 #include <string>
 
-#include "config.h"
+#include "config.hpp"
 #include "json.hpp"
-#include "helper.h"
+#include "helper.hpp"
 
 #ifndef worldModel_H
 #define worldModel_H
 
+// set_allDetectedCorners() missing
 
 /*
  * initialize int variables

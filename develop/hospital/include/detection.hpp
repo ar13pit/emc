@@ -3,16 +3,16 @@
 #include <cmath>
 #include <iostream>
 
-#include "config.h"
-#include "helper.h"
-#include "worldModel.h"
+#include "config.hpp"
+#include "helper.hpp"
+#include "worldModel.hpp"
 
 #ifndef detection_H
 #define detection_H
 
 
 class Detection {
-    
+
     emc::IO* inOut;
 
     WorldModel* WM;

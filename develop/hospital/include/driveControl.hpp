@@ -2,9 +2,10 @@
 #include <emc/rate.h>
 #include <emc/odom.h>
 #include <iostream>
-#include "config.h"
-#include "helper.h"
-#include "worldModel.h"
+
+#include "config.hpp"
+#include "helper.hpp"
+#include "worldModel.hpp"
 
 #ifndef driveControl_H
 #define driveControl_H

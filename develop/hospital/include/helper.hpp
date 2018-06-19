@@ -1,8 +1,8 @@
-#ifndef helper_H
-#define helper_H
-
 #include <iostream>
 #include <vector>
+
+#ifndef helper_H
+#define helper_H
 
 
 /*

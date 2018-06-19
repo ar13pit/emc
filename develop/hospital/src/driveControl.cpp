@@ -1,4 +1,4 @@
-#include "driveControl.h"
+#include "driveControl.hpp"
 
 DriveControl::DriveControl (emc::IO* io, WorldModel* worldmodel) : inOut(io), WM(worldmodel), r(DRIVE_RATE) {};
 
