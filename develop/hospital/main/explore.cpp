@@ -57,14 +57,15 @@ int main ()
     initial_detection_data.Corners_total[40] = {};
     initial_detection_data.Exits_total[40] = {};
     initial_detection_data.local_exits = initial_exit_map_vec;
+
     worldModel.set_localDetection(initial_detection_data);
 
 
-    worldModel.set_currentHighState(EXPLORE_HOSPITAL);
-    worldModel.set_currentLowState(EXPLORE_CORRIDOR);
+    // worldModel.set_currentHighState(EXPLORE_HOSPITAL);
+    // worldModel.set_currentLowState(EXPLORE_CORRIDOR);
     // worldModel.setAllDetectedExits(initial_exit_map_vec);
     //    worldModel.set_closestPointWall(initial_point);
-    worldModel.set_currentLocation(IN_CORRIDOR);
+    // worldModel.set_currentLocation(IN_CORRIDOR);
     worldModel.set_currentRoom(corridor.roomID);
     worldModel.set_curRoom(corridor);
 
@@ -141,14 +142,14 @@ int main ()
 
         //        }
 
-        if (worldModel.get_closestPointWall().dist < MIN_DIST_TO_WALL) {
+        if (worldModel.get_closestPointWall().dist() < MIN_DIST_TO_WALL) {
             wall_detected = true;
         }
         else
             wall_detected = false;
 
-        std::cout << "Closest Point dist = " << worldModel.get_closestPointWall().dist << std::endl;
-        std::cout << "Closest Point angle = " << worldModel.get_closestPointWall().angle << std::endl;
+        std::cout << "Closest Point dist = " << worldModel.get_closestPointWall().dist() << std::endl;
+        std::cout << "Closest Point angle = " << worldModel.get_closestPointWall().angle() << std::endl;
 
         // low level control
         if (wall_detected){

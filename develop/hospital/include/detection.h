@@ -11,9 +11,9 @@
 #define detection_H
 
 
-class Detection{
-private:
+class Detection {
     emc::IO* inOut;
+
     WorldModel* WM;
 
 public:
