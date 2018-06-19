@@ -272,6 +272,10 @@ Mapping_data WorldModel::get_mapping() {
     return currentMappingData_;
 };
 
+std::vector<Point> WorldModel::get_allDetectedCorners() {
+    return allDetectedCorners_;
+};
+
 /*
                 ------------------------------------
                             SET METHODS

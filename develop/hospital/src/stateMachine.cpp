@@ -35,7 +35,7 @@ bool state_machine(WorldModel * worldModel){
 
 
 
-    Room current_room = worldModel->get_curRoom();
+    Room current_room = worldModel->get_currentRoom();
     int current_room_number = current_room.roomID;
 
 
@@ -82,6 +82,14 @@ bool state_machine(WorldModel * worldModel){
 
     switch(high_st) {
     case EXPLORE_HOSPITAL:
+
+        std::cout << "EXPLORING THE HOSPITAL " << std::endl;
+
+
+        if (location == IN_CORRIDOR) {
+
+            std::cout << "In corridor" << "\n";
+
             switch(low_st){
 
             case EXPLORE_CORRIDOR:

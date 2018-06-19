@@ -119,7 +119,7 @@ int main ()
 
         // low level control
         if (wall_detected) {
-            worldModel.set_destination(planning.getAwayFromWall(&worldModel));
+            worldModel.set_destination(planning.getAwayFromWall());
             std::cout << "WALL DETECTED" << std::endl;
         }
         else {
