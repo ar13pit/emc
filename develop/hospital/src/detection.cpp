@@ -9,11 +9,9 @@ Detection::Detection (emc::IO* io, WorldModel* worldmodel) : inOut(io), WM(world
 Detection_data Detection::detection_execution () {
     findExitsAndCorners_Final();
     Point closestPoint = closest_point();
-    std::vector<Exit_map> localExits = local_Exits();
+    std::vector<Exit> localExits = local_Exits();
 
     Detection_data data;
-
-
 
     data.closest_Point = closestPoint;
     data.local_exits = localExits;
@@ -22,24 +20,28 @@ Detection_data Detection::detection_execution () {
         data.Corners_total[i] = Corners_Total[i];
     }
 
-std::cout << "Detection execution"  <<"\n";
+    std::cout << "Detection execution"  <<"\n";
     WM->set_localDetection(data);
 
 }
 
-std::vector<Exit_map> Detection::local_Exits(){
-    std::vector<Exit_map> local_exit_list;
-    for(int i = 0; i < 40; ++i){
-        if(Corners_Total[i].detected){
-            Exit_map exit_local;
-            exit_local.point1.x = Exits_Total[i].exitPoint1.y;
-            exit_local.point2.y = -Exits_Total[i].exitPoint1.x;
+std::vector<Exit> Detection::local_Exits () {
 
-            exit_local.point2.x = Exits_Total[i].exitPoint2.y;
-            exit_local.point2.y = -Exits_Total[i].exitPoint2.x;
+    std::vector<Exit> local_exit_list;
+    Exit exit_local;
+
+    for(int i = 0; i < 40; ++i) {
+
+        if (Corners_Total[i].detected()) {
+            exit_local.exitPoint1.x = Exits_Total[i].exitPoint1.y;
+            exit_local.exitPoint1.y = -Exits_Total[i].exitPoint1.x;
+
+            exit_local.exitPoint2.x = Exits_Total[i].exitPoint2.y;
+            exit_local.exitPoint2.y = -Exits_Total[i].exitPoint2.x;
+
             local_exit_list.push_back(exit_local);
         }
-        else{
+        else {
             break;
         }
     }
@@ -75,31 +77,31 @@ void Detection::findExitsAndCorners_Final(){
     Exit Exits_total_final[40];
 
     for(int i = 0; i < 40; ++i){
-        Corners_Total[i].detected = false;
-        Exits_Total[i].detected = false;
+        Corners_Total[i].detected(false);
+        Exits_Total[i].detected(false);
     }
 
     for (int i = 0; i < 100; ++i){
-        Corners_total[i].detected = false;
-        Exits_total[i].detected = false;
+        Corners_total[i].detected(false);
+        Exits_total[i].detected(false);
     }
 
     average_CornersAndExits();
 
     for(int j = 0; j < 20; j = j+1){
-        if(Corners_RL[j].detected){
+        if(Corners_RL[j].detected()){
             bool neighbour_corner_detected = false;
             for(int k = 0; k < 20; k = k+1){
-                if(Corners_LR[k].detected){
+                if(Corners_LR[k].detected()){
                     double distance = sqrt( pow(Corners_LR[k].cornerPoint_LR.x - Corners_RL[j].cornerPoint.x,2) +  pow(Corners_LR[k].cornerPoint_LR.y - Corners_RL[j].cornerPoint.y,2));
 
                     if(distance < distance_total_thresh){
                         Corners_total[k].cornerPoint.x = (Corners_RL[j].cornerPoint.x + Corners_LR[k].cornerPoint_LR.x) / 2;
                         Corners_total[k].cornerPoint.y = (Corners_RL[j].cornerPoint.y + Corners_LR[k].cornerPoint_LR.y) / 2;
-                        Corners_total[k].detected = true;
+                        Corners_total[k].detected(true);
                         neighbour_corner_detected = true;
-                        Corners_RL[j].detected=false;
-                        Corners_LR[k].detected=false;
+                        Corners_RL[j].detected(false);
+                        Corners_LR[k].detected(false);
                         break;
                     }
                 }
@@ -110,8 +112,8 @@ void Detection::findExitsAndCorners_Final(){
 
             if(neighbour_corner_detected == false){
                 for(int k = 0; k < 100; k = k+1){
-                    if(Corners_total[k].detected == false){
-                        Corners_total[k].detected = true;
+                    if(Corners_total[k].detected() == false){
+                        Corners_total[k].detected(true);
                         Corners_total[k] = Corners_RL[j];
                         break;
                     }
@@ -122,19 +124,19 @@ void Detection::findExitsAndCorners_Final(){
 
 
     for(int j = 0; j < 20; j = j+1){
-        if(Corners_LR[j].detected){
+        if(Corners_LR[j].detected()){
             bool neighbour_corner_detected = false;
             for(int k = 0; k < 20; k = k+1){
-                if(Corners_RL[k].detected){
+                if(Corners_RL[k].detected()){
                     double distance = sqrt( pow(Corners_RL[k].cornerPoint.x - Corners_LR[j].cornerPoint_LR.x,2) +  pow(Corners_RL[k].cornerPoint.y - Corners_LR[j].cornerPoint_LR.y,2));
 
                     if(distance < distance_total_thresh){
                         Corners_total[k].cornerPoint.x = (Corners_RL[j].cornerPoint.x + Corners_LR[k].cornerPoint_LR.x) / 2;
                         Corners_total[k].cornerPoint.y = (Corners_RL[j].cornerPoint.y + Corners_LR[k].cornerPoint_LR.y) / 2;
-                        Corners_total[k].detected = true;
+                        Corners_total[k].detected(true);
                         neighbour_corner_detected = true;
-                        Corners_RL[k].detected=false;
-                        Corners_LR[j].detected=false;
+                        Corners_RL[k].detected(false);
+                        Corners_LR[j].detected(false);
                         break;
                     }
                 }
@@ -145,11 +147,11 @@ void Detection::findExitsAndCorners_Final(){
 
             if(neighbour_corner_detected == false){
                 for(int k = 0; k < 100; k = k+1){
-                    if(Corners_total[k].detected == false){
+                    if(Corners_total[k].detected() == false){
                         Corner corner_normal;
                         corner_normal.cornerPoint = Corners_LR[j].cornerPoint_LR;
-                        corner_normal.detected = Corners_LR[j].detected;
-                        Corners_total[k].detected = true;
+                        corner_normal.detected(Corners_LR[j].detected());
+                        Corners_total[k].detected(true);
                         Corners_total[k] = corner_normal;
                         break;
                     }
@@ -161,8 +163,8 @@ void Detection::findExitsAndCorners_Final(){
 
     int j = 0;
     for(int i = 0; i < 40; ++i){
-        if(Corners_total_final[i].detected == false){
-            Corners_total_final[i].detected = true;
+        if(Corners_total_final[i].detected() == false){
+            Corners_total_final[i].detected(true);
             Corners_Total[j] = Corners_total[i];
             Corners_total_final[j] = Corners_Total[i];
             ++j;
@@ -171,10 +173,10 @@ void Detection::findExitsAndCorners_Final(){
 
 
     for(int j = 0; j < 20; j = j+1){
-        if(Exits_RL[j].detected){
+        if(Exits_RL[j].detected()){
             bool neighbour_exit_detected = false;
             for(int k = 0; k < 20; k = k+1){
-                if(Exits_LR[k].detected){
+                if(Exits_LR[k].detected()){
                     double RL_centerExitx = 0.5 * Exits_RL[j].exitPoint1.x + 0.5 * Exits_RL[j].exitPoint2.x;
                     double RL_centerExity = 0.5 * Exits_RL[j].exitPoint1.y + 0.5 * Exits_RL[j].exitPoint2.y;
                     double LR_centerExitx = 0.5 * Exits_LR[j].exitPoint1_LR.x + 0.5 * Exits_LR[j].exitPoint2_LR.x;
@@ -182,14 +184,14 @@ void Detection::findExitsAndCorners_Final(){
                     double distance = sqrt( pow(RL_centerExitx - LR_centerExitx,2) +  pow(RL_centerExity - LR_centerExity,2));
 
                     if(distance < distance_total_thresh){
-                        Exits_total[k].detected = true;
+                        Exits_total[k].detected(true);
                         Exits_total[k].exitPoint1.x = (Exits_RL[j].exitPoint1.x + Exits_LR[k].exitPoint1_LR.x) / 2;
                         Exits_total[k].exitPoint1.y = (Exits_RL[j].exitPoint1.y + Exits_LR[k].exitPoint1_LR.y) / 2;
                         Exits_total[k].exitPoint2.x = (Exits_RL[j].exitPoint2.x + Exits_LR[k].exitPoint2_LR.x) / 2;
                         Exits_total[k].exitPoint2.y = (Exits_RL[j].exitPoint2.y + Exits_LR[k].exitPoint2_LR.y) / 2;
                         neighbour_exit_detected = true;
-                        Exits_RL[j].detected = false;
-                        Exits_LR[k].detected = false;
+                        Exits_RL[j].detected(false);
+                        Exits_LR[k].detected(false);
                         break;
                     }
                 }
@@ -197,7 +199,7 @@ void Detection::findExitsAndCorners_Final(){
             }
             if(neighbour_exit_detected==false){
                 for(int k=0; k < 100; k = k+1){
-                    Exits_total[k].detected = true;
+                    Exits_total[k].detected(true);
                     Exits_total[k] = Exits_RL[j];
                 }
             }
@@ -205,10 +207,10 @@ void Detection::findExitsAndCorners_Final(){
     }
 
     for(int j = 0; j < 20; j = j+1){
-        if(Exits_LR[j].detected){
+        if(Exits_LR[j].detected()){
             bool neighbour_exit_detected = false;
             for(int k = 0; k < 20; k = k+1){
-                if(Exits_RL[k].detected){
+                if(Exits_RL[k].detected()){
                     double RL_centerExitx = 0.5 * Exits_RL[j].exitPoint1.x + 0.5 * Exits_RL[j].exitPoint2.x;
                     double RL_centerExity = 0.5 * Exits_RL[j].exitPoint1.y + 0.5 * Exits_RL[j].exitPoint2.y;
                     double LR_centerExitx = 0.5 * Exits_LR[j].exitPoint1_LR.x + 0.5 * Exits_LR[j].exitPoint2_LR.x;
@@ -216,14 +218,14 @@ void Detection::findExitsAndCorners_Final(){
                     double distance = sqrt( pow(RL_centerExitx - LR_centerExitx,2) +  pow(RL_centerExity - LR_centerExity,2));
 
                     if(distance < distance_total_thresh){
-                        Exits_total[k].detected = true;
+                        Exits_total[k].detected(true);
                         Exits_total[k].exitPoint1.x = (Exits_RL[j].exitPoint1.x + Exits_LR[k].exitPoint1_LR.x) / 2;
                         Exits_total[k].exitPoint1.y = (Exits_RL[j].exitPoint1.y + Exits_LR[k].exitPoint1_LR.y) / 2;
                         Exits_total[k].exitPoint2.x = (Exits_RL[j].exitPoint2.x + Exits_LR[k].exitPoint2_LR.x) / 2;
                         Exits_total[k].exitPoint2.y = (Exits_RL[j].exitPoint2.y + Exits_LR[k].exitPoint2_LR.y) / 2;
                         neighbour_exit_detected = true;
-                        Exits_RL[j].detected = false;
-                        Exits_LR[k].detected = false;
+                        Exits_RL[j].detected(false);
+                        Exits_LR[k].detected(false);
                         break;
                     }
                 }
@@ -232,10 +234,10 @@ void Detection::findExitsAndCorners_Final(){
             if(neighbour_exit_detected==false){
                 for(int k=0; k < 100; k = k+1){
                     Exit exit_normal;
-                    exit_normal.detected = Exits_LR[j].detected;
+                    exit_normal.detected(Exits_LR[j].detected());
                     exit_normal.exitPoint1 = Exits_LR[j].exitPoint1_LR;
                     exit_normal.exitPoint2 = Exits_LR[j].exitPoint2_LR;
-                    Exits_total[k].detected = true;
+                    Exits_total[k].detected(true);
                     Exits_total[k] = exit_normal;
                     break;
                 }
@@ -245,8 +247,8 @@ void Detection::findExitsAndCorners_Final(){
 
     j = 0;
     for(int i = 0; i < 40; ++i){
-        if(Exits_total_final[i].detected == false){
-            Exits_total_final[i].detected = true;
+        if(Exits_total_final[i].detected(false) ){
+            Exits_total_final[i].detected(true);
             Exits_Total[j] = Exits_total[i];
             Exits_total_final[j] = Exits_Total[i];
             ++j;
@@ -276,9 +278,9 @@ void Detection::average_CornersAndExits(){
 
     for (int i = 0; i < 100; ++i){
         nAverageCornerPoint_RL[i] = 0;
-        AverageCornerPoint_RL[i].detected = false;
+        AverageCornerPoint_RL[i].detected(false);
         nAverageExit_RL[i] = 0;
-        AverageExit_RL[i].detected = false;
+        AverageExit_RL[i].detected(false);
     }
 
     // LEFT-RIGHT AVERAGING INITILISING
@@ -291,9 +293,9 @@ void Detection::average_CornersAndExits(){
 
     for (int i = 0; i < 100; ++i){
         nAverageCornerPoint_LR[i] = 0;
-        AverageCornerPoint_LR[i].detected = false;
+        AverageCornerPoint_LR[i].detected(false);
         nAverageExit_LR[i] = 0;
-        AverageExit_LR[i].detected = false;
+        AverageExit_LR[i].detected(false);
     }
 
 
@@ -314,10 +316,10 @@ void Detection::average_CornersAndExits(){
 
         for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
 
-            if(Corners_RL[j].detected){
+            if(Corners_RL[j].detected()){
                 bool corner_detected = false;
                 for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                    if(AverageCornerPoint_RL[k].detected){
+                    if(AverageCornerPoint_RL[k].detected()){
                         double distance = sqrt( pow(AverageCornerPoint_RL[k].cornerPoint.x - Corners_RL[j].cornerPoint.x,2) +  pow(AverageCornerPoint_RL[k].cornerPoint.y - Corners_RL[j].cornerPoint.y,2));
 
 
@@ -336,8 +338,8 @@ void Detection::average_CornersAndExits(){
 
                 if(corner_detected==false){
                     for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                        if(AverageCornerPoint_RL[k].detected == false){
-                            AverageCornerPoint_RL[k].detected = true;
+                        if(AverageCornerPoint_RL[k].detected() == false){
+                            AverageCornerPoint_RL[k].detected(true);
                             AverageCornerPoint_RL[k] = Corners_RL[j];
                             nAverageCornerPoint_RL[k] = 1;
                             break;
@@ -349,10 +351,10 @@ void Detection::average_CornersAndExits(){
 
         for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
 
-            if(Exits_RL[j].detected){
+            if(Exits_RL[j].detected()){
                 bool exit_detected = false;
                 for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                    if(AverageExit_RL[k].detected){
+                    if(AverageExit_RL[k].detected()){
                         double centerExitx = 0.5 * Exits_RL[j].exitPoint1.x + 0.5 * Exits_RL[j].exitPoint2.x;
                         double centerExity = 0.5 * Exits_RL[j].exitPoint1.y + 0.5 * Exits_RL[j].exitPoint2.y;
                         double average_centerExitx = 0.5 * AverageExit_RL[j].exitPoint1.x + 0.5 * AverageExit_RL[j].exitPoint2.x;
@@ -380,8 +382,8 @@ void Detection::average_CornersAndExits(){
                 }
                 if(exit_detected==false){
                     for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                        if(AverageExit_RL[k].detected == false){
-                            AverageExit_RL[k].detected = true;
+                        if(AverageExit_RL[k].detected() == false){
+                            AverageExit_RL[k].detected(true);
                             AverageExit_RL[k] = Exits_RL[j];
                             nAverageExit_RL[k] = 1;
                             break;
@@ -400,10 +402,10 @@ void Detection::average_CornersAndExits(){
 
         for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
 
-            if(Corners_LR[j].detected){
+            if(Corners_LR[j].detected()){
                 bool corner_detected = false;
                 for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                    if(AverageCornerPoint_LR[k].detected){
+                    if(AverageCornerPoint_LR[k].detected()){
                         double distance = sqrt( pow(AverageCornerPoint_LR[k].cornerPoint_LR.x - Corners_LR[j].cornerPoint_LR.x,2) +  pow(AverageCornerPoint_LR[k].cornerPoint_LR.y - Corners_LR[j].cornerPoint_LR.y,2));
 
                         if(distance < distance_thresh){
@@ -422,8 +424,8 @@ void Detection::average_CornersAndExits(){
                 }
                 if(corner_detected==false){
                     for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                        if(AverageCornerPoint_LR[k].detected == false){
-                            AverageCornerPoint_LR[k].detected = true;
+                        if(AverageCornerPoint_LR[k].detected() == false){
+                            AverageCornerPoint_LR[k].detected(true);
                             AverageCornerPoint_LR[k] = Corners_LR[j];
                             nAverageCornerPoint_LR[k] = 1;
                             break;
@@ -435,10 +437,10 @@ void Detection::average_CornersAndExits(){
 
         for(int j = 0; j < 20; j = j+1){ //20 is length of Corners_RL, be aware of robustness issues when changing this length
 
-            if(Exits_LR[j].detected){
+            if(Exits_LR[j].detected()){
                 bool exit_detected = false;
                 for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                    if(AverageExit_LR[k].detected){
+                    if(AverageExit_LR[k].detected()){
                         double centerExitx = 0.5 * Exits_LR[j].exitPoint1_LR.x + 0.5 * Exits_LR[j].exitPoint2_LR.x;
                         double centerExity = 0.5 * Exits_LR[j].exitPoint1_LR.y + 0.5 * Exits_LR[j].exitPoint2_LR.y;
                         double average_centerExitx = 0.5 * AverageExit_LR[j].exitPoint1_LR.x + 0.5 * AverageExit_LR[j].exitPoint2_LR.x;
@@ -464,8 +466,8 @@ void Detection::average_CornersAndExits(){
                 }
                 if(exit_detected==false){
                     for(int k = 0; k < 100; k = k+1){ //100 is length of AverageCornerPoint, be aware of robustness issues when changing this length
-                        if(AverageExit_LR[k].detected == false){
-                            AverageExit_LR[k].detected = true;
+                        if(AverageExit_LR[k].detected() == false){
+                            AverageExit_LR[k].detected(true);
                             AverageExit_LR[k] = Exits_LR[j];
                             nAverageExit_LR[k] = 1;
                             break;
@@ -481,8 +483,8 @@ void Detection::average_CornersAndExits(){
 
 
     for(int i = 0; i < 20; ++i){
-        Corners_RL[i].detected = false;
-        Exits_RL[i].detected = false;//
+        Corners_RL[i].detected(false);
+        Exits_RL[i].detected(false);//
     }
 
 
@@ -514,8 +516,8 @@ void Detection::average_CornersAndExits(){
 
 
     for(int i = 0; i < 20; ++i){
-        Corners_LR[i].detected = false;
-        Exits_LR[i].detected = false;
+        Corners_LR[i].detected(false);
+        Exits_LR[i].detected(false);
     }
 
     j = 0;
@@ -560,16 +562,16 @@ void Detection::saveLRFScan(){
     for(unsigned int i = nFilterPoints; i < laser.ranges.size()-nFilterPoints; ++i)
     {
         if(laser.ranges[i]>0.001){
-            Detection::LatestLaserScan[i-nFilterPoints].dist = laser.ranges[i];
-            Detection::LatestLaserScan[i-nFilterPoints].angle = -a;
-            Detection::LatestLaserScan[i-nFilterPoints].x = sin(-a) * laser.ranges[i];
-            Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * laser.ranges[i];
+            LatestLaserScan[i-nFilterPoints].dist(laser.ranges[i]);
+            LatestLaserScan[i-nFilterPoints].angle(-a);
+            LatestLaserScan[i-nFilterPoints].x = sin(-a) * laser.ranges[i];
+            LatestLaserScan[i-nFilterPoints].y = cos(-a) * laser.ranges[i];
         }
         else{ // 30 meters if range is below threshold
-            Detection::LatestLaserScan[i-nFilterPoints].dist = 30;
-            Detection::LatestLaserScan[i-nFilterPoints].angle = -a;
-            Detection::LatestLaserScan[i-nFilterPoints].x = sin(-a) * 30;
-            Detection::LatestLaserScan[i-nFilterPoints].y = cos(-a) * 30;
+            LatestLaserScan[i-nFilterPoints].dist(30);
+            LatestLaserScan[i-nFilterPoints].angle(-a);
+            LatestLaserScan[i-nFilterPoints].x = sin(-a) * 30;
+            LatestLaserScan[i-nFilterPoints].y = cos(-a) * 30;
         }
 
         a += laser.angle_increment;
@@ -591,7 +593,7 @@ CorridorWalls Detection::findCorridorWalls(){
 
     // Look for left wall (RL SCAN)
     for(unsigned int i = 700; i < 940; i = i + 20){
-        if(LatestLaserScan[i].dist < 1.5){
+        if(LatestLaserScan[i].dist() < 1.5){
             if(Detection::lineFit(aFit, bFit, i-nPointsSearch, i) ){
                 left1.y = -1;
                 left2.y = 1;
@@ -607,7 +609,7 @@ CorridorWalls Detection::findCorridorWalls(){
 
     // Look for right wall (RL SCAN)
     for(unsigned int i = 300; i > 50; i = i - 20){
-        if(LatestLaserScan[i].dist < 1.5){
+        if(LatestLaserScan[i].dist() < 1.5){
             if(Detection::lineFit(aFit, bFit, i, i+nPointsSearch) ){
                 right1.y = -1;
                 right2.y = 1;
@@ -635,8 +637,8 @@ void Detection::findExitsAndCorners_RL(){
     int nCorners = 20;
 
     for (int l = 0; l < nExits; l=l+1){
-        Exits_RL[l].detected = false;
-        Corners_RL[l].detected = false;
+        Exits_RL[l].detected(false);
+        Corners_RL[l].detected(false);
     }
     //double errorThresh = 0.05; //Amount of deviation from linefit which is allowed (due to sensor noise)
     double errorThresh = 0.05; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
@@ -675,20 +677,20 @@ void Detection::findExitsAndCorners_RL(){
                 }
 
 
-                if(nDeviations > nPointsThresh && LatestLaserScan[j].dist < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                if(nDeviations > nPointsThresh && LatestLaserScan[j].dist() < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
 
                     //Corner detected
-                    if(LatestLaserScan[j-nPointsThresh].dist <= 0.9 * LatestLaserScan[j-nPointsThresh - 1].dist ){
+                    if(LatestLaserScan[j-nPointsThresh].dist() <= 0.9 * LatestLaserScan[j-nPointsThresh - 1].dist() ){
                         i = j;
                         j = 970;
                     }
                     else{
                         Corner corner;
                         corner.cornerPoint = LatestLaserScan[j-nPointsThresh - 1];
-                        corner.detected = true;
+                        corner.detected(true);
 
                         for(int l = 0; l < nCorners; l = l+1){
-                            if(Corners_RL[l].detected==false){
+                            if(Corners_RL[l].detected()==false){
                                 Corners_RL[l] = corner;
                                 break;
                             }
@@ -700,7 +702,7 @@ void Detection::findExitsAndCorners_RL(){
                 }
 
 
-                if (nDeviations > nPointsThresh && LatestLaserScan[j].dist > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                if (nDeviations > nPointsThresh && LatestLaserScan[j].dist() > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
 
                     // Exit detected
                     iExit1 = j - nPointsThresh - 2;
@@ -734,9 +736,9 @@ void Detection::findExitsAndCorners_RL(){
                             Exit exit;
                             exit.exitPoint1 = LatestLaserScan[iExit1];
                             exit.exitPoint2 = LatestLaserScan[iExit2];
-                            exit.detected = true;
+                            exit.detected(true);
                             for(int l = 0; l < nExits; l = l+1){
-                                if(!Exits_RL[l].detected){
+                                if(!Exits_RL[l].detected()){
                                     Exits_RL[l] = exit;
                                     break;
                                 }
@@ -756,8 +758,8 @@ void Detection::findExitsAndCorners_LR(){ // LR SCAN
     int nCorners = 20;
 
     for (int l = 0; l < nExits; l=l+1){
-        Exits_LR[l].detected = false;
-        Corners_LR[l].detected = false;
+        Exits_LR[l].detected(false);
+        Corners_LR[l].detected(false);
     }
     double errorThresh = 0.05; //[m] Amount of deviation from linefit which is allowed (due to sensor noise)
     int nPointsThresh = 15; //Amount of points larger of smaller than expected before action is being undertaken
@@ -794,20 +796,20 @@ void Detection::findExitsAndCorners_LR(){ // LR SCAN
                 }
 
 
-                if(nDeviations > nPointsThresh && LatestLaserScan[j].dist < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                if(nDeviations > nPointsThresh && LatestLaserScan[j].dist() < sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
 
                     //Corner detected
-                    if(LatestLaserScan[j+nPointsThresh].dist <= 0.9 * LatestLaserScan[j+nPointsThresh + 1].dist ){
+                    if(LatestLaserScan[j+nPointsThresh].dist() <= 0.9 * LatestLaserScan[j+nPointsThresh + 1].dist() ){
                         i = j;
                         j = 0;
                     }
                     else{
                         Corner corner;
                         corner.cornerPoint_LR = LatestLaserScan[j+nPointsThresh + 1];
-                        corner.detected = true;
+                        corner.detected(true);
 
                         for(int l = 0; l < nCorners; l = l+1){
-                            if(Corners_LR[l].detected==false){
+                            if(Corners_LR[l].detected()==false){
                                 Corners_LR[l] = corner;
                                 break;
                             }
@@ -819,7 +821,7 @@ void Detection::findExitsAndCorners_LR(){ // LR SCAN
                 }
 
 
-                if (nDeviations > nPointsThresh && LatestLaserScan[j].dist > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
+                if (nDeviations > nPointsThresh && LatestLaserScan[j].dist() > sqrt( pow(x_intersect,2) + pow(y_intersect,2) )){
 
                     // Exit detected
                     iExit1_LR = j + nPointsThresh + 2;
@@ -854,9 +856,9 @@ void Detection::findExitsAndCorners_LR(){ // LR SCAN
                             Exit exit;
                             exit.exitPoint1_LR = LatestLaserScan[iExit1_LR];
                             exit.exitPoint2_LR = LatestLaserScan[iExit2_LR];
-                            exit.detected = true;
+                            exit.detected(true);
                             for(int l = 0; l < nExits; l = l+1){
-                                if(!Exits_LR[l].detected){
+                                if(!Exits_LR[l].detected()){
                                     Exits_LR[l] = exit;
                                     break;
                                 }
@@ -873,7 +875,7 @@ void Detection::findExitsAndCorners_LR(){ // LR SCAN
 double Detection::distance_to_front(){
     double dist_total;
     for(int i = 450; i < 500; i = i+1 ){
-        dist_total = dist_total = LatestLaserScan[i].dist;
+        dist_total = dist_total = LatestLaserScan[i].dist();
     }
     double distance = dist_total/50;
 
@@ -939,8 +941,8 @@ Point Detection::findFurthestPoint(){
     int imax = 0;
     double max = 0;
     for(int i = 0; i < 1000-2*15; ++i){
-        if (LatestLaserScan[i].dist > max){
-            max = LatestLaserScan[i].dist;
+        if (LatestLaserScan[i].dist() > max){
+            max = LatestLaserScan[i].dist();
             imax = i;
         }
     }

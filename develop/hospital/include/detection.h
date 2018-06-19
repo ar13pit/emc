@@ -12,6 +12,7 @@
 
 
 class Detection {
+    
     emc::IO* inOut;
 
     WorldModel* WM;
