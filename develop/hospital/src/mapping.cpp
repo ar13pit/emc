@@ -10,13 +10,12 @@
    redundancies.
 4. Data from odom not being read anywhere.
 5. Jari must stop copying comments!
+6. Not sure how well would update_global_pos() work
 
 */
 
 
-Mapping::Mapping (emc::IO* io, WorldModel* worldModel) : inOut(io), WM(worldModel) {
-        odom = emc::OdometryData();
-}
+Mapping::Mapping (emc::IO* io, WorldModel* worldModel) : inOut(io), WM(worldModel), r(EXECUTION_RATE) {};
 
 
 //int show_canvas(emc::LaserData scan)
@@ -36,6 +35,7 @@ void Mapping::execute_mapping () {
         corners_local[i] = WM->get_localDetection().Corners_total[i];
     }
 
+    currentRoomID = WM->get_currentRoomID();
 
     std::cout<<"2"<<std::endl;
     update_global_pos();
@@ -56,6 +56,7 @@ void Mapping::execute_mapping () {
 void Mapping::update_global_pos () {
 
     //update_global_pos();
+    while (!inOut->readOdometryData(odom)) { r.sleep(); }
 
     //First thing you check if results are total crap
     global_pos.x = -odom.y;
@@ -73,14 +74,21 @@ void Mapping::update_global_pos () {
 }
 
 
-//Update corners in the total corner vector and the current room vector based on current room
+// Check if there is a new room found by comparing existing globals exits and current local exits
 void Mapping::update_rooms () {
 
-    int currentRoom = WM->get_currentRoom();
     Exit exit_found;
+    Exit exit_map;
+
     Point center_exit_found;
+    Point center_exit_map;
+
+    bool detected_already;
+    double distance;
 
     for (int i = 0; i < 40; ++i) { // ROBUSTNESS ISSUES, PAY ATTENTION
+
+        // WHY USE THIS IF CONDITION? Shouldn't exit_local only have exits with detected flag? Makes no sense!
         if (exits_local[i].detected()) {
 
             exit_found.exitPoint1 = local2global(exits_local[i].exitPoint1);
@@ -89,19 +97,20 @@ void Mapping::update_rooms () {
             center_exit_found.x = (exit_found.exitPoint1.x + exit_found.exitPoint2.x) * 0.5;
             center_exit_found.y = (exit_found.exitPoint1.y + exit_found.exitPoint2.y) * 0.5;
 
-            bool detected_already = false;
+            detected_already = false;
             for (int j = 0; j < totalExits.size(); ++j) {
-                Exit exit_map = totalExits[j];
 
-                Point center_exit_map;
+                exit_map = totalExits[j];
+
                 center_exit_map.x = (exit_map.exitPoint1.x + exit_map.exitPoint2.x) * 0.5;
                 center_exit_map.y = (exit_map.exitPoint1.y + exit_map.exitPoint2.y) * 0.5;
 
 
                 //Point_map corner_map = map[currentRoom].corners[j];
-                double distance = sqrt(pow(center_exit_map.x - center_exit_found.x, 2) + pow(center_exit_map.y - center_exit_found.y, 2));
-                if(distance < MAPPING_UNCERTAINTY){
+                distance = sqrt(pow(center_exit_map.x - center_exit_found.x, 2) + pow(center_exit_map.y - center_exit_found.y, 2));
+                if (distance < MAPPING_UNCERTAINTY) {
                     detected_already = true;
+                    break;
                 }
             }
 
@@ -112,11 +121,11 @@ void Mapping::update_rooms () {
                 Room room;
                 room.exit = exit_found;
                 room.roomID = nRooms + 1;
-                room.previousRoom = currentRoom;
+                room.previousRoom = currentRoomID;
 
                 // WTF are you tring to do here JARI?
-                std::vector<Point> corners;
-                room.corners = corners;
+                // std::vector<Point> corners;
+                // room.corners = corners;
 
                 map.push_back(room);
 
@@ -131,36 +140,49 @@ void Mapping::update_rooms () {
 }
 
 
-//Update corners in the total corner vector and the current room vector based on current room
+// Update corners in the total corner vector and the current room vector based on current room
 void Mapping::update_corners () {
 
     // WTF are you tring to do here JARI?
-    int currentRoom = 0;    //worldmodel->get_currentRoom();
+    // int currentRoom = 0;    //worldmodel->get_currentRoom();
 
+    Point corner_found;
+    Point corner_map;
+
+    bool detected_already;
+
+    double distance;
 
     for(int i = 0; i < 40; ++i) { // ROBUSTNESS ISSUES, PAY ATTENTION
-         if(corners_local[i].detected){
-             Point_map corner_found = local2global(corners_local[i].cornerPoint);
-             bool detected_already = false; // by default
 
-             for(int j = 0; j < totalCorners.size(); ++j){
-                 Point_map corner_map = totalCorners[j];
+        // WHY USE THIS IF CONDITION? Shouldn't exit_local only have exits with detected flag? Makes no sense!
+        if (corners_local[i].detected) {
+
+            corner_found = local2global(corners_local[i].cornerPoint);
+
+            detected_already = false; // by default
+            for (int j = 0; j < totalCorners.size(); ++j) {
+
+                corner_map = totalCorners[j];
                  //Point_map corner_map = map[currentRoom].corners[j];
-                 double distance = sqrt(pow(corner_map.x - corner_found.x, 2) + pow(corner_map.y - corner_found.y, 2));
-                 if(distance < MAPPING_UNCERTAINTY){
+                distance = sqrt(pow(corner_map.x - corner_found.x, 2) + pow(corner_map.y - corner_found.y, 2));
+                if (distance < MAPPING_UNCERTAINTY) {
                     detected_already = true;
-                 }
-             }
+                    break;
+                }
+            }
 
-             if(detected_already == false){
-                map[currentRoom].corners.push_back(corner_found);
+            if (detected_already == false) {
+
+                map[currentRoomID].corners.push_back(corner_found);
                 totalCorners.push_back(corner_found);
 
-             }
+            }
 
-         } else {
-             break;
-         }
+        }
+        else {
+            break;
+        }
     }
 }
 
@@ -168,12 +190,12 @@ void Mapping::update_corners () {
 
 Point Mapping::local2global (Point local) { //Convert local into global coordinate
 
-    Point global;
+    Point temp;
 
-    global.x = global_pos.x + local.dist() * sin(local.angle() + global_pos.angle());
-    global.y = global_pos.y + local.dist() * cos(local.angle() + global_pos.angle());
+    temp.x = global_pos.x + local.dist() * sin(local.angle() + global_pos.angle());
+    temp.y = global_pos.y + local.dist() * cos(local.angle() + global_pos.angle());
 
-    return global;
+    return temp;
 }
 
 

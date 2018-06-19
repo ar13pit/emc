@@ -18,6 +18,7 @@ class Mapping {
 
     emc::IO *inOut;
     emc::OdometryData odom;
+    emc::Rate r;
 
     WorldModel* WM;
 
@@ -26,6 +27,8 @@ class Mapping {
     Point global_pos;
     Point latest_odom;
     Point odom_diff;
+
+    int currentRoomID;
 
     // Kept here temporarily. Remove when arrays are converted to vectors
     Detection_data localDetection;
