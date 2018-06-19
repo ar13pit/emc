@@ -26,14 +26,13 @@ class WorldModel {
     std::vector<Room> globalRooms_;
     std::vector<int> explorationStack_;     // Contains list of room numbers that robot must go to
 
-    std::vector<Exit_map> allDetectedExits_;
-    std::vector<Point_map> allDetectedCorners_;
+    std::vector<Exit> allDetectedExits_;
+    std::vector<Point> allDetectedCorners_;
 
     Point closestPointWall_;
-    Point_map globalPosition_;
+    Point globalPosition_;
     Point pointStraightAhead_;
-
-    Destination destination_;
+    Point destination_;
 
     Detection_data localDetection_;
     Mapping_data currentMappingData_;
@@ -61,7 +60,7 @@ class WorldModel {
     void createJson();
     void extractJson();
 
-    void set_allDetectedExits(std::vector<Exit_map> allDetectedExits);
+    void set_allDetectedExits(std::vector<Exit> allDetectedExits);
     void set_variablesRelatedToDetectionData();
     void set_updateMappingVariables();
 
@@ -72,7 +71,7 @@ public:
 
     // Get Methods
     Point get_closestPointWall();
-    Point_map get_globalPosition();                     // Renamed from     Point getCurrentPosition();
+    Point get_globalPosition();                     // Renamed from     Point getCurrentPosition();
     Point get_pointStraightAhead();
 
     Destination get_destination();
@@ -97,18 +96,18 @@ public:
     std::vector<Room> get_globalRooms();            // Renamed from     std::vector<Room> getAllRooms();
     std::vector<int> get_explorationStack();
     std::vector<int> get_connectedRooms(int baseRoom);          // Never call this method during an ongoing exploration of any room.
-    std::vector<Exit_map> getAllDetectedExits();
-    std::vector<Point_map> get_allDetectedCorners();
+    std::vector<Exit> getAllDetectedExits();
+    std::vector<Point> get_allDetectedCorners();
 
     Mapping_data get_mapping();
 
 
     // Set Methods
     void set_closestPointWall(Point updatedClosestPointWall);
-    void set_globalPosition(Point_map updatedGlobalPosition);
+    void set_globalPosition(Point updatedGlobalPosition);
     void set_pointStraightAhead(Point updatedPointStraightAhead);
 
-    void set_destination(Destination updatedDestination);
+    void set_destination(Point updatedDestination);
 
     void set_localDetection(Detection_data updatedLocalDetection);
 
@@ -131,7 +130,7 @@ public:
     void set_nextRoom();
     void set_mapping(Mapping_data updateMappingData);
 
-    void set_allDetectedCorners(std::vector<Point_map> allDetectedCorners_);
+    void set_allDetectedCorners(std::vector<Point> allDetectedCorners_);
 
 
     // Other Methods (sorry)

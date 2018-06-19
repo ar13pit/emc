@@ -6,7 +6,8 @@
 --------------------------------------------------------------------------------
 */
 
-WorldModel::WorldModel() : currentLocation_(IN_CORRIDOR), enteredRooms_(0), nestedExits_(0), currentRoom_(0), roomsFound_(0)
+WorldModel::WorldModel() : currentHighState_(EXPLORE_HOSPITAL), currentLowState_(EXPLORE_CORRIDOR), currentLocation_(IN_CORRIDOR),
+    enteredRooms_(0), nestedExits_(0), currentRoom_(0), roomsFound_(0)
  { };
 
 /*
@@ -68,8 +69,8 @@ void WorldModel::createJson() {
 
       room.emplace("Corners", corners);
 
-      json ep1 = { { "x", i.exit.point1.x }, { "y", i.exit.point1.y } } ;
-      json ep2 = { { "x", i.exit.point2.x }, { "y", i.exit.point2.y } } ;
+      json ep1 = { { "x", i.exit.exitPoint1.x }, { "y", i.exit.exitPoint1.y } } ;
+      json ep2 = { { "x", i.exit.exitPoint2.x }, { "y", i.exit.exitPoint2.y } } ;
       exits.emplace("0", ep1);
       exits.emplace("1", ep2);
 
@@ -88,9 +89,9 @@ void WorldModel::extractJson() {
     for (const auto& c : jsonObject_)
     {
       Room tempRoom;
-      Exit_map tempExit;
-      Point_map tempPoint;
-      std::vector<Point_map> tempCorners;
+      Exit tempExit;
+      Point tempPoint;
+      std::vector<Point> tempCorners;
 
 
       assert(c.is_object());
@@ -108,7 +109,7 @@ void WorldModel::extractJson() {
       for (json::iterator it = corner.begin(); it != corner.end(); ++it) {
 
         json pt = it.value();         // it.key() returns the key (which is a str object)
-        Point_map cornerPoint;
+        Point cornerPoint;
 
         cornerPoint.x = pt["x"];
         cornerPoint.y = pt["y"];
@@ -119,11 +120,11 @@ void WorldModel::extractJson() {
 
       tempPoint.x = c["Exit"]["0"]["x"];
       tempPoint.y = c["Exit"]["0"]["y"];
-      tempExit.point1 = tempPoint;
+      tempExit.exitPoint1 = tempPoint;
 
       tempPoint.x = c["Exit"]["1"]["x"];
       tempPoint.y = c["Exit"]["1"]["y"];
-      tempExit.point2 = tempPoint;
+      tempExit.exitPoint2 = tempPoint;
 
       tempRoom.exit = tempExit;
 
@@ -136,8 +137,8 @@ void WorldModel::extractJson() {
           cornerID++;
       }
 
-      std::cout << "Exit 1: (" << tempRoom.exit.point1.x << "," << tempRoom.exit.point1.y << ")"  << '\n';
-      std::cout << "Exit 2: (" << tempRoom.exit.point2.x << "," << tempRoom.exit.point2.y << ")"  << '\n';
+      std::cout << "Exit 1: (" << tempRoom.exit.exitPoint1.x << "," << tempRoom.exit.exitPoint1.y << ")"  << '\n';
+      std::cout << "Exit 2: (" << tempRoom.exit.exitPoint2.x << "," << tempRoom.exit.exitPoint2.y << ")"  << '\n';
       std::cout << "----------------------------------------------------------------------------" << '\n';
 
 
@@ -148,7 +149,7 @@ void WorldModel::extractJson() {
 
 }
 
-void WorldModel::set_allDetectedExits(std::vector<Exit_map> allDetectedExits){
+void WorldModel::set_allDetectedExits(std::vector<Exit> allDetectedExits){
     allDetectedExits_ = allDetectedExits;
 }
 
@@ -160,7 +161,7 @@ void WorldModel::set_variablesRelatedToDetectionData(){
 }
 
 void WorldModel::set_updateMappingVariables () {
-    Point_map temp;
+    Point temp;
     temp.x = currentMappingData_.pico_position.x;
     temp.y = currentMappingData_.pico_position.y;
 
@@ -184,7 +185,7 @@ Point WorldModel::get_closestPointWall () {
     return closestPointWall_;
 };
 
-Point_map WorldModel::get_globalPosition () {
+Point WorldModel::get_globalPosition () {
     return globalPosition_;
 };
 
@@ -192,7 +193,7 @@ Point WorldModel::get_pointStraightAhead () {
     return pointStraightAhead_;
 };
 
-Destination WorldModel::get_destination () {
+Point WorldModel::get_destination () {
     return destination_;
 };
 
@@ -245,27 +246,27 @@ std::vector<int> WorldModel::get_connectedRooms (int baseRoom) {
 
 Room WorldModel::get_mostNestedRoom(){
     return mostNestedRoom_;
-}
+};
 
 Room WorldModel::get_closestRoom(){
     return closestRoom_;
-}
+};
 
 Room WorldModel::get_curRoom(){
     return curRoom_;
-}
+};
 
 Room WorldModel::get_nextRoom(){
     return nextRoom_;
-}
+};
 
-std::vector<Exit_map> WorldModel::getAllDetectedExits() {
+std::vector<Exit> WorldModel::getAllDetectedExits() {
     return allDetectedExits_;
-}
+};
 
 Mapping_data WorldModel::get_mapping() {
     return currentMappingData_;
-}
+};
 
 /*
                 ------------------------------------
@@ -277,7 +278,7 @@ void WorldModel::set_closestPointWall (Point updatedClosestPointWall) {
     closestPointWall_ = updatedClosestPointWall;
 };
 
-void WorldModel::set_globalPosition (Point_map updatedGlobalPosition) {
+void WorldModel::set_globalPosition (Point updatedGlobalPosition) {
     globalPosition_ = updatedGlobalPosition;
 };
 
@@ -285,7 +286,7 @@ void WorldModel::set_pointStraightAhead (Point updatedPointStraightAhead) {
     pointStraightAhead_ = updatedPointStraightAhead;
 };
 
-void WorldModel::set_destination (Destination updatedDestination) {
+void WorldModel::set_destination (Point updatedDestination) {
     destination_ = updatedDestination;
 };
 
@@ -366,7 +367,7 @@ void WorldModel::set_closestRoom(){
     Room closestRoom;
     std::vector<Room> allRooms = get_globalRooms();
     int curRoom = get_currentRoom();
-    Point_map curPos = get_globalPosition();
+    Point curPos = get_globalPosition();
     double shortestDist = INFINITY;
 
     for(int i = 0;i<allRooms.size(); i++){
@@ -375,10 +376,10 @@ void WorldModel::set_closestRoom(){
                closestRoom.corners.size()){
             //Get middle point of the exit
 
-            double xMid = 0.5*(allRooms[i].exit.point1.x + allRooms[i].exit.point2.x);
-            double yMid = 0.5*(allRooms[i].exit.point1.y + allRooms[i].exit.point2.y);
+            double xMid = 0.5*(allRooms[i].exit.exitPoint1.x + allRooms[i].exit.exitPoint2.x);
+            double yMid = 0.5*(allRooms[i].exit.exitPoint1.y + allRooms[i].exit.exitPoint2.y);
 
-            double distToRoom = sqrt(pow(curPos.x-xMid, 2) + pow(curPos.y-yMid, 2));
+            double distToRoom = sqrt(pow(curPos.x - xMid, 2) + pow(curPos.y - yMid, 2));
             if(distToRoom < shortestDist){
                 shortestDist = distToRoom;
                 closestRoom = allRooms[i];
@@ -410,7 +411,7 @@ void WorldModel::set_mapping(Mapping_data updateMappingData) {
     set_updateMappingVariables();
 }
 
-void WorldModel::set_allDetectedCorners(std::vector<Point_map> allDetectedCorners){
+void WorldModel::set_allDetectedCorners(std::vector<Point> allDetectedCorners){
     allDetectedCorners_ = allDetectedCorners;
 }
 
