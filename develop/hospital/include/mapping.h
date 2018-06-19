@@ -18,32 +18,43 @@ class Mapping {
 
     emc::IO *inOut;
     emc::OdometryData odom;
+
     WorldModel* WM;
 
-public:
-    std::vector<Room> map;
-    std::vector<Exit_map> totalExits;
-    std::vector<Point_map> totalCorners;
+    Mapping_data mapdata;
 
     Point global_pos;
     Point latest_odom;
     Point odom_diff;
 
+    // Kept here temporarily. Remove when arrays are converted to vectors
+    Detection_data localDetection;
+    Exit exits_local[40];       // Data from worldmodel (written there by detection)
+    Corner corners_local[40];   // Data from worldmodel (written there by detection)
+
+
+    std::vector<Point> totalCorners;
+    std::vector<Exit> totalExits;
+    std::vector<Room> map;
+
+
+    void update_global_pos ();
+    void update_corners ();
+    void update_rooms ();
+    Point local2global(Point);
+
+public:
+
+
     Mapping(emc::IO *io, WorldModel* worldModel);
 
-    void init_map ();
-    void update_global_pos ();
 //void update_Odometry(WorldModel*);
 //void delta_Odometry(WorldModel*);
 
-    void update_corners ();
-    void update_rooms ();
+
+    // the only function that is called to do all the mapping
     void execute_mapping ();
 
-// the only function that is called to do all the mapping
-    void update_map();
-
-    Point local2global(Point);
 
 };
 
