@@ -83,9 +83,6 @@ bool state_machine(WorldModel * worldModel){
     switch(high_st) {
     case EXPLORE_HOSPITAL:
 
-        std::cout << "EXPLORING THE HOSPITAL " << std::endl;
-
-
         if (location == IN_CORRIDOR) {
 
             std::cout << "In corridor" << "\n";
@@ -99,14 +96,17 @@ bool state_machine(WorldModel * worldModel){
 
                 } else{     //PICO is at the end of the corridor --> Wall at the front
                     worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
+                    worldModel->set_closestRoom();
                     std::cout << "Moving to the next room" << std::endl;
+                    std::cout << "GLOBALROOMS SIZE = " << worldModel->get_globalRooms().size() << std::endl;
+
                 }
                 return end_of_program;
 
             case GO_TO_NEXT_ROOM:
 
                 if (worldModel->get_destination().dist() < DIST_SETPOINT){
-                    worldModel->set_currentLowState(GO_INSIDE_ROOM);
+                    //worldModel->set_currentLowState(GO_INSIDE_ROOM);
                     std::cout << "Entering a room from corridor" << std::endl;
                 } else {
                     std::cout << "Moving to the next room" << std::endl;

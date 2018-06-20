@@ -20,9 +20,9 @@ void DriveControl::picoTurning () {
         while (!inOut->readOdometryData(odomCur)) { r.sleep(); }
         r.sleep();
         angle_cur = odomRef.a - odomCur.a;
-        std::cout << "absolute odomCur angle " << fabs(odomCur.a) << std::endl;
-        std::cout << "absolute odomRef angle " << fabs(odomRef.a) << std::endl;
-        std::cout << "absolute dest angle " << fabs(dest.angle()) << std::endl;
+//        std::cout << "absolute odomCur angle " << fabs(odomCur.a) << std::endl;
+//        std::cout << "absolute odomRef angle " << fabs(odomRef.a) << std::endl;
+//        std::cout << "absolute dest angle " << fabs(dest.angle()) << std::endl;
     }
     picoStop();
 };
@@ -45,9 +45,9 @@ void DriveControl::picoDrive(bool back){
         while (!inOut->readOdometryData(odomCur)){r.sleep();}
         dist_cur = sqrt(pow((odomCur.x - odomRef.x), 2) + pow((odomCur.y - odomRef.y), 2));
         r.sleep();
-        std::cout << "absolute odomCur distance " << fabs(dist_cur) << std::endl;
+//        std::cout << "absolute odomCur distance " << fabs(dist_cur) << std::endl;
 //        std::cout << "absolute odomRef distance " << fabs(dist_ref) << std::endl;
-        std::cout << "absolute dest distance " << fabs(dest.dist()) << std::endl;
+//        std::cout << "absolute dest distance " << fabs(dest.dist()) << std::endl;
     }
     picoStop();
 };

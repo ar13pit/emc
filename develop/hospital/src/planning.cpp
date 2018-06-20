@@ -28,7 +28,8 @@ Point Planning::getAwayFromWall () {
     }
     //If closest point is in the front of PICO, then turn around
     else {
-        tempAngle = closestPoint.angle() < 0 ? TURN_WHEN_OBJECT_IN_FRONT : -TURN_WHEN_OBJECT_IN_FRONT;
+        tempAngle = M_PI - closestPoint.angle();
+        //tempAngle = closestPoint.angle() < 0 ? TURN_WHEN_OBJECT_IN_FRONT : -TURN_WHEN_OBJECT_IN_FRONT;
         dest.angle(tempAngle);
         dest.dist(0);
     }
@@ -69,17 +70,22 @@ Point Planning::getNearbyExitPoint (Room closestRoom) {
     return destination;
 }
 
-Point Planning::driveToPoint (Point goToPoint) {
+Point Planning::driveToPoint (Point goToPoint, Point curPos) {
 
 //    ///////////////////  TODO  //////////////////////////////////////
 //    /// Check wheter is works when the relative angle is different
 //    /// Unable to check in simulation without other classes...
 //    ///
-    Point curPos = WM->get_globalPosition();
+    //Point curPos = WM->get_globalPosition();
     Point dest;
 
     double disX = goToPoint.x - curPos.x;
     double disY = goToPoint.y - curPos.y;
+
+    std::cout << "CurPosX = " << curPos.x << std::endl;
+    std::cout << "GoToX = " << goToPoint.x << std::endl;
+    std::cout << "CurPosY = " << curPos.y << std::endl;
+    std::cout << "GoToY = " << goToPoint.y << std::endl;
 
     if (disX > 0 && disY < 0) {
         std::cout << "First Quadrant" <<std::endl;
@@ -102,7 +108,8 @@ Point Planning::driveToPoint (Point goToPoint) {
 
 //    dest.angle = atan(disY/disX);
 
-    std::cout << "ANGLE = " << dest.angle() <<std::endl;
+    std::cout << "Dest ANGLE = " << dest.angle() <<std::endl;
+    std::cout << "Cur ANGLE = " << curPos.angle() <<std::endl;
 
     return dest;
 }

@@ -93,12 +93,12 @@ int main ()
         std::cout << "Closest Point angle = " << worldModel.get_closestPointWall().angle() << std::endl;
 
         // low level control
+        end_of_program = state_machine(&worldModel);
         if (wall_detected) {
             worldModel.set_destination(planning.getAwayFromWall());
             std::cout << "WALL DETECTED" << std::endl;
         }
         else {
-            end_of_program = state_machine(&worldModel);
             monitoring(&worldModel);
         }
 
@@ -123,8 +123,6 @@ int main ()
         r.sleep();
         std::cout <<"----------------------------" << std::endl << std::endl;
 
-        std::cout << "Press Enter to continue ..." << '\n';
-        std::cin.get();
     }
 
 

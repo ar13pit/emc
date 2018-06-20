@@ -26,7 +26,7 @@ bool explore_hospital(WorldModel * worldModel){
 
         room = worldModel->get_closestRoom();
         navigateTo = planning.getNearbyExitPoint(room);
-        dest = planning.driveToPoint(navigateTo);
+        dest = planning.driveToPoint(navigateTo, worldModel->get_globalPosition());
 
     } else if (current_low == EXPLORE_CORRIDOR){
 
@@ -36,7 +36,7 @@ bool explore_hospital(WorldModel * worldModel){
 
         room = worldModel->get_currentRoom();
         navigateTo = planning.getNearbyExitPoint(room);
-        dest = planning.driveToPoint(navigateTo);
+        dest = planning.driveToPoint(navigateTo, worldModel->get_globalPosition());
     }
 
     worldModel->set_destination(dest);
@@ -56,7 +56,7 @@ bool return_to_init(WorldModel * worldModel){
     if (current_low == GO_TO_START){
 
         navigateTo = planning.getStartPos();
-        dest = planning.driveToPoint(navigateTo);
+        dest = planning.driveToPoint(navigateTo, worldModel->get_globalPosition());
 
     } else if (current_low == PARKING) {
 

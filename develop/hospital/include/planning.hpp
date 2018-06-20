@@ -22,7 +22,7 @@ public:
 
     Planning (WorldModel* worldmodel);
 
-    Point driveToPoint (Point navigateTo);
+    Point driveToPoint (Point navigateTo, Point curPos);
     Point setpointInCorridor ();               //Navigate Pico through Corridor
     Point getAwayFromWall ();
     Point driveInRoom ();

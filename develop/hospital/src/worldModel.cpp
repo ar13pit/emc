@@ -376,9 +376,17 @@ void WorldModel::set_closestRoom(){
 
     for (int i = 0; i<allRooms.size(); ++i) {
 
+        std::cout << "EXIT Room 1 X" << allRooms[i].exit.exitPoint1.x << std::endl;
+        std::cout << "EXIT Room 1 Y" << allRooms[i].exit.exitPoint1.y << std::endl;
+        std::cout << "EXIT Room 2 X" << allRooms[i].exit.exitPoint2.x << std::endl;
+        std::cout << "EXIT Room 2 Y" << allRooms[i].exit.exitPoint2.y << std::endl;
+
+
         if (curRoom == allRooms[i].previousRoom &&
                closestRoom.corners.size()) {
             //Get middle point of the exit
+
+            std::cout << "IN" << std::endl;
 
             double xMid = 0.5*(allRooms[i].exit.exitPoint1.x + allRooms[i].exit.exitPoint2.x);
             double yMid = 0.5*(allRooms[i].exit.exitPoint1.y + allRooms[i].exit.exitPoint2.y);
@@ -392,6 +400,7 @@ void WorldModel::set_closestRoom(){
         }
     }
     //cout << "Closest Exit is at (" << 0.5*(closestRoom.exit_previous.exitPoint1.x + closestRoom.exit_previous.exitPoint2.x) << ',' << 0.5*(closestRoom.exit_previous.exitPoint1.y + closestRoom.exit_previous.exitPoint2.y) << ')' << endl;
+
     closestRoom_ = closestRoom;
 }
 
