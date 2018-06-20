@@ -55,14 +55,13 @@ int main ()
 
     while(io.ok()) {
 
-        if (counter == 38) {
+        if (counter == 51) {
             break;
         }
 
 
         detection.detection_execution(); //
         localDetection = worldModel.get_localDetection();
-
         vis.init_visualize();
         for(unsigned int i = 0; i < 970 ; ++i)
         {
@@ -83,6 +82,7 @@ int main ()
                if (sqrt(pow(lexit.x - rexit.x, 2) + pow(lexit.y - rexit.y, 2)) < CORRIDOR_EXIT_WIDTH) {
                 std::cout << "Exit Distance: " << sqrt(pow(lexit.x - rexit.x, 2) + pow(lexit.y - rexit.y, 2)) << '\n';
                    vis.plotExit(localDetection.Exits_total[l]);
+
                }
 
 
@@ -126,30 +126,39 @@ int main ()
         //     p1.dist(DIST_SETPOINT);
         //     // monitoring(&worldModel);
         // }
-        //
-        // if (counter == 5) {
-        //     p1.x = 0.5;
-        //     p1.y = 0;
-        //     p1.angle((M_PI/2));
-        //     p1.dist(0);
-        //
-        //     // worldModel.set_destination(planning.getAwayFromWall());
-        //     std::cout << "Room 1" << std::endl;
-        // }
-        if (counter == 34) {
-            p1.x = 0.5;
+        // counter == 32 || counter == 33 || counter == 34 ||
+        if (counter == 27 || counter == 28 || counter == 40 || counter == 41 || counter == 42) {
+            p1.x = -0.5;
             p1.y = 0;
-            p1.angle(-1*(M_PI/2));
+            p1.angle(-M_PI/2);
             p1.dist(0);
 
             // worldModel.set_destination(planning.getAwayFromWall());
             std::cout << "Room 1" << std::endl;
         }
-        else if (counter == 35) {
-            std::cout << "Paused!" << '\n';
-            std::cin.get();
+        else if (counter == 32 || counter == 33) {
+            p1.x = 0.5;
+            p1.y = 0;
+            p1.angle(M_PI/2);
+            p1.dist(0);
 
+            // worldModel.set_destination(planning.getAwayFromWall());
+            // std::cout << "Room 1" << std::endl;
         }
+        // else if (counter == 37) {
+        //     p1.x = 0.5;
+        //     p1.y = 0;
+        //     p1.angle(M_PI/2);
+        //     p1.dist(0);
+        //
+        // }
+        // else if (counter == 38 || counter == 39) {
+        //     p1.x = -0.5;
+        //     p1.y = 0;
+        //     p1.angle(-M_PI/2);
+        //     p1.dist(0);
+        //
+        // }
         else {
             p1.x = 0;
             p1.y = 0.5;
