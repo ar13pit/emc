@@ -3,22 +3,13 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc.hpp>
 
-#include <emc/io.h>
-#include <emc/rate.h>
-#include <emc/odom.h>
 #include <cmath>
 #include <cstdlib>
-
-
 #include <string>
 #include <sstream>
 #include <iostream>
 
-
-//#include "driveControl.h"
 #include "helper.hpp"
-//#include "worldModel.h"
-//#include "planning.h"
 #include "config.hpp"
 
 #ifndef VISUALIZE
@@ -36,6 +27,8 @@ public:
     void publish();
     void plotExit(Exit);
     void plotCorner(Corner);
+    void plotPoint(Point);
+
     // void plotExit_LR(Exit_LR);
     // void plotCorner_LR(Corner_LR);
     void plotLine(double, double, Point, Point);

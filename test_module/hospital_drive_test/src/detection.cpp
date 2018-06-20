@@ -273,7 +273,7 @@ void Detection::average_CornersAndExits(){
 
     // AVERAGING MAGIC NUMBERS
     int nAverages = 10;
-    double distance_thresh = 0.03;
+    double distance_thresh = 0.1;
     int nLarger = 5;
 
     // RIGHT-LEFT AVERAGING INITILISING

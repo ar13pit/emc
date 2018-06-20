@@ -31,7 +31,7 @@ void Point::dist (double newDistance) {
 */
 
 
-Exit::Exit () {};
+Exit::Exit () : detected_(false) {};
 
 void Exit::detected (bool exitDetectedFlag) {
     detected_ = exitDetectedFlag;
@@ -47,7 +47,7 @@ bool Exit::detected () {
 -----------------------------------------
 */
 
-Corner::Corner () {};
+Corner::Corner () : detected_(false) {};
 
 void Corner::detected (bool cornerDetectedFlag) {
     detected_ = cornerDetectedFlag;

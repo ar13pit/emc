@@ -9,13 +9,17 @@ void DriveControl::picoTurning () {
 
     double angle_cur = odomRef.a - odomCur.a;
 
-    bool left = calibrate_angle();
+    int turn_direction = calibrate_angle();
+    std::cout << "Turn left: " << left << '\n';
 
     while (fabs(angle_cur) < fabs(ref_angle) - TURN_COMPLETE){
-        if (left){
+        if (turn_direction == -1){
             picoTurnLeft();
-        } else {
+        } else if (turn_direction == 1) {
             picoTurnRight();
+        }
+        else {
+            // DO Nothing
         }
         while (!inOut->readOdometryData(odomCur)) { r.sleep(); }
         r.sleep();
@@ -52,8 +56,8 @@ void DriveControl::picoDrive(bool back){
     picoStop();
 };
 
-bool DriveControl::calibrate_angle () {
-    bool left;
+int DriveControl::calibrate_angle () {
+    int turn_direction;     // -1 for left, 0 for no turn, 1 for turn
     double destA = dest.angle();
 
     if( destA < -M_PI )
@@ -65,11 +69,15 @@ bool DriveControl::calibrate_angle () {
     ref_angle = destA;
 
     if (destA < 0) {
-        left = true;
+        turn_direction = -1;
+    }
+    else if (destA > 0) {
+        turn_direction = 1;
     }
     else {
-        left = false;
+        turn_direction = 0;
     }
+    return turn_direction;
 };
 
 void DriveControl::picoSideDrive () {

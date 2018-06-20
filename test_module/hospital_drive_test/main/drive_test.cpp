@@ -33,10 +33,12 @@ int main ()
     // Planning planning(&worldModel);
     // Mapping mapping(&io, &worldModel);
     Visualizer vis;
-    Corner corner;
     Point p1, p2;
 
+    p1.x = 0;
+    p1.y = 0.5;
     p1.dist(0.5);
+
     // Room corridor;
     // Detection_data localDetection;
     //
@@ -52,9 +54,6 @@ int main ()
     // std::string talking = "I am parked";
 
     int counter = 0;
-    corner.cornerPoint.x = 0;
-    corner.cornerPoint.y = 0.5;
-    corner.detected(true);
 
     while(io.ok()) {
 
@@ -74,7 +73,7 @@ int main ()
             vis.plot_xy_color(x, y,0, 0, 255);
         }
 
-        vis.plotCorner(corner);
+        vis.plotPoint(p1);
 
 
         vis.publish();
@@ -98,18 +97,16 @@ int main ()
 
 //        }
         if (counter == 4) {
-            corner.cornerPoint.x = -0.5;
-            corner.cornerPoint.y = 0;
-            corner.detected(true);
+            p1.x = -0.5;
+            p1.y = 0;
             p1.angle(M_PI/2);
         }
         else if (counter == 7) {
             break;
         }
         else {
-            corner.cornerPoint.x = 0;
-            corner.cornerPoint.y = 0.5;
-            corner.detected(true);
+            p1.x = 0;
+            p1.y = 0.5;
             p1.angle(0);
         }
 

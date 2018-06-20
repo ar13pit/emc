@@ -13,6 +13,7 @@ file(GLOB SOURCES "src/*.cpp")
 # Create executable named "testPlanning"
 add_executable(drive_test ${SOURCES} main/drive_test.cpp)
 add_executable(json_test ${SOURCES} main/json_test.cpp)
+add_executable(detection_test ${SOURCES} main/detection_test.cpp)
 
 
 find_package(OpenCV REQUIRED)
@@ -22,6 +23,8 @@ target_link_libraries(drive_test emc-framework)
 target_link_libraries(drive_test ${OpenCV_LIBS})
 target_link_libraries(json_test emc-framework)
 target_link_libraries(json_test ${OpenCV_LIBS})
+target_link_libraries(detection_test emc-framework)
+target_link_libraries(detection_test ${OpenCV_LIBS})
 
 # Create the executable in directory "/bin"
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

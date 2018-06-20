@@ -31,7 +31,7 @@ class DriveControl {
     void picoBackwards();               // Method to let pico drive backwards
 //    void picoSideDrive(double ref_dist, emc::OdometryData odomCur, double angle, emc::Rate *r);   // Method to let pico drive side ways
     void picoStop();                    // Method to stop moving with the robot
-    bool calibrate_angle();
+    int calibrate_angle();
     void picoDrive(bool back);       // Method to let pico turn for an angle and then drive
     void picoTurning(); // Method to let pico turn for an angle and then drive backwards
     void picoSideDrive();

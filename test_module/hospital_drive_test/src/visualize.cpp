@@ -120,11 +120,18 @@ void Visualizer::plotCorner(Corner corner){
         cv::Point2d corner1 = worldToCanvas(corner.cornerPoint.x, corner.cornerPoint.y);
 
         Visualizer::plot_xy_color(corner.cornerPoint.x, corner.cornerPoint.y,0,255,0);
-        circle(canvas, corner1, 1, cv::Scalar(0,0,255),5,8,0);
+        circle(canvas, corner1, 1, cv::Scalar(255,255,0),5,8,0);
 
     }
 }
 
+void Visualizer::plotPoint(Point point){
+    cv::Point2d point1 = worldToCanvas(point.x, point.y);
+
+    Visualizer::plot_xy_color(point.x, point.y, 0, 255, 0);
+    circle(canvas, point1, 1, cv::Scalar(0,255,255),5,8,0);
+
+}
 
 void Visualizer::plotLine(double aFit, double bFit, Point firstPoint, Point lastPoint){
     double x1 = -10;
