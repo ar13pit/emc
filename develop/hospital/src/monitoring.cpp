@@ -25,6 +25,10 @@ bool explore_hospital(WorldModel * worldModel){
     } else if (current_low == GO_TO_NEXT_ROOM){
 
         room = worldModel->get_closestRoom();
+        std::cout << "EXIT Room 1 X = " << room.exit.exitPoint1.x << std::endl;
+        std::cout << "EXIT Room 1 Y = " << room.exit.exitPoint1.y << std::endl;
+        std::cout << "EXIT Room 2 X = " << room.exit.exitPoint2.x << std::endl;
+        std::cout << "EXIT Room 2 Y = " << room.exit.exitPoint2.y << std::endl;
         navigateTo = planning.getNearbyExitPoint(room);
         dest = planning.driveToPoint(navigateTo, worldModel->get_globalPosition());
 
@@ -33,7 +37,7 @@ bool explore_hospital(WorldModel * worldModel){
         dest = planning.setpointInCorridor();
 
     } else if (current_low == EXIT_TO_PREV_ROOM){
-
+std::cout << "2222" << std::endl;
         room = worldModel->get_currentRoom();
         navigateTo = planning.getNearbyExitPoint(room);
         dest = planning.driveToPoint(navigateTo, worldModel->get_globalPosition());
@@ -56,6 +60,7 @@ bool return_to_init(WorldModel * worldModel){
     if (current_low == GO_TO_START){
 
         navigateTo = planning.getStartPos();
+        std::cout << "3333" << std::endl;
         dest = planning.driveToPoint(navigateTo, worldModel->get_globalPosition());
 
     } else if (current_low == PARKING) {

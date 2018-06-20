@@ -23,7 +23,7 @@ bool state_machine(WorldModel * worldModel){
     //                                       //
     //---------------------------------------//
 
-    int numb_rooms_in_corridor = worldModel->get_connectedRooms(0).size();    // total number of rooms detected
+    int numb_rooms_in_corridor = worldModel->get_globalRooms().size();    // total number of rooms detected
     int numb_rooms_explored = worldModel->get_enteredRooms();
     int numb_nexted_exits = worldModel->get_nestedExits();      // number of total exits in rooms - 1*numb_rooms_explored
 
@@ -116,6 +116,8 @@ bool state_machine(WorldModel * worldModel){
             case GO_INSIDE_ROOM:
                 worldModel->set_currentLocation(IN_ROOM);
                 worldModel->set_currentLowState(EXPLORE_ROOM);
+                worldModel->set_enteredRooms(true);
+                worldModel->set_nestedExits(true);
                 std::cout << "Exploring the room " << std::endl;
                 return end_of_program;
             }
