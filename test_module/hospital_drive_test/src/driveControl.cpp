@@ -10,7 +10,7 @@ void DriveControl::picoTurning () {
     double angle_cur = odomRef.a - odomCur.a;
 
     int turn_direction = calibrate_angle();
-    std::cout << "Turn left: " << left << '\n';
+    std::cout << "Turn decision: " << turn_direction << '\n';
 
     while (fabs(angle_cur) < fabs(ref_angle) - TURN_COMPLETE){
         if (turn_direction == -1){
