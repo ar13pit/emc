@@ -1,8 +1,37 @@
-#include "visualize.hpp"
+#include <emc/io.h>
+#include <emc/rate.h>
 
-// Visualizer::Visualizer() {
-//     init_visualize();
-// }
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include "opencv2/imgproc.hpp"
+
+#include <string>
+#include <sstream>
+#include <iostream>
+
+#include <emc/odom.h>
+#include <cmath>
+#include <cstdlib>
+
+//#include "driveControl.h"
+#include "detection.h"
+//#include "worldModel.h"
+//#include "planning.h"
+#include "config.h"
+#include "visualize.h"
+//#include "main.pp"
+
+
+using namespace std;
+//using namespace cv;
+
+
+
+
+double resolution = 0.01;
+//double a;
+
 
 //int show_canvas(emc::LaserData scan)
 void Visualizer::init_visualize()
@@ -33,9 +62,9 @@ void Visualizer::init_visualize()
     }
 
     // wall avoidance perimeter
-    // VISUALIZER_BUMP_AVOIDANCE -> adjust avoidance distance (stay away from wall param.)
+    double bump_avoidance = 0.3; // adjust avoidance distance (stay away from wall param.)
     cv::Point2d pico_center = worldToCanvas(0, 0);
-    circle(canvas, pico_center, VISUALIZER_BUMP_AVOIDANCE/VISUALIZER_RESOLUTION, cv::Scalar(125,125,125),2,8,0);
+    circle(canvas, pico_center, bump_avoidance/resolution, cv::Scalar(125,125,125),2,8,0);
     //circle(exi)
 
     // Legend
@@ -103,12 +132,12 @@ void Visualizer::publish(){
     cv::waitKey(3);
 }
 
-void Visualizer::plotExit(Exit exitVar){
-    if(exitVar.detected()){
-        cv::Point2d exit1 = worldToCanvas(exitVar.exitPoint1.x, exitVar.exitPoint1.y);
-        cv::Point2d exit2 = worldToCanvas(exitVar.exitPoint2.x, exitVar.exitPoint2.y);
+void Visualizer::plotExit(Exit exit){
+    if(exit.detected){
+        cv::Point2d exit1 = worldToCanvas(exit.exitPoint1.x, exit.exitPoint1.y);
+        cv::Point2d exit2 = worldToCanvas(exit.exitPoint2.x, exit.exitPoint2.y);
 
-        Visualizer::plot_xy_color(exitVar.exitPoint2.x, exitVar.exitPoint2.y,0,255,0);
+        Visualizer::plot_xy_color(exit.exitPoint2.x, exit.exitPoint2.y,0,255,0);
         circle(canvas, exit1, 1, cv::Scalar(0,255,0),5,8,0);
         circle(canvas, exit2, 1, cv::Scalar(0,255,0),5,8,0);
 
@@ -116,7 +145,7 @@ void Visualizer::plotExit(Exit exitVar){
 }
 
 void Visualizer::plotCorner(Corner corner){
-    if(corner.detected()){
+    if(corner.detected){
         cv::Point2d corner1 = worldToCanvas(corner.cornerPoint.x, corner.cornerPoint.y);
 
         Visualizer::plot_xy_color(corner.cornerPoint.x, corner.cornerPoint.y,0,255,0);
@@ -125,6 +154,28 @@ void Visualizer::plotCorner(Corner corner){
     }
 }
 
+
+void Visualizer::plotExit_LR(Exit_LR exit){
+    if(exit.detected){
+        cv::Point2d exit1_LR = worldToCanvas(exit.exitPoint1_LR.x, exit.exitPoint1_LR.y);
+        cv::Point2d exit2_LR = worldToCanvas(exit.exitPoint2_LR.x, exit.exitPoint2_LR.y);
+
+        Visualizer::plot_xy_color(exit.exitPoint2_LR.x, exit.exitPoint2_LR.y,0,255,0);
+        circle(canvas, exit1_LR, 1, cv::Scalar(255,255,0),5,8,0);
+        circle(canvas, exit2_LR, 1, cv::Scalar(255,255,0),5,8,0);
+
+    }
+}
+
+void Visualizer::plotCorner_LR(Corner_LR corner){
+    if(corner.detected){
+        cv::Point2d corner1_LR = worldToCanvas(corner.cornerPoint_LR.x, corner.cornerPoint_LR.y);
+
+        Visualizer::plot_xy_color(corner.cornerPoint_LR.x, corner.cornerPoint_LR.y,0,255,0);
+        circle(canvas, corner1_LR, 1, cv::Scalar(0,255,255),5,8,0);
+
+    }
+}
 
 void Visualizer::plotLine(double aFit, double bFit, Point firstPoint, Point lastPoint){
     double x1 = -10;
@@ -139,5 +190,5 @@ void Visualizer::plotLine(double aFit, double bFit, Point firstPoint, Point last
 }
 
 cv::Point2d Visualizer::worldToCanvas(double x, double y){
-    return cv::Point2d(x / VISUALIZER_RESOLUTION, -y / VISUALIZER_RESOLUTION) + canvas_center;
+    return cv::Point2d(x / resolution, -y / resolution) + canvas_center;
 }

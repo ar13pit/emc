@@ -16,7 +16,7 @@
 #include "config.h"
 #include "mapping.h"
 #include "helper.h"
-
+#include "visualize.h"
 
 int main(int argc, char *argv[])
 {
@@ -69,6 +69,9 @@ int main(int argc, char *argv[])
     worldModel.set_curRoom(corridor);
     worldModel.set_globalPosition(initial_point_map);
 
+    Visualizer vis;
+    Detection_data localDetection;
+
 
 
 
@@ -82,6 +85,34 @@ int main(int argc, char *argv[])
 
 
         detection.detection_execution(&worldModel); //
+        localDetection = worldModel.get_localDetection();
+
+        vis.init_visualize();
+        for(unsigned int i = 0; i < 970 ; ++i)
+        {
+            double x = detection.LatestLaserScan[i].x;
+            double y = detection.LatestLaserScan[i].y;
+            vis.plot_xy_color(x, y,0, 0, 255);
+        }
+
+        for(unsigned int l = 0; l < 40; l=l+1){
+           if(localDetection.Exits_total[l].detected){
+        //                   std::cout << l;
+               vis.plotExit(localDetection.Exits_total[l]);
+
+           }
+
+           if(localDetection.Corners_total[l].detected){
+        //                   std::cout << l;
+               vis.plotCorner(localDetection.Corners_total[l]);
+
+           }
+        }
+
+        vis.publish();
+
+
+
 
         //        if(detection.getSensorData()) {
 
@@ -175,8 +206,8 @@ int main(int argc, char *argv[])
         r.sleep();
         std::cout <<"----------------------------" << std::endl << std::endl;
 
-        /*std::cout << "Press Enter to continue ..." << '\n';
-        cin.get();*/
+        std::cout << "Press Enter to continue ..." << '\n';
+        std::cin.get();
     }
 
 

@@ -28,6 +28,8 @@
 #define FRONTWALL_ANGLE 0.1*M_PI                    // [rad] A wall is in front of Pico is it is at a certain abs ange
 #define MAPPING_UNCERTAINTY 0.3
 
+#define VISUALIZER_RESOLUTION 0.01
+#define VISUALIZER_BUMP_AVOIDANCE 0.3
 #define JSON_PATH "Rooms.json"                      // Json path
 
 
