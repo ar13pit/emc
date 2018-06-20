@@ -136,7 +136,7 @@ int main ()
             // worldModel.set_destination(planning.getAwayFromWall());
             std::cout << "Room 1" << std::endl;
         }
-        else if (counter == 32 || counter == 33) {
+        else if (counter == 32 || counter == 33 || counter == 48) {
             p1.x = 0.5;
             p1.y = 0;
             p1.angle(M_PI/2);
