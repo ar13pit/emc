@@ -23,7 +23,7 @@
 
 #define MOVESIDEWAYS_FACTOR 0.9*TURN_MARGIN         // [-] Move sideways when a wall is at the side of PICO
 #define TURN_WHEN_OBJECT_IN_FRONT 0.5*M_PI          // [rad] Turn when there is a wall at the front of PICO
-#define WAIT_BEFORE_EXIT 0.5                        // [m] PICO drives the exit and waits in front of it (at a certain distance)
+#define WAIT_BEFORE_EXIT 0.1                        // [m] PICO drives the exit and waits in front of it (at a certain distance)
 #define DISTANCE_FROM_WALL_IN_ROOM 1                // [m] When a wall is in front of Pico at a certain distance Pico turns around
 #define FRONTWALL_ANGLE 0.1*M_PI                    // [rad] A wall is in front of Pico is it is at a certain abs ange
 #define MAPPING_UNCERTAINTY 0.3
