@@ -20,6 +20,8 @@ find_package(OpenCV REQUIRED)
 # Link libraries
 target_link_libraries(drive_test emc-framework)
 target_link_libraries(drive_test ${OpenCV_LIBS})
+target_link_libraries(json_test emc-framework)
+target_link_libraries(json_test ${OpenCV_LIBS})
 
 # Create the executable in directory "/bin"
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
