@@ -7,7 +7,7 @@ Detection::Detection (emc::IO* io, WorldModel* worldmodel) : inOut(io), WM(world
 
 
 Detection_data Detection::detection_execution () {
-    findExitsAndCorners_Final();
+    average_CornersAndExits();
     Point closestPoint = closest_point();
     std::vector<Exit> localExits = local_Exits();
 
@@ -15,10 +15,18 @@ Detection_data Detection::detection_execution () {
 
     data.closest_Point = closestPoint;
     data.local_exits = localExits;
-    for(int i = 0; i < 40; ++i){
-        data.Exits_total[i] = Exits_Total[i];
-        data.Corners_total[i] = Corners_Total[i];
+    for(int i = 0; i < 20; ++i){
+        data.Exits_total[i] = Exits_RL[i];
+        data.Corners_total[i] = Corners_RL[i];
     }
+    Exit empty_exit;
+    Corner empty_corner;
+
+    for(int i = 20; i < 40; ++i){
+        data.Exits_total[i] = empty_exit;
+        data.Corners_total[i] = empty_corner;
+    }
+
 
     std::cout << "Detection execution"  <<"\n";
     WM->set_localDetection(data);
