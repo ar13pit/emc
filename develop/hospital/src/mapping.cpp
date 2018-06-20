@@ -115,6 +115,7 @@ void Mapping::update_rooms () {
             }
 
             if (detected_already == false) {
+//                if !()
                 //map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
                 totalExits.push_back(exit_found);
                 int nRooms = map.size();
