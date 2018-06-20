@@ -116,13 +116,8 @@ int main ()
         // low level control
         // end_of_program = state_machine(&worldModel);
         if (wall_detected) {
-            p1.x = -0.5;
-            p1.y = 0;
-            p1.angle(M_PI/2);
-            p1.dist(0);
-
             // worldModel.set_destination(planning.getAwayFromWall());
-            std::cout << "WALL DETECTED" << std::endl;
+            std::cout << "TOO CLOSE TO WALL" << std::endl;
         }
         // else {
         //     p1.x = 0;
@@ -132,16 +127,16 @@ int main ()
         //     // monitoring(&worldModel);
         // }
         //
-        // else if (counter == 5) {
+        // if (counter == 5) {
         //     p1.x = 0.5;
         //     p1.y = 0;
-        //     p1.angle(-1*(M_PI/2));
+        //     p1.angle((M_PI/2));
         //     p1.dist(0);
         //
         //     // worldModel.set_destination(planning.getAwayFromWall());
         //     std::cout << "Room 1" << std::endl;
         // }
-        else if (counter == 34) {
+        if (counter == 34) {
             p1.x = 0.5;
             p1.y = 0;
             p1.angle(-1*(M_PI/2));

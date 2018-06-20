@@ -99,7 +99,7 @@ int main ()
         if (counter == 4) {
             p1.x = -0.5;
             p1.y = 0;
-            p1.angle(M_PI/2);
+            p1.angle(-M_PI/2);
         }
         else if (counter == 7) {
             break;
