@@ -23,7 +23,7 @@ bool state_machine(WorldModel * worldModel){
     //                                       //
     //---------------------------------------//
 
-    int numb_rooms_in_corridor = worldModel->get_globalRooms().size();    // total number of rooms detected
+    int numb_rooms_in_corridor = worldModel->get_connectedRooms(0).size();    // total number of rooms detected
     int numb_rooms_explored = worldModel->get_enteredRooms();
     int numb_nexted_exits = worldModel->get_nestedExits();      // number of total exits in rooms - 1*numb_rooms_explored
 
@@ -111,15 +111,13 @@ bool state_machine(WorldModel * worldModel){
                 } else {
                     std::cout << "Moving to the next room" << std::endl;
                 }
-                return end_of_program;
+                break;
 
             case GO_INSIDE_ROOM:
                 worldModel->set_currentLocation(IN_ROOM);
                 worldModel->set_currentLowState(EXPLORE_ROOM);
-                worldModel->set_enteredRooms(true);
-                worldModel->set_nestedExits(true);
                 std::cout << "Exploring the room " << std::endl;
-                return end_of_program;
+                break;
             }
 
             // command to go to  first exit
@@ -146,7 +144,7 @@ bool state_machine(WorldModel * worldModel){
                     }
                 }
 
-                return end_of_program;
+                break;
 
             case GO_INSIDE_ROOM:
                 if (current_room.previousRoom == 0) {
@@ -159,7 +157,7 @@ bool state_machine(WorldModel * worldModel){
                 } else {
                     worldModel->set_currentLowState(EXPLORE_ROOM);
                 }
-                return end_of_program;
+                break;
 
             case GO_TO_NEXT_ROOM:
 
@@ -169,7 +167,7 @@ bool state_machine(WorldModel * worldModel){
                 } else {
 //                    std::cout << "Going to nested room " << std::endl;
                 }
-                return end_of_program;
+                break;
 
             case EXIT_TO_PREV_ROOM:
                 if (worldModel->get_destination().dist() < DIST_SETPOINT){
@@ -178,18 +176,18 @@ bool state_machine(WorldModel * worldModel){
                 } else {
 //                    std::cout << "Leaving the room" << "\n";
                 }
-                return end_of_program;
+                break;
             }
         }
 
 
-        if (numb_rooms_in_corridor == (numb_nexted_exits + numb_rooms_explored)) {
+        if (numb_rooms_explored == (numb_nexted_exits + numb_rooms_explored)) {
             std::cout << "Moving to starting point " << std::endl;
             worldModel->set_currentHighState(RETURN_TO_INIT);
             worldModel->set_currentLowState(GO_TO_START);
         }
 
-        return end_of_program;
+        break;
 
     case RETURN_TO_INIT:
         // assuming we are in the corridor
@@ -205,13 +203,13 @@ bool state_machine(WorldModel * worldModel){
             } else {
 //                std::cout << "Moving to starting point " << std::endl;
             }
-            return end_of_program;
+            break;
 
         case PARKING:
             std::cout << "Parked! " << std::endl;
             worldModel->set_mostNestedRoom();
             end_of_program = true;
-            return end_of_program;
+            break;
         }
 
         break;
@@ -244,7 +242,7 @@ bool state_machine(WorldModel * worldModel){
             worldModel->set_nextRoom();
             worldModel->set_currentLowState(GO_TO_NEXT_ROOM);
             std::cout << "Going to next room " << std::endl;
-            return end_of_program;
+            break;
 
         case GO_TO_NEXT_ROOM:
 
@@ -258,7 +256,7 @@ bool state_machine(WorldModel * worldModel){
 //                    std::cout << "Going to next room " << std::endl;
                 }
             }
-            return end_of_program;
+            break;
 
         case STAND_NEXT_TO_OBJECT:
 //            std::cout << "Moving to the object " << std::endl;
@@ -266,7 +264,7 @@ bool state_machine(WorldModel * worldModel){
                 end_of_program = true;
                 std::cout << "Near the object " << std::endl;
             }
-            return end_of_program;
+            break;
         }
 
         break;

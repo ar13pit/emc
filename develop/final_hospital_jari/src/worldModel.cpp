@@ -376,27 +376,24 @@ void WorldModel::set_closestRoom(){
 
     for (int i = 0; i<allRooms.size(); ++i) {
 
-//        std::cout << "EXIT Room 1 X = " << allRooms[i].exit.exitPoint1.x << std::endl;
-//        std::cout << "EXIT Room 1 Y = " << allRooms[i].exit.exitPoint1.y << std::endl;
-//        std::cout << "EXIT Room 2 X = " << allRooms[i].exit.exitPoint2.x << std::endl;
-//        std::cout << "EXIT Room 2 Y = " << allRooms[i].exit.exitPoint2.y << std::endl;
+        std::cout << "EXIT Room 1 X" << allRooms[i].exit.exitPoint1.x << std::endl;
+        std::cout << "EXIT Room 1 Y" << allRooms[i].exit.exitPoint1.y << std::endl;
+        std::cout << "EXIT Room 2 X" << allRooms[i].exit.exitPoint2.x << std::endl;
+        std::cout << "EXIT Room 2 Y" << allRooms[i].exit.exitPoint2.y << std::endl;
 
-//std::cout << "PREV ROOM = " << allRooms[i].previousRoom << std::endl;
-//std::cout << "CUR ROOM = " << get_currentRoomID() << std::endl;
+
         if (curRoom == allRooms[i].previousRoom &&
-               allRooms[i].corners.size() < 4 ) {
+               closestRoom.corners.size()) {
             //Get middle point of the exit
 
-//            std::cout << "IN" << std::endl;
+            std::cout << "IN" << std::endl;
 
             double xMid = 0.5*(allRooms[i].exit.exitPoint1.x + allRooms[i].exit.exitPoint2.x);
             double yMid = 0.5*(allRooms[i].exit.exitPoint1.y + allRooms[i].exit.exitPoint2.y);
-//std::cout << "xMID = " << xMid << std::endl;
-//std::cout << "yMID = " << yMid << std::endl;
+
             double distToRoom = sqrt(pow(curPos.x - xMid, 2) + pow(curPos.y - yMid, 2));
             if(distToRoom < shortestDist){
                 shortestDist = distToRoom;
-                std::cout << "ShortestDist = " << shortestDist <<std::endl;
                 closestRoom = allRooms[i];
             }
             //cout << "Exit Room " << i << " is at (" << xMid << ',' << yMid << ')' << endl;
