@@ -115,20 +115,21 @@ void Mapping::update_rooms () {
             }
 
             if (detected_already == false) {
-                //map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
-                totalExits.push_back(exit_found);
-                int nRooms = map.size();
-                Room room;
-                room.exit = exit_found;
-                room.roomID = nRooms + 1;
-                room.previousRoom = currentRoomID;
+                if (!(exit_found.exitPoint1.angle() - exit_found.exitPoint2.angle() < 0.1*M_PI)){
+                    //map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
+                    totalExits.push_back(exit_found);
+                    int nRooms = map.size();
+                    Room room;
+                    room.exit = exit_found;
+                    room.roomID = nRooms + 1;
+                    room.previousRoom = currentRoomID;
 
-                // WTF are you tring to do here JARI?
-                // std::vector<Point> corners;
-                // room.corners = corners;
+                    // WTF are you tring to do here JARI?
+                    // std::vector<Point> corners;
+                    // room.corners = corners;
 
-                map.push_back(room);
-
+                    map.push_back(room);
+                }
             }
 
         }
@@ -164,7 +165,7 @@ void Mapping::update_corners () {
             for (int j = 0; j < totalCorners.size(); ++j) {
 
                 corner_map = totalCorners[j];
-                 //Point_map corner_map = map[currentRoom].corners[j];
+                //Point_map corner_map = map[currentRoom].corners[j];
                 distance = sqrt(pow(corner_map.x - corner_found.x, 2) + pow(corner_map.y - corner_found.y, 2));
                 if (distance < MAPPING_UNCERTAINTY) {
                     detected_already = true;
@@ -208,9 +209,9 @@ Point Mapping::local2global (Point local) { //Convert local into global coordina
 
 //void Mapping::delta_Odometry(){
 
-    //odom_diff.x = global_pos.x - latest_odom.x;
-    //odom_diff.y = global_pos.y - latest_odom.y;
-    //odom_diff.angle = global_pos.angle - latest_odom.angle;
+//odom_diff.x = global_pos.x - latest_odom.x;
+//odom_diff.y = global_pos.y - latest_odom.y;
+//odom_diff.angle = global_pos.angle - latest_odom.angle;
 
 //}
 
