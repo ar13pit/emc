@@ -115,7 +115,10 @@ void Mapping::update_rooms () {
             }
 
             if (detected_already == false) {
-                if (!(exit_found.exitPoint1.angle() - exit_found.exitPoint2.angle() < 0.1*M_PI)){
+//                std::cout << "angle of the exit point " << exit_found.exitPoint1.angle() << std::endl;
+//                double exit1_angle = exit_found.exitPoint1.x;
+//                double exit2_angle;
+//                if (!(exit_found.exitPoint1.angle() - exit_found.exitPoint2.angle() < 0.1*M_PI)){
                     //map[currentRoom].corners[map[currentRoom].corners.size()] = corner_found;
                     totalExits.push_back(exit_found);
                     int nRooms = map.size();
@@ -129,7 +132,7 @@ void Mapping::update_rooms () {
                     // room.corners = corners;
 
                     map.push_back(room);
-                }
+//                }
             }
 
         }
