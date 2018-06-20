@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 //            }
 
             //vis.plotExit(exit);
-            vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
+            // vis.plotLine(detection.aFitPlot,detection.bFitPlot,exit.exitPoint1,exit.exitPoint2);
             vis.publish();
 
 
